@@ -1,38 +1,42 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
-%%% Maintains consistent margins with A0 document.
-\usepackage[margin=1in]{geometry}
-\usepackage[shortlabels]{enumitem}
-\setlist[enumerate]{font={\bfseries}}
+\usepackage[margin=1in]{geometry} % Set margins
+\usepackage{hyperref} % For links
 
 \title{CS 348 - Report}
-\author{Group 21}
-\date{Spring 2024}
+\author{Kegan Allen, Luke Martin, Matteo Pesenti, Angelina Wu, Eric Zhang}
+\date{Spring 2024 - Group 21}
 
 \begin{document}
 
 \maketitle
 
+\noindent Link to repository: \href{https://github.com/LukasMartini/CS348Group21Project}{CS348Group21Project}
+
 \section{Project Introduction}
 
-Poker hand history tracker with bankroll, bet habit vs hand value, etc. information.
+%Poker hand history tracker with bankroll, bet habit vs hand value, etc. information. Social features (posting hand/game history publicly, commenting)
+
+At present, our application will primarily be a central platform for poker players to view, comment on, and make use of their game replays and personal statistics,
+as well as those posted publicly by other users. As such, our database will be a repository of game results (play history, betting habits, etc.), loss/ gain
+tracking information, and account data. \\
+
+\noindent To accomplish this, we must rely almost entirely on our users. Our focus on game statistics necessarily requires some level of input from clients, 
+as obtaining the information directly from popular online poker platforms (PokerStars, etc.) requires technologies that are outside of the scope of this project. 
+Since the app will likely stay localized within the group for the duration of this course, the dataset can only be comprised of games that are extractable from public sources
+or from our members. However, if we were to deploy, it would include data from anyone with an account. 
+Either way, it is our responsibility as a team to be the database administrators.
 
 \section{Choice of Platform}
 
-- Choice of platform: reactTS, python\(flask\), postgresql, local machines
-- Web UI
+%- Choice of platform: reactTS, python (flask), postgresql, local machines
 
-\section{Group Members}
+Due to the relative variety and complexity of our data, it is needlessly complicated to interact with the database using the commandline.
+As such, our user interface will consist of a React-based website supported by a Flask back-end, giving us flexibility in how we manage the database 
+while keeping the user experinece simple. For the database, we intend on using Postgresql, so our local machines are our platform of choice.
 
-Group Members:
-\begin{enumerate}
-    \item Kegan Allen
-    \item Luke Martin
-    \item Matteo Pesenti
-    \item Angelina Wu
-    \item Eric Zhang
-\end{enumerate}
+\section{Group Member Contribution}
 
-All group members participated in brainstorming session.
+All group members participated in the preparation of Milestone 0 equally via writing or editing the report or the "hello world" equivalent.
 
 \end{document}
