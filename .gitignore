@@ -1,3 +1,5 @@
+.venv
+frontend/node_modules
 report.aux
 report.log
 report.out
