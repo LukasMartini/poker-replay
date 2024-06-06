@@ -10,13 +10,12 @@ CREATE TABLE poker_hand (
     rake NUMERIC(10, 2),
     played_at TIMESTAMP,
     table_name VARCHAR(50),
-    max_players INT,
+    max_players INT
 );
 
 CREATE TABLE player (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
-    UNIQUE (name)
+    name VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE player_action (
