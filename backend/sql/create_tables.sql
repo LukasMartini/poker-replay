@@ -59,8 +59,8 @@ CREATE TABLE player_cards (
     stack_size NUMERIC(10, 2),
     FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
     FOREIGN KEY (player_id) REFERENCES player(id),
-    CHECK (hole_card1 IS NULL OR hole_card1 ~ '^[2-9TJQKA][CDHS]$'),
-    CHECK (hole_card2 IS NULL OR hole_card2 ~ '^[2-9TJQKA][CDHS]$')
+    CHECK (hole_card1 IS NULL OR hole_card1 ~ '^[2-9TJQKA][cdhs]$'),
+    CHECK (hole_card2 IS NULL OR hole_card2 ~ '^[2-9TJQKA][cdhs]$')
 );
 
 CREATE TABLE board_cards (
@@ -72,9 +72,9 @@ CREATE TABLE board_cards (
     turn_card CHAR(2) NULL,
     river_card CHAR(2) NULL,
     FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
-    CHECK (flop_card1 IS NULL OR flop_card1 ~ '^[2-9TJQKA][CDHS]$'),
-    CHECK (flop_card2 IS NULL OR flop_card2 ~ '^[2-9TJQKA][CDHS]$'),
-    CHECK (flop_card3 IS NULL OR flop_card3 ~ '^[2-9TJQKA][CDHS]$'),
-    CHECK (turn_card IS NULL OR turn_card ~ '^[2-9TJQKA][CDHS]$'),
-    CHECK (river_card IS NULL OR river_card ~ '^[2-9TJQKA][CDHS]$')
+    CHECK (flop_card1 IS NULL OR flop_card1 ~ '^[2-9TJQKA][cdhs]$'),
+    CHECK (flop_card2 IS NULL OR flop_card2 ~ '^[2-9TJQKA][cdhs]$'),
+    CHECK (flop_card3 IS NULL OR flop_card3 ~ '^[2-9TJQKA][cdhs]$'),
+    CHECK (turn_card IS NULL OR turn_card ~ '^[2-9TJQKA][cdhs]$'),
+    CHECK (river_card IS NULL OR river_card ~ '^[2-9TJQKA][cdhs]$')
 );
