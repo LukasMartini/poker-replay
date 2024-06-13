@@ -1,3 +1,14 @@
+-- untested
+-- Function to confirm that a CHAR(2) card takes the correct form via regex
+CREATE OR REPLACE FUNCTION is_valid_card(card CHAR(2))
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN card IS NULL OR card ~ '^[2-9TJQKA][cdhs]$';
+END;
+$$;
+
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -19,7 +30,7 @@ CREATE TABLE poker_session (
     max_players INT,
     start_time TIMESTAMP,
     end_time TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (user_id) REFERENCES users(id), -- User that uploaded this session
     CHECK (end_time IS NULL OR end_time > start_time)
 );
 
@@ -35,7 +46,9 @@ CREATE TABLE poker_hand (
 
 CREATE TABLE player (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE
+    user_id INT, -- user that owns this player
+    name VARCHAR(50) NOT NULL UNIQUE,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE player_action (
@@ -47,7 +60,7 @@ CREATE TABLE player_action (
     action_type VARCHAR(50),
     amount NUMERIC(10, 2),
     FOREIGN KEY (player_id) REFERENCES player(id),
-    FOREIGN KEY (hand_id) REFERENCES poker_hand(id)
+    FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
     CHECK (betting_round IN ('Preflop', 'Flop', 'Turn', 'River')),
     CHECK (action_type IN ('fold', 'check', 'call', 'bet', 'raise', 'all-in'))
 );
@@ -62,8 +75,8 @@ CREATE TABLE player_cards (
     stack_size NUMERIC(10, 2),
     FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
     FOREIGN KEY (player_id) REFERENCES player(id),
-    CHECK (hole_card1 IS NULL OR hole_card1 ~ '^[2-9TJQKA][cdhs]$'),
-    CHECK (hole_card2 IS NULL OR hole_card2 ~ '^[2-9TJQKA][cdhs]$')
+    CHECK (is_valid_card(hole_card1)),
+    CHECK (is_valid_card(hole_card2))
 );
 
 CREATE TABLE board_cards (
@@ -75,9 +88,9 @@ CREATE TABLE board_cards (
     turn_card CHAR(2) NULL,
     river_card CHAR(2) NULL,
     FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
-    CHECK (flop_card1 IS NULL OR flop_card1 ~ '^[2-9TJQKA][cdhs]$'),
-    CHECK (flop_card2 IS NULL OR flop_card2 ~ '^[2-9TJQKA][cdhs]$'),
-    CHECK (flop_card3 IS NULL OR flop_card3 ~ '^[2-9TJQKA][cdhs]$'),
-    CHECK (turn_card IS NULL OR turn_card ~ '^[2-9TJQKA][cdhs]$'),
-    CHECK (river_card IS NULL OR river_card ~ '^[2-9TJQKA][cdhs]$')
+    CHECK (is_valid_card(flop_card1)),
+    CHECK (is_valid_card(flop_card2)),
+    CHECK (is_valid_card(flop_card3)),
+    CHECK (is_valid_card(turn_card)),
+    CHECK (is_valid_card(river_card))
 );
