@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[margin=1in]{geometry} % Set margins
+\usepackage{hyperref} % For links
+\usepackage{verbatim}
+
+%%% "Set and Forgets"
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%%% For better newlines
+\usepackage{parskip}
+
+%%% Define a shorthand function to force paragraph indents.
+\newcommand{\forceindent}{\parindent=0.7cm\hangindent=0.7cm}
+
+\begin{document}
+
+\section*{Application Features}
+    \subsection*{R6 - Content Search}
+
+        One of the core features of our application is the ability to search for and view information about any given hand that a user has played. While conceptually simple, the implementation 
+        will make use of every part of our technology stack. To find a played hand, its unique identifier and a player name must be given by the user in our web interface. 
+        From there, using account data, we can query our database for results from all of the relevant tables (player\textunderscore action, player\textunderscore cards, board\textunderscore cards) 
+        using predicates such that only data associated with the desired user is selected. This data is then sent back to the front-end for viewing. If no player name is given, it will default to the
+        user searching the database.
+
+        An example of how this feature will look can be seen in our database-driven application submitted with Milestone 1.
+
+        The query template is as follows:
+        \begin{verbatim}
+PREPARE handData AS (SELECT poker_hand.id, p.name, poker_hand.total_pot, 
+                            player_cards.hole_card1, player_cards.hole_card2,
+                            player_action.hand_id, player_action.amount,
+                            board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
+                            board_cards.turn_card, board_cards.river_card
+                    FROM poker_hand, (SELECT * FROM player WHERE player.name = $2) p, 
+                         player_action, player_cards, board_cards
+                    WHERE poker_hand.id = $1 AND player_action.player_id = p.id 
+                            AND player_action.hand_id = $1
+                            AND player_cards.hand_id = $1 AND player_cards.player_id = p.id
+                            AND board_cards.hand_id = $1
+);
+        \end{verbatim}
+        where the selected data can only come from rows where the inputted hand\textunderscore id (1) and player name (2) match with the queried tables.
+        Note that temporary table 'p' is to translate a player's name to its associated player\textunderscore id. We do this to allow us the flexibility to 
+        implement searching by user.
+
+        If we use the data below in a sample query,
+        \begin{verbatim}
+poker_hand: 1, 1, 1, Cash, 0.1, 0.1, CAD, 0.1, 0.1, January 8 04:05:06 1999 PST, Gaussia, 6
+
+player: 1, Ted
+
+player_action: 1, 1, 1, 1, Folds, 0.01
+
+player_cards: 1, 1, 1, AC, AS, 1, 0.1
+
+board_cards: 1, 1, AC, 2C, 3C, 4C, TC
+        \end{verbatim}
+        We expect the output to be
+        \begin{verbatim}
+[(1, 'Ted', Decimal('0.10'), 'AC', 'AS', 1, Decimal('0.01'), 'AC', '2C', '3C', '4C', 'TC')]
+        \end{verbatim}
+
+
+\end{document}
