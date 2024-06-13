@@ -1,10 +1,6 @@
 import re
 from datetime import datetime
-from server import get_db_connection
-
-# Connect to the database
-conn = get_db_connection()
-cur = conn.cursor()
+from db_commands import execute_query
 
 '''
 Hand #1: 
@@ -28,8 +24,8 @@ fourz4444: calls $0.03
 CashMatteo: folds 
 '''
 
-# Function to parse hand history
-def parse_hand_history(file_path):
+def parse_hand_history(file_path, user_id):
+    '''Populates the database with the hand history from the given file path.'''
     with open(file_path, 'r') as file:
         content = file.read()
         
@@ -37,8 +33,6 @@ def parse_hand_history(file_path):
     hands[0] = hands[0].replace('\nHand #', 'Hand #')
     
     for hand in hands:
-        print("\n\n\n\n")
-        
         lines = hand.split('\n')
         
         if "*** HOLE CARDS ***" not in lines:
@@ -172,8 +166,3 @@ def parse_hand_history(file_path):
             if collect_match:
                 player_name, amount = collect_match.groups()
                 print(player_name, amount)
-
-parse_hand_history("hand_histories/poker_stars/handHistory-126997.txt")
-
-cur.close()
-conn.close()

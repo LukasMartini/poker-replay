@@ -5,6 +5,7 @@ This document outlines the steps required to create and configure the `cs348` da
 ## Prerequisites
 
 - PostgreSQL installed on your local machine.
+- Should be in the `backend` directory.
 
 ## Step 1: Log into PostgreSQL
 
@@ -21,7 +22,6 @@ Run the following command to create the `cs348` database:
 ```sql
 CREATE DATABASE cs348;
 ```
-
 
 ## Step 3: Switch to the New Database
 
@@ -68,5 +68,5 @@ psql -d cs348 -U admin
 Run the following command to load the schema into the database:
 
 ```bash
-psql -d cs348 -U admin -f backend/sql/create_tables.sql
+psql -d cs348 -U admin -f sql/create_tables.sql
 ```
