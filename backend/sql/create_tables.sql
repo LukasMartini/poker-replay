@@ -43,10 +43,13 @@ CREATE TABLE player_action (
     player_id INT,
     hand_id INT,
     seat_number INT,
+    betting_round VARCHAR(50),
     action_type VARCHAR(50),
     amount NUMERIC(10, 2),
     FOREIGN KEY (player_id) REFERENCES player(id),
     FOREIGN KEY (hand_id) REFERENCES poker_hand(id)
+    CHECK (betting_round IN ('Preflop', 'Flop', 'Turn', 'River')),
+    CHECK (action_type IN ('fold', 'check', 'call', 'bet', 'raise', 'all-in'))
 );
 
 CREATE TABLE player_cards (

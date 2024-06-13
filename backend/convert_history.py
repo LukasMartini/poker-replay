@@ -2,28 +2,6 @@ import re
 from datetime import datetime
 from db_commands import execute_query
 
-'''
-Hand #1: 
-
-PokerStars Hand #246222355402:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 22:56:41 ET
-Table 'Alya III' 6-max Seat #1 is the button
-Seat 1: HortonRoundtree ($1.86 in chips) 
-Seat 2: fourz4444 ($1.91 in chips) 
-Seat 3: CashMatteo ($2 in chips) 
-Seat 5: ljab26 ($2.96 in chips) 
-Seat 6: vegasricky ($1.56 in chips) 
-fourz4444: posts small blind $0.01
-CashMatteo: posts big blind $0.02
-bouchizzle: sits out 
-*** HOLE CARDS ***
-Dealt to CashMatteo [8c 3d]
-ljab26: raises $0.02 to $0.04
-vegasricky: folds 
-HortonRoundtree: folds 
-fourz4444: calls $0.03
-CashMatteo: folds 
-'''
-
 def parse_hand_history(file_path, user_id):
     '''Populates the database with the hand history from the given file path.'''
     with open(file_path, 'r') as file:
@@ -31,6 +9,9 @@ def parse_hand_history(file_path, user_id):
         
     hands = re.split(r'(?<=\n\n)(?=Hand\s*#\s*\d+: \n\n)', content)
     hands[0] = hands[0].replace('\nHand #', 'Hand #')
+    
+    poker_session = None
+    session_id = None
     
     for hand in hands:
         lines = hand.split('\n')
@@ -68,6 +49,15 @@ def parse_hand_history(file_path, user_id):
 
         if game_type == "Cash":
             print(hand_num, pokerstars_id, game_type, stakes, datetime_obj, table_name, table_size, button_seat)
+            
+            query = """
+            INSERT INTO poker_session 
+            (user_id, tournament_id, table_name, game_type, small_blind, big_blind, currency, total_hands, max_players, start_time, end_time)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            execute_query(query, (user_id, None, table_name, game_type, stakes.split('/')[0], stakes.split('/')[1], stakes.split(' ')[1], 0, table_size, datetime_obj, None)
+            
+            
         else:
             print(hand_num, pokerstars_id, game_type, tournament_id, buy_in, level, datetime_obj, table_name, table_size, button_seat)
         
