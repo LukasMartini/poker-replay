@@ -3,7 +3,7 @@
 -- Ensure that hand_id matches user_id and user_id matches current user
 -- Pull total pot, player action, player cards, and board cards. Only pull based on user_id.
 
-PREPARE hand_data AS (
+PREPARE hand_data2 AS (
     SELECT poker_hand.id, p.name, poker_hand.total_pot, player_cards.hole_card1, player_cards.hole_card2,
            player_action.hand_id, player_action.amount,
            board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
