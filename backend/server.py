@@ -1,50 +1,18 @@
-from flask import Flask, Response, jsonify
-from db_commands import get_db_connection, execute_query
-from flask_cors import CORS, cross_origin
-
-conn = get_db_connection()
-cur = conn.cursor()
+from flask import Flask, Response
+from db_commands import get_db_connection
 
 app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/')
-@cross_origin()
-def homepage():
-    return Response(status=200)
-
-@app.route('/api/hand_summary/<int:id>', methods=['GET'])
-@cross_origin()
-def hand_summary(id: int) -> Response:
-    # result = execute_query(f'EXECUTE one_time_hand_info({id});')
-    cur.execute(f'EXECUTE one_time_hand_info({id});')
-    result = cur.fetchall()
-
-    return jsonify(result), 200
-
-@app.route("/api/player_actions/<int:id>", methods=['GET'])
-@cross_origin()
-def player_actions(id: int) -> Response:
-    # result = execute_query(f'EXECUTE player_actions_in_hand({id});')
-    cur.execute(f'EXECUTE player_actions_in_hand({id});')
-    result = cur.fetchall()
-
-    return jsonify(result), 200
-
-@app.route("/api/player_cards/<int:id>", methods=['GET'])
-@cross_origin()
-def player_cards(id: int) -> Response:
-    # result = execute_query(f'EXECUTE player_cards_in_hand({id});')
-    cur.execute(f'EXECUTE player_cards_in_hand({id});')
-    result = cur.fetchall()
-
-    return jsonify(result), 200
-
-if __name__ == '__main__':
-    cur.execute(open('backend/sql/fetch_hand_query_templates.sql').read())
-
-    app.run(host="localhost", port=5001, debug=True)
-    
+def index():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM books;')
+    books = cur.fetchall()
     cur.close()
     conn.close()
+    return Response(response=str(books), status=200)
+
+
+if __name__ == '__main__':
+    app.run(host="localhost", port=5001, debug=True)
