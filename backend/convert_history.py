@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from db_commands import execute_query
+from db_commands import execute_query, get_or_create_session
 
 def parse_hand_history(file_path, user_id):
     '''Populates the database with the hand history from the given file path.'''
@@ -47,17 +47,22 @@ def parse_hand_history(file_path, user_id):
         table_name, table_size, button_seat = re.search(r"Table '(.+)' (\d+)-max Seat #(\d+) is the button", lines[3]).groups()
         total_pot, rake = re.search(r"Total pot \$?([\d.]+)(?:.*)\| Rake \$?([\d.]+)", lines[lines.index("*** SUMMARY ***") + 1]).groups()
 
-        if game_type == "Cash":
-            print(hand_num, pokerstars_id, game_type, stakes, datetime_obj, table_name, table_size, button_seat)
+
+
+        
+        
+        
+        
+        
+        if game_type == "Cash":                
+            small_blind, part = stakes.replace('$', '').split('/')
+            big_blind, currency = part.split()
             
-            query = """
-            INSERT INTO poker_session 
-            (user_id, tournament_id, table_name, game_type, small_blind, big_blind, currency, total_hands, max_players, start_time, end_time)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """
-            execute_query(query, (user_id, None, table_name, game_type, stakes.split('/')[0], stakes.split('/')[1], stakes.split(' ')[1], 0, table_size, datetime_obj, None)
+            print(hand_num, pokerstars_id, game_type, small_blind, big_blind, currency)
+            print(datetime_obj, table_name, table_size, button_seat, total_pot, rake)            
             
-            
+            get_or_create_session(user_id, table_name, game_type, small_blind, big_blind, currency, table_size, datetime_obj)
+               
         else:
             print(hand_num, pokerstars_id, game_type, tournament_id, buy_in, level, datetime_obj, table_name, table_size, button_seat)
         
