@@ -21,10 +21,9 @@ CREATE TABLE poker_session (
     id SERIAL PRIMARY KEY,
     user_id INT,
     tournament_id BIGINT NULL,
+    buy_in NUMERIC(10, 2), -- Only applicable for tournaments
     table_name VARCHAR(50),
     game_type VARCHAR(50),
-    small_blind NUMERIC(10, 2),
-    big_blind NUMERIC(10, 2),
     currency VARCHAR(10),
     total_hands INT,
     max_players INT,
@@ -37,7 +36,9 @@ CREATE TABLE poker_session (
 CREATE TABLE poker_hand (
     id SERIAL PRIMARY KEY,
     session_id INT,
-    site_hand_id BIGINT, 
+    site_hand_id BIGINT,
+    small_blind NUMERIC(10, 2),
+    big_blind NUMERIC(10, 2),
     total_pot NUMERIC(10, 2),
     rake NUMERIC(10, 2),
     played_at TIMESTAMP,
