@@ -8,6 +8,8 @@ DROP TABLE IF EXISTS player_cards;
 DROP TABLE IF EXISTS player_action;
 DROP TABLE IF EXISTS player;
 DROP TABLE IF EXISTS poker_hand;
+DROP TABLE IF EXISTS poker_session;
+DROP TABLE IF EXISTS users;
 
 -- Re-enable foreign key checks
 SET session_replication_role = 'origin';

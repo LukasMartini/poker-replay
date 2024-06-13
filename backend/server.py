@@ -1,17 +1,7 @@
-import psycopg2
 from flask import Flask, Response
+from db_commands import get_db_connection
 
 app = Flask(__name__)
-
-def get_db_connection():
-    conn = psycopg2.connect(
-      host='localhost',
-      database='cs348',
-      user='admin',
-      password='admin123'
-    )
-    return conn
-
 
 @app.route('/')
 def index():
