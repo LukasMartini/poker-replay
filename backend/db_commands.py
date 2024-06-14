@@ -1,5 +1,6 @@
-import re
+from functools import lru_cache
 import psycopg2
+
 
 DB_PARAMS = {
     "host": "localhost",
@@ -26,7 +27,6 @@ def execute_query(query, data=None, fetch=False):
                         return cur.fetchall()
         finally:
             conn.close()
-            
 
 def get_or_create_cash_session(user_id, table_name, game_type, currency, table_size, datetime_obj):
     '''Checks if a session already exists in the database, and if not, creates a new session.'''
@@ -71,7 +71,6 @@ def get_or_create_tournament_session(user_id, tournament_id, buy_in, table_name,
         """
         result = execute_query(insert_query, (user_id, tournament_id, buy_in, table_name, game_type, currency, 0, table_size, datetime_obj), fetch=True)
         return result[0][0]
-    
 
 def create_hand(session_id, pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj):
     '''Inserts a new hand into the database. Also updates the total_hands and end_time of the session.'''
@@ -88,23 +87,24 @@ def create_hand(session_id, pokerstars_id, small_blind, big_blind, total_pot, ra
     VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id;
     """
     result = execute_query(insert_hand_query, (session_id, pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj), fetch=True)
-    return result[0][0]
-    
-def create_player(hand_id, seat_num, player_name, stack, hole_cards, position, stack_size):
-    '''Inserts a new player into the database.'''
-    
-    
-def create_player(hand_id, player_name, position, stack_size):
-    '''Inserts a new player into the database, and adds their card details to the player_cards table.'''
+    return result[0][0] 
+
+@lru_cache()
+def get_or_create_player_id(player_name):
+    '''Checks if a player already exists in the database, and if not, creates a new player.'''
     player_query = "SELECT id FROM player WHERE name = %s"
     result = execute_query(player_query, (player_name,), fetch=True)
     
-    if not result:
-        # No player found, insert new player
+    if result:
+        return result[0][0]
+    else:
         insert_player_query = "INSERT INTO player (name) VALUES (%s) RETURNING id"
         result = execute_query(insert_player_query, (player_name,), fetch=True)
+        return result[0][0]
     
-    player_id = result[0][0]
+def create_player(hand_id, player_name, position, stack_size):
+    '''Inserts a new player into the database, and adds their card details to the player_cards table.'''
+    player_id = get_or_create_player_id(player_name)
 
     # Insert player card details
     insert_cards_query = """
@@ -115,8 +115,7 @@ def create_player(hand_id, player_name, position, stack_size):
 
 def update_player_cards(hand_id, player_name, hole_cards):
     '''Updates the hole cards for a player in the database.'''
-    player_query = "SELECT id FROM player WHERE name = %s"
-    player_id = execute_query(player_query, (player_name,), fetch=True)[0][0]
+    player_id = get_or_create_player_id(player_name)
     
     hole_card1, hole_card2 = hole_cards
     
@@ -128,8 +127,7 @@ def update_player_cards(hand_id, player_name, hole_cards):
 
 def create_action(hand_id, player_name, betting_round, action, amount):
     '''Inserts a new action into the database.'''
-    player_query = "SELECT id FROM player WHERE name = %s"
-    player_id = execute_query(player_query, (player_name,), fetch=True)[0][0]
+    player_id = get_or_create_player_id(player_name)
     
     singular_forms = {
         "calls": "call",
