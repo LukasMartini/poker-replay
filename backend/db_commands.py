@@ -147,9 +147,12 @@ def create_action(hand_id, player_name, betting_round, action, amount):
     """
     execute_query(insert_action_query, (hand_id, player_id, betting_round, action, amount))
 
-def create_board(hand_id, flop_cards, turn_card, river_card):
+def create_board(hand_id, flop_cards=None, turn_card=None, river_card=None):
     '''Inserts new board cards into the database.'''
-    flop_card1, flop_card2, flop_card3 = flop_cards
+    if not flop_cards:
+        flop_card1, flop_card2, flop_card3 = None, None, None
+    else:
+        flop_card1, flop_card2, flop_card3 = flop_cards
     
     insert_board_query = """
     INSERT INTO board_cards (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card)
