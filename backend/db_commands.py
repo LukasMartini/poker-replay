@@ -1,3 +1,4 @@
+import re
 import psycopg2
 
 DB_PARAMS = {
@@ -27,28 +28,131 @@ def execute_query(query, data=None, fetch=False):
             conn.close()
             
 
-def get_or_create_session(user_id, table_name, game_type, small_blind, big_blind, currency, table_size, datetime_obj):
+def get_or_create_cash_session(user_id, table_name, game_type, currency, table_size, datetime_obj):
     '''Checks if a session already exists in the database, and if not, creates a new session.'''
 
     check_query = """
     SELECT id FROM poker_session
-    WHERE user_id = %s AND table_name = %s AND game_type = %s AND small_blind = %s AND big_blind = %s AND currency = %s
+    WHERE user_id = %s AND table_name = %s AND game_type = %s AND currency = %s
     """
-    
-    result = execute_query(check_query, (user_id, table_name, game_type, small_blind, big_blind, currency), fetch=True)
+    result = execute_query(check_query, (user_id, table_name, game_type, currency), fetch=True)
     
     # Check if a session was found
     if result:
-        print("Session already exists with session_id:", result[0][0])
         return result[0][0]  # Return existing session_id
     else:
         # If no existing session, insert a new one
         insert_query = """
         INSERT INTO poker_session 
-        (user_id, table_name, game_type, small_blind, big_blind, currency, total_hands, max_players, start_time)
+        (user_id, table_name, game_type, currency, total_hands, max_players, start_time)
+        VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id
+        """
+        result = execute_query(insert_query, (user_id, table_name, game_type, currency, 0, table_size, datetime_obj), fetch=True)
+        return result[0][0]
+
+def get_or_create_tournament_session(user_id, tournament_id, buy_in, table_name, game_type, currency, table_size, datetime_obj):   
+    '''Checks if a session already exists in the database, and if not, creates a new session.'''
+    
+    check_query = """
+    SELECT id FROM poker_session
+    WHERE user_id = %s AND tournament_id = %s AND buy_in = %s AND table_name = %s AND game_type = %s AND currency = %s
+    """
+    result = execute_query(check_query, (user_id, tournament_id, buy_in, table_name, game_type, currency), fetch=True)
+    
+    # Check if a session was found
+    if result:
+        return result[0][0]  # Return existing session_id
+    else:
+        # If no existing session, insert a new one
+        insert_query = """
+        INSERT INTO poker_session 
+        (user_id, tournament_id, buy_in, table_name, game_type, currency, total_hands, max_players, start_time)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
         """
-        result = execute_query(insert_query, (user_id, table_name, game_type, small_blind, big_blind, currency, 0, table_size, datetime_obj), fetch=True)
-        session_id = result[0][0]
-        print("Inserted new session with session_id:", session_id[0][0])
-        return session_id  # Return new session_id
+        result = execute_query(insert_query, (user_id, tournament_id, buy_in, table_name, game_type, currency, 0, table_size, datetime_obj), fetch=True)
+        return result[0][0]
+    
+
+def create_hand(session_id, pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj):
+    '''Inserts a new hand into the database. Also updates the total_hands and end_time of the session.'''
+    
+    update_session_query = """
+    UPDATE poker_session SET total_hands = total_hands + 1, end_time = %s
+    WHERE id = %s;
+    """
+    
+    execute_query(update_session_query, (datetime_obj, session_id))
+    
+    insert_hand_query = """
+    INSERT INTO poker_hand (session_id, site_hand_id, small_blind, big_blind, total_pot, rake, played_at)
+    VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id;
+    """
+    result = execute_query(insert_hand_query, (session_id, pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj), fetch=True)
+    return result[0][0]
+    
+def create_player(hand_id, seat_num, player_name, stack, hole_cards, position, stack_size):
+    '''Inserts a new player into the database.'''
+    
+    
+def create_player(hand_id, player_name, position, stack_size):
+    '''Inserts a new player into the database, and adds their card details to the player_cards table.'''
+    player_query = "SELECT id FROM player WHERE name = %s"
+    result = execute_query(player_query, (player_name,), fetch=True)
+    
+    if not result:
+        # No player found, insert new player
+        insert_player_query = "INSERT INTO player (name) VALUES (%s) RETURNING id"
+        result = execute_query(insert_player_query, (player_name,), fetch=True)
+    
+    player_id = result[0][0]
+
+    # Insert player card details
+    insert_cards_query = """
+    INSERT INTO player_cards (hand_id, player_id, position, stack_size) 
+    VALUES (%s, %s, %s, %s)
+    """
+    execute_query(insert_cards_query, (hand_id, player_id, position, stack_size))
+
+def update_player_cards(hand_id, player_name, hole_cards):
+    '''Updates the hole cards for a player in the database.'''
+    player_query = "SELECT id FROM player WHERE name = %s"
+    player_id = execute_query(player_query, (player_name,), fetch=True)[0][0]
+    
+    hole_card1, hole_card2 = hole_cards
+    
+    update_cards_query = """
+    UPDATE player_cards SET hole_card1 = %s, hole_card2 = %s
+    WHERE hand_id = %s AND player_id = %s
+    """
+    execute_query(update_cards_query, (hole_card1, hole_card2, hand_id, player_id))
+
+def create_action(hand_id, player_name, betting_round, action, amount):
+    '''Inserts a new action into the database.'''
+    player_query = "SELECT id FROM player WHERE name = %s"
+    player_id = execute_query(player_query, (player_name,), fetch=True)[0][0]
+    
+    singular_forms = {
+        "calls": "call",
+        "folds": "fold",
+        "checks": "check",
+        "bets": "bet",
+        "raises": "raise"
+    }
+    
+    action = singular_forms.get(action, action)
+    
+    insert_action_query = """
+    INSERT INTO player_action (hand_id, player_id, betting_round, action_type, amount)
+    VALUES (%s, %s, %s, %s, %s)
+    """
+    execute_query(insert_action_query, (hand_id, player_id, betting_round, action, amount))
+
+def create_board(hand_id, flop_cards, turn_card, river_card):
+    '''Inserts new board cards into the database.'''
+    flop_card1, flop_card2, flop_card3 = flop_cards
+    
+    insert_board_query = """
+    INSERT INTO board_cards (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card)
+    VALUES (%s, %s, %s, %s, %s, %s)
+    """
+    execute_query(insert_board_query, (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card))

@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from db_commands import execute_query, get_or_create_session
+from db_commands import create_action, create_hand, create_player, execute_query, get_or_create_cash_session, get_or_create_tournament_session, update_player_cards
 
 def parse_hand_history(file_path, user_id):
     '''Populates the database with the hand history from the given file path.'''
@@ -9,9 +9,6 @@ def parse_hand_history(file_path, user_id):
         
     hands = re.split(r'(?<=\n\n)(?=Hand\s*#\s*\d+: \n\n)', content)
     hands[0] = hands[0].replace('\nHand #', 'Hand #')
-    
-    poker_session = None
-    session_id = None
     
     for hand in hands:
         lines = hand.split('\n')
@@ -26,13 +23,13 @@ def parse_hand_history(file_path, user_id):
             game_type = "Tournament"
             
             if "Freeroll" in lines[2]:
-                tournament_id, level, datetime_str = re.search(
+                tournament_id, tournament_level, datetime_str = re.search(
                     r"Tournament #(\d+), Freeroll\s+Hold'em No Limit - Level (.*?) - (.*)",
                     lines[2]
                     ).groups()
-                buy_in = "$0.00+$0.00 NA"
+                stakes = "$0.00+$0.00 NA"
             else:
-                tournament_id, buy_in, level, datetime_str = re.search(
+                tournament_id, stakes, tournament_level, datetime_str = re.search(
                     r"Tournament #(\d+), (\$\d+\.\d+\+\$\d+\.\d+ .*) Hold'em No Limit - Level (.*?) - (.*)", 
                     lines[2]
                     ).groups()
@@ -46,27 +43,21 @@ def parse_hand_history(file_path, user_id):
         datetime_obj = datetime.strptime(datetime_str, "%Y/%m/%d %H:%M:%S ET")
         table_name, table_size, button_seat = re.search(r"Table '(.+)' (\d+)-max Seat #(\d+) is the button", lines[3]).groups()
         total_pot, rake = re.search(r"Total pot \$?([\d.]+)(?:.*)\| Rake \$?([\d.]+)", lines[lines.index("*** SUMMARY ***") + 1]).groups()
-
-
-
         
-        
-        
-        
-        
-        if game_type == "Cash":                
+        if game_type == "Cash":
             small_blind, part = stakes.replace('$', '').split('/')
             big_blind, currency = part.split()
             
-            print(hand_num, pokerstars_id, game_type, small_blind, big_blind, currency)
-            print(datetime_obj, table_name, table_size, button_seat, total_pot, rake)            
-            
-            get_or_create_session(user_id, table_name, game_type, small_blind, big_blind, currency, table_size, datetime_obj)
-               
+            session_id = get_or_create_cash_session(user_id, table_name, game_type, currency, table_size, datetime_obj)
+            hand_id = create_hand(session_id, pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj)
         else:
-            print(hand_num, pokerstars_id, game_type, tournament_id, buy_in, level, datetime_obj, table_name, table_size, button_seat)
-        
-        print("-"*80)
+            buy_in , part = stakes.replace('$', '').split('+')
+            rake, currency = part.split()
+            total_buy_in = float(buy_in) + float(rake)
+            
+            level, small_blind, big_blind = re.search(r"(\w+)\s*\((\d+)/(\d+)\)", tournament_level).groups()            
+            session_id = get_or_create_tournament_session(user_id, tournament_id, total_buy_in, table_name, game_type, currency, table_size, datetime_obj)
+            hand_id = create_hand(session_id, pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj)
         
         seat_pattern = re.compile(r"Seat (\d+): ([^:]+) \(\$?([\d.]+) in chips\)")
         blind_pattern = re.compile(r"([^:]+): posts (?:small blind|big blind) \$?([\d.]+)")
@@ -75,15 +66,13 @@ def parse_hand_history(file_path, user_id):
                 break
             seat_match = seat_pattern.match(line)
             if seat_match:
-                seat_num, player_name, stack = seat_match.groups()
-                print(seat_num, player_name, stack)
+                seat_num, player_name, stack = seat_match.groups()                
+                create_player(hand_id, player_name, seat_num, stack)
                 
             blind_match = blind_pattern.match(line)
             if blind_match:
                 player_name, amount = blind_match.groups()
-                print(player_name, amount)
-        
-        print("Preflop", "-"*20)
+                create_action(hand_id, player_name, "Preflop", "ante", amount)
         
         raise_pattern = re.compile(r"([^:]+): raises \$?([\d.]+) to \$?([\d.]+)")
         action_pattern = re.compile(r"([^:]+): (calls|folds|checks|bets) \$?([\d.]+)?")
@@ -93,11 +82,15 @@ def parse_hand_history(file_path, user_id):
             action_match = action_pattern.match(line)
             if action_match:
                 player_name, action, amount = action_match.groups()
-                print(player_name, action, amount)
+                create_action(hand_id, player_name, "Preflop", action, amount)
+            
+            raise_match = raise_pattern.match(line)
+            if raise_match:
+                player_name, inital_amount, total = raise_match.groups()
+                create_action(hand_id, player_name, "Preflop", "raise", total)
         
         if not any("*** FLOP ***" in line for line in lines):
             continue
-        print("Flop", "-"*20)
         
         flop_index = next(i for i, line in enumerate(lines) if "*** FLOP ***" in line)
         flop_cards = re.search(r"\*\*\* FLOP \*\*\* \[(\w{2}) (\w{2}) (\w{2})\]", lines[flop_index]).groups()
@@ -155,7 +148,7 @@ def parse_hand_history(file_path, user_id):
             show_match = show_pattern.match(line)
             if show_match:
                 player_name, *hand = show_match.groups()
-                print(player_name, hand)
+                update_player_cards(hand_id, player_name, hand)
                 
             collect_match = collect_pattern.match(line)
             if collect_match:

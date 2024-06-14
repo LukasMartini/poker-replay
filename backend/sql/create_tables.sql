@@ -30,7 +30,7 @@ CREATE TABLE poker_session (
     start_time TIMESTAMP,
     end_time TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id), -- User that uploaded this session
-    CHECK (end_time IS NULL OR end_time > start_time)
+    CHECK (end_time IS NULL OR end_time >= start_time)
 );
 
 CREATE TABLE poker_hand (
@@ -56,7 +56,6 @@ CREATE TABLE player_action (
     id SERIAL PRIMARY KEY,
     player_id INT,
     hand_id INT,
-    seat_number INT,
     betting_round VARCHAR(50),
     action_type VARCHAR(50),
     amount NUMERIC(10, 2),
