@@ -15,7 +15,7 @@ export POKER_REPLAY_ROOT=$HOME:/path/to/poker-replay
 Then add the following to the end of the file:
 
 ```bash
-source $POKER_REPLAY_ROOT/common_shell_commands.sh
+source $POKER_REPLAY_ROOT/shell_commands.sh
 ```
 
 Then source the profile:
