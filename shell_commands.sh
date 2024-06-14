@@ -17,7 +17,8 @@ create_tables() {
 # Function to load data
 load_data() {
     echo "Loading data..."
-    python $POKER_REPLAY_ROOT/backend/load_data.py
+    cd $POKER_REPLAY_ROOT/backend
+    python load_data.py
     echo "Data loaded successfully."
 }
 
