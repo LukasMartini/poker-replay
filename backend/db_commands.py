@@ -20,8 +20,10 @@ def execute_query(query, data=None, fetch=False):
             with conn.cursor() as cur:
                 if data is not None:
                     cur.execute(query, data)
+                    conn.commit()
                 else:
                     cur.execute(query)
+                    conn.commit()
                 if fetch:
                     return cur.fetchall()
         finally:
