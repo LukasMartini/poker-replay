@@ -21,23 +21,24 @@ CREATE TABLE poker_session (
     id SERIAL PRIMARY KEY,
     user_id INT,
     tournament_id BIGINT NULL,
+    buy_in NUMERIC(10, 2), -- Only applicable for tournaments
     table_name VARCHAR(50),
     game_type VARCHAR(50),
-    small_blind NUMERIC(10, 2),
-    big_blind NUMERIC(10, 2),
     currency VARCHAR(10),
     total_hands INT,
     max_players INT,
     start_time TIMESTAMP,
     end_time TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id), -- User that uploaded this session
-    CHECK (end_time IS NULL OR end_time > start_time)
+    CHECK (end_time IS NULL OR end_time >= start_time)
 );
 
 CREATE TABLE poker_hand (
     id SERIAL PRIMARY KEY,
     session_id INT,
-    site_hand_id BIGINT, 
+    site_hand_id BIGINT,
+    small_blind NUMERIC(10, 2),
+    big_blind NUMERIC(10, 2),
     total_pot NUMERIC(10, 2),
     rake NUMERIC(10, 2),
     played_at TIMESTAMP,
@@ -55,14 +56,13 @@ CREATE TABLE player_action (
     id SERIAL PRIMARY KEY,
     player_id INT,
     hand_id INT,
-    seat_number INT,
     betting_round VARCHAR(50),
     action_type VARCHAR(50),
     amount NUMERIC(10, 2),
     FOREIGN KEY (player_id) REFERENCES player(id),
     FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
-    CHECK (betting_round IN ('Preflop', 'Flop', 'Turn', 'River')),
-    CHECK (action_type IN ('fold', 'check', 'call', 'bet', 'raise', 'all-in'))
+    CHECK (betting_round IN ('Preflop', 'Flop', 'Turn', 'River', 'Showdown')),
+    CHECK (action_type IN ('fold', 'check', 'call', 'bet', 'raise', 'collect', 'ante'))
 );
 
 CREATE TABLE player_cards (

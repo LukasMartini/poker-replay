@@ -1,5 +1,3 @@
-import re
-from datetime import datetime
 from convert_history import parse_hand_history
 from db_commands import execute_query
 import bcrypt
