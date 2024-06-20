@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS player;
 DROP TABLE IF EXISTS poker_hand;
 DROP TABLE IF EXISTS poker_session;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS authorized;
 DROP FUNCTION IF EXISTS is_valid_card;
 
 SELECT 'All specified tables have been dropped successfully.' AS status;
