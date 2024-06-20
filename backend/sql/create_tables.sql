@@ -1,4 +1,3 @@
--- untested
 -- Function to confirm that a CHAR(2) card takes the correct form via regex
 CREATE OR REPLACE FUNCTION is_valid_card(card CHAR(2))
 RETURNS BOOLEAN
