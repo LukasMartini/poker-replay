@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from db_commands import create_action, create_board, create_hand, create_player, execute_query, get_or_create_cash_session, get_or_create_tournament_session, update_player_cards
+from db_commands import create_action, create_board, create_hand, create_player, execute_query, get_or_create_cash_session, get_or_create_tournament_session, link_player_to_user, update_player_cards
 
 def parse_hand_history(file_path, user_id):
     '''Populates the database with the hand history from the given file path.'''
@@ -82,11 +82,18 @@ def parse_hand_history(file_path, user_id):
                 player_name, amount = collect_match.groups()
                 create_action(hand_id, player_name, "Showdown", "collect", amount)
         
+        dealt_to_pattern = re.compile(r"Dealt to ([^:]+) \[(\w{2}) (\w{2})\]")
         raise_pattern = re.compile(r"([^:]+): raises \$?([\d.]+) to \$?([\d.]+)")
         action_pattern = re.compile(r"([^:]+): (calls|folds|checks|bets) \$?([\d.]+)?")
         for line in lines[lines.index("*** HOLE CARDS ***") + 1:]:
             if "*** FLOP ***" in line:
                 break
+            
+            dealt_to_match = dealt_to_pattern.match(line)
+            if dealt_to_match:
+                player_name, card1, card2 = dealt_to_match.groups()
+                update_player_cards(hand_id, player_name, (card1, card2))
+                link_player_to_user(player_name, user_id)
             
             action_match = action_pattern.match(line)
             if action_match:
