@@ -20,8 +20,10 @@ def hand_summary(id: int) -> Response:
     # result = execute_query(f'EXECUTE one_time_hand_info({id});')
     cur.execute(f'EXECUTE one_time_hand_info({id});')
     result = cur.fetchall()
+    column_names = [description[0] for description in cur.description]
+    data = [dict(zip(column_names, row)) for row in result]
 
-    return jsonify(result), 200
+    return jsonify(data), 200
 
 @app.route("/api/player_actions/<int:id>", methods=['GET'])
 @cross_origin()
@@ -29,8 +31,10 @@ def player_actions(id: int) -> Response:
     # result = execute_query(f'EXECUTE player_actions_in_hand({id});')
     cur.execute(f'EXECUTE player_actions_in_hand({id});')
     result = cur.fetchall()
+    column_names = [description[0] for description in cur.description]
+    data = [dict(zip(column_names, row)) for row in result]
 
-    return jsonify(result), 200
+    return jsonify(data), 200
 
 @app.route("/api/player_cards/<int:id>", methods=['GET'])
 @cross_origin()
@@ -38,8 +42,10 @@ def player_cards(id: int) -> Response:
     # result = execute_query(f'EXECUTE player_cards_in_hand({id});')
     cur.execute(f'EXECUTE player_cards_in_hand({id});')
     result = cur.fetchall()
+    column_names = [description[0] for description in cur.description]
+    data = [dict(zip(column_names, row)) for row in result]
 
-    return jsonify(result), 200
+    return jsonify(data), 200
 
 if __name__ == '__main__':
     cur.execute(open('backend/sql/fetch_hand_query_templates.sql').read())

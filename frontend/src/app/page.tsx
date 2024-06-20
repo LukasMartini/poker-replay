@@ -35,11 +35,11 @@ const Search = () => {
       <div className="py-12 justify-center">
         <SearchBar />
       </div>
-      <div className="grid grid-cols-4 gap-12">
+      {/* <div className="grid grid-cols-4 gap-12">
         {test.map((info, index) => (
           <HandCard handId={info.handId} userId={info.userId} tableName={info.tableName} key={index} />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }
