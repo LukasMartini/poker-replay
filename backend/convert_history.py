@@ -100,7 +100,8 @@ def parse_hand_history(file_path, user_id):
             raise_match = raise_pattern.match(line)
             if raise_match:
                 player_name, inital_amount, total = raise_match.groups()
-                create_action(hand_id, player_name, "Preflop", "raise", total)
+                amount_raised = float(total) - float(inital_amount)
+                create_action(hand_id, player_name, "Preflop", "raise", amount_raised)
             
             collect_match = collect_pattern.match(line)
             if collect_match:
@@ -126,7 +127,8 @@ def parse_hand_history(file_path, user_id):
             raise_match = raise_pattern.match(line)
             if raise_match:
                 player_name, inital_amount, total = raise_match.groups()
-                create_action(hand_id, player_name, "Flop", "raise", total)
+                amount_raised = float(total) - float(inital_amount)
+                create_action(hand_id, player_name, "Flop", "raise", amount_raised)
             
             collect_match = collect_pattern.match(line)
             if collect_match:
@@ -152,7 +154,8 @@ def parse_hand_history(file_path, user_id):
             raise_match = raise_pattern.match(line)
             if raise_match:
                 player_name, inital_amount, total = raise_match.groups()
-                create_action(hand_id, player_name, "Turn", "raise", total)
+                amount_raised = float(total) - float(inital_amount)
+                create_action(hand_id, player_name, "Turn", "raise", amount_raised)
             
             collect_match = collect_pattern.match(line)
             if collect_match:
@@ -178,7 +181,8 @@ def parse_hand_history(file_path, user_id):
             raise_match = raise_pattern.match(line)
             if raise_match:
                 player_name, inital_amount, total = raise_match.groups()
-                create_action(hand_id, player_name, "River", "raise", total)
+                amount_raised = float(total) - float(inital_amount)
+                create_action(hand_id, player_name, "River", "raise", amount_raised)
                 
             collect_match = collect_pattern.match(line)
             if collect_match:
