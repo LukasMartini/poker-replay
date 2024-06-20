@@ -14,7 +14,9 @@ CREATE TABLE users (
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE,
     password_hash CHAR(60), -- Assuming bcrypt hash which outputs 60 characters
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    salt CHAR(29), -- Storing bcrypt salt, which is 29 characters long
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    token CHAR(36)
 );
 
 CREATE TABLE poker_session (
@@ -93,4 +95,12 @@ CREATE TABLE board_cards (
     CHECK (is_valid_card(flop_card3)),
     CHECK (is_valid_card(turn_card)),
     CHECK (is_valid_card(river_card))
+);
+
+CREATE TABLE authorized (
+    user_id INT, -- user authorized
+    hand_id INT, -- hand authorized to view
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
+    PRIMARY KEY (user_id, hand_id)
 );

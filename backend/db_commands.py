@@ -114,6 +114,15 @@ def create_player(hand_id, player_name, position, stack_size):
     """
     execute_query(insert_cards_query, (hand_id, player_id, position, stack_size))
 
+def link_player_to_user(player_name, user_id):
+    '''Links a player to a user in the database.'''
+    player_id = get_or_create_player_id(player_name)
+    
+    update_player_query = """
+    UPDATE player SET user_id = %s WHERE id = %s
+    """
+    execute_query(update_player_query, (user_id, player_id))
+
 def update_player_cards(hand_id, player_name, hole_cards):
     '''Updates the hole cards for a player in the database.'''
     player_id = get_or_create_player_id(player_name)

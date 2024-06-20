@@ -1,0 +1,738 @@
+﻿
+Hand #1: 
+
+PokerStars Hand #246222355402:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 22:56:41 ET
+Table 'Alya III' 6-max Seat #1 is the button
+Seat 1: HortonRoundtree ($1.86 in chips) 
+Seat 2: fourz4444 ($1.91 in chips) 
+Seat 3: CashMatteo ($2 in chips) 
+Seat 5: ljab26 ($2.96 in chips) 
+Seat 6: vegasricky ($1.56 in chips) 
+fourz4444: posts small blind $0.01
+CashMatteo: posts big blind $0.02
+bouchizzle: sits out 
+*** HOLE CARDS ***
+Dealt to CashMatteo [8c 3d]
+ljab26: raises $0.02 to $0.04
+vegasricky: folds 
+HortonRoundtree: folds 
+fourz4444: calls $0.03
+CashMatteo: folds 
+*** FLOP *** [4h Jd Kh]
+fourz4444: checks 
+ljab26: bets $0.04
+fourz4444: raises $0.18 to $0.22
+ljab26: folds 
+Uncalled bet ($0.18) returned to fourz4444
+fourz4444 collected $0.17 from pot
+fourz4444: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.18 | Rake $0.01 
+Board [4h Jd Kh]
+Seat 1: HortonRoundtree (button) folded before Flop (didn't bet)
+Seat 2: fourz4444 (small blind) collected ($0.17)
+Seat 3: CashMatteo (big blind) folded before Flop
+Seat 5: ljab26 folded on the Flop
+Seat 6: vegasricky folded before Flop (didn't bet)
+
+Hand #2: 
+
+PokerStars Hand #246222360465:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 22:57:21 ET
+Table 'Alya III' 6-max Seat #2 is the button
+Seat 1: HortonRoundtree ($1.86 in chips) 
+Seat 2: fourz4444 ($2 in chips) 
+Seat 3: CashMatteo ($1.98 in chips) 
+Seat 4: bouchizzle ($2 in chips) 
+Seat 5: ljab26 ($2.88 in chips) 
+Seat 6: vegasricky ($1.56 in chips) 
+CashMatteo: posts small blind $0.01
+bouchizzle: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [3d Js]
+ljab26: folds 
+vegasricky: calls $0.02
+HortonRoundtree: folds 
+fourz4444: calls $0.02
+CashMatteo: folds 
+bouchizzle: checks 
+*** FLOP *** [Tc Kh 5c]
+bouchizzle: checks 
+vegasricky: bets $0.06
+fourz4444: folds 
+bouchizzle: folds 
+Uncalled bet ($0.06) returned to vegasricky
+vegasricky collected $0.07 from pot
+*** SUMMARY ***
+Total pot $0.07 | Rake $0 
+Board [Tc Kh 5c]
+Seat 1: HortonRoundtree folded before Flop (didn't bet)
+Seat 2: fourz4444 (button) folded on the Flop
+Seat 3: CashMatteo (small blind) folded before Flop
+Seat 4: bouchizzle (big blind) folded on the Flop
+Seat 5: ljab26 folded before Flop (didn't bet)
+Seat 6: vegasricky collected ($0.07)
+
+Hand #3: 
+
+PokerStars Hand #246222366367:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 22:58:09 ET
+Table 'Alya III' 6-max Seat #3 is the button
+Seat 1: HortonRoundtree ($1.86 in chips) 
+Seat 2: fourz4444 ($1.98 in chips) 
+Seat 3: CashMatteo ($1.97 in chips) 
+Seat 4: bouchizzle ($1.98 in chips) 
+Seat 5: ljab26 ($2.88 in chips) 
+Seat 6: vegasricky ($1.61 in chips) 
+bouchizzle: posts small blind $0.01
+ljab26: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [2h 5s]
+vegasricky: folds 
+HortonRoundtree: raises $0.02 to $0.04
+fourz4444: folds 
+CashMatteo: calls $0.04
+bouchizzle: raises $0.14 to $0.18
+ljab26: folds 
+HortonRoundtree: folds 
+CashMatteo: folds 
+Uncalled bet ($0.14) returned to bouchizzle
+bouchizzle collected $0.14 from pot
+bouchizzle: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.14 | Rake $0 
+Seat 1: HortonRoundtree folded before Flop
+Seat 2: fourz4444 folded before Flop (didn't bet)
+Seat 3: CashMatteo (button) folded before Flop
+Seat 4: bouchizzle (small blind) collected ($0.14)
+Seat 5: ljab26 (big blind) folded before Flop
+Seat 6: vegasricky folded before Flop (didn't bet)
+
+Hand #4: 
+
+PokerStars Hand #246222370146:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 22:58:38 ET
+Table 'Alya III' 6-max Seat #4 is the button
+Seat 1: HortonRoundtree ($1.82 in chips) 
+Seat 2: fourz4444 ($1.98 in chips) 
+Seat 3: CashMatteo ($1.93 in chips) 
+Seat 4: bouchizzle ($2.08 in chips) 
+Seat 5: ljab26 ($2.86 in chips) 
+Seat 6: vegasricky ($1.61 in chips) 
+ljab26: posts small blind $0.01
+vegasricky: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [5h Td]
+HortonRoundtree: folds 
+fourz4444: calls $0.02
+CashMatteo: folds 
+bouchizzle: raises $0.06 to $0.08
+ljab26: calls $0.07
+vegasricky: folds 
+fourz4444: calls $0.06
+*** FLOP *** [8s 2h 5s]
+ljab26: checks 
+fourz4444: checks 
+bouchizzle: bets $0.15
+ljab26: folds 
+fourz4444: calls $0.15
+*** TURN *** [8s 2h 5s] [Jh]
+fourz4444: bets $0.54
+bouchizzle: folds 
+Uncalled bet ($0.54) returned to fourz4444
+fourz4444 collected $0.54 from pot
+fourz4444: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.56 | Rake $0.02 
+Board [8s 2h 5s Jh]
+Seat 1: HortonRoundtree folded before Flop (didn't bet)
+Seat 2: fourz4444 collected ($0.54)
+Seat 3: CashMatteo folded before Flop (didn't bet)
+Seat 4: bouchizzle (button) folded on the Turn
+Seat 5: ljab26 (small blind) folded on the Flop
+Seat 6: vegasricky (big blind) folded before Flop
+
+Hand #5: 
+
+PokerStars Hand #246222376289:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 22:59:28 ET
+Table 'Alya III' 6-max Seat #5 is the button
+Seat 1: HortonRoundtree ($1.82 in chips) 
+Seat 2: fourz4444 ($2.29 in chips) 
+Seat 3: CashMatteo ($1.93 in chips) 
+Seat 4: bouchizzle ($1.85 in chips) 
+Seat 5: ljab26 ($2.78 in chips) 
+Seat 6: vegasricky ($1.59 in chips) 
+vegasricky: posts small blind $0.01
+HortonRoundtree: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [Ah 2c]
+fourz4444: calls $0.02
+CashMatteo: calls $0.02
+bouchizzle: folds 
+ljab26: calls $0.02
+vegasricky: calls $0.01
+HortonRoundtree: checks 
+*** FLOP *** [6d Ts 8d]
+vegasricky: bets $0.06
+HortonRoundtree: folds 
+fourz4444: calls $0.06
+CashMatteo: folds 
+ljab26: folds 
+*** TURN *** [6d Ts 8d] [Qc]
+vegasricky: bets $0.06
+fourz4444: calls $0.06
+*** RIVER *** [6d Ts 8d Qc] [3c]
+vegasricky: bets $0.06
+fourz4444: folds 
+Uncalled bet ($0.06) returned to vegasricky
+vegasricky collected $0.33 from pot
+*** SUMMARY ***
+Total pot $0.34 | Rake $0.01 
+Board [6d Ts 8d Qc 3c]
+Seat 1: HortonRoundtree (big blind) folded on the Flop
+Seat 2: fourz4444 folded on the River
+Seat 3: CashMatteo folded on the Flop
+Seat 4: bouchizzle folded before Flop (didn't bet)
+Seat 5: ljab26 (button) folded on the Flop
+Seat 6: vegasricky (small blind) collected ($0.33)
+
+Hand #6: 
+
+PokerStars Hand #246222383878:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:00:26 ET
+Table 'Alya III' 6-max Seat #6 is the button
+Seat 1: HortonRoundtree ($1.80 in chips) 
+Seat 2: fourz4444 ($2.15 in chips) 
+Seat 3: CashMatteo ($1.91 in chips) 
+Seat 4: bouchizzle ($2 in chips) 
+Seat 5: ljab26 ($2.76 in chips) 
+Seat 6: vegasricky ($1.78 in chips) 
+HortonRoundtree: posts small blind $0.01
+fourz4444: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [Kh Ts]
+CashMatteo: raises $0.04 to $0.06
+bouchizzle: folds 
+ljab26: folds 
+vegasricky: folds 
+HortonRoundtree: folds 
+fourz4444: folds 
+Uncalled bet ($0.04) returned to CashMatteo
+CashMatteo collected $0.05 from pot
+CashMatteo: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.05 | Rake $0 
+Seat 1: HortonRoundtree (small blind) folded before Flop
+Seat 2: fourz4444 (big blind) folded before Flop
+Seat 3: CashMatteo collected ($0.05)
+Seat 4: bouchizzle folded before Flop (didn't bet)
+Seat 5: ljab26 folded before Flop (didn't bet)
+Seat 6: vegasricky (button) folded before Flop (didn't bet)
+
+Hand #7: 
+
+PokerStars Hand #246222387010:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:00:49 ET
+Table 'Alya III' 6-max Seat #1 is the button
+Seat 1: HortonRoundtree ($1.79 in chips) 
+Seat 2: fourz4444 ($2.13 in chips) 
+Seat 3: CashMatteo ($1.94 in chips) 
+Seat 4: bouchizzle ($2 in chips) 
+Seat 5: ljab26 ($2.76 in chips) 
+Seat 6: vegasricky ($1.78 in chips) 
+fourz4444: posts small blind $0.01
+CashMatteo: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [As Ad]
+bouchizzle: folds 
+ljab26: calls $0.02
+vegasricky: folds 
+HortonRoundtree: folds 
+fourz4444: calls $0.01
+CashMatteo: raises $0.04 to $0.06
+ljab26: calls $0.04
+fourz4444: calls $0.04
+*** FLOP *** [6s 7s 3c]
+fourz4444: checks 
+CashMatteo: bets $0.07
+ljab26: calls $0.07
+fourz4444: calls $0.07
+*** TURN *** [6s 7s 3c] [5d]
+fourz4444: checks 
+CashMatteo: checks 
+ljab26: checks 
+*** RIVER *** [6s 7s 3c 5d] [6d]
+fourz4444: bets $0.19
+CashMatteo: calls $0.19
+ljab26: folds 
+*** SHOW DOWN ***
+fourz4444: shows [5h 8d] (two pair, Sixes and Fives)
+CashMatteo: shows [As Ad] (two pair, Aces and Sixes)
+CashMatteo collected $0.74 from pot
+*** SUMMARY ***
+Total pot $0.77 | Rake $0.03 
+Board [6s 7s 3c 5d 6d]
+Seat 1: HortonRoundtree (button) folded before Flop (didn't bet)
+Seat 2: fourz4444 (small blind) showed [5h 8d] and lost with two pair, Sixes and Fives
+Seat 3: CashMatteo (big blind) showed [As Ad] and won ($0.74) with two pair, Aces and Sixes
+Seat 4: bouchizzle folded before Flop (didn't bet)
+Seat 5: ljab26 folded on the River
+Seat 6: vegasricky folded before Flop (didn't bet)
+
+Hand #8: 
+
+PokerStars Hand #246222400269:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:02:22 ET
+Table 'Alya III' 6-max Seat #2 is the button
+Seat 1: HortonRoundtree ($1.79 in chips) 
+Seat 2: fourz4444 ($1.81 in chips) 
+Seat 3: CashMatteo ($2.36 in chips) 
+Seat 4: bouchizzle ($2 in chips) 
+Seat 5: ljab26 ($2.63 in chips) 
+Seat 6: vegasricky ($1.78 in chips) 
+CashMatteo: posts small blind $0.01
+bouchizzle: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [Jh 6c]
+ljab26: folds 
+vegasricky: folds 
+HortonRoundtree: folds 
+fourz4444: calls $0.02
+CashMatteo: calls $0.01
+bouchizzle: checks 
+*** FLOP *** [Th 2h 3d]
+CashMatteo: checks 
+bouchizzle: checks 
+fourz4444: checks 
+*** TURN *** [Th 2h 3d] [2s]
+CashMatteo: checks 
+bouchizzle: bets $0.06
+fourz4444: calls $0.06
+CashMatteo: folds 
+*** RIVER *** [Th 2h 3d 2s] [Kd]
+bouchizzle: bets $0.23
+fourz4444: calls $0.23
+*** SHOW DOWN ***
+bouchizzle: shows [2d Js] (three of a kind, Deuces)
+fourz4444: mucks hand 
+bouchizzle collected $0.62 from pot
+*** SUMMARY ***
+Total pot $0.64 | Rake $0.02 
+Board [Th 2h 3d 2s Kd]
+Seat 1: HortonRoundtree folded before Flop (didn't bet)
+Seat 2: fourz4444 (button) mucked [Ks 7c]
+Seat 3: CashMatteo (small blind) folded on the Turn
+Seat 4: bouchizzle (big blind) showed [2d Js] and won ($0.62) with three of a kind, Deuces
+Seat 5: ljab26 folded before Flop (didn't bet)
+Seat 6: vegasricky folded before Flop (didn't bet)
+
+Hand #9: 
+
+PokerStars Hand #246222408874:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:03:22 ET
+Table 'Alya III' 6-max Seat #3 is the button
+Seat 1: HortonRoundtree ($1.79 in chips) 
+Seat 2: fourz4444 ($1.50 in chips) 
+Seat 3: CashMatteo ($2.34 in chips) 
+Seat 4: bouchizzle ($2.31 in chips) 
+Seat 5: ljab26 ($2.63 in chips) 
+Seat 6: vegasricky ($1.78 in chips) 
+bouchizzle: posts small blind $0.01
+ljab26: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [2s 4h]
+vegasricky: raises $0.02 to $0.04
+HortonRoundtree: folds 
+fourz4444: calls $0.04
+CashMatteo: folds 
+bouchizzle: folds 
+ljab26: folds 
+*** FLOP *** [Jc Js 5h]
+vegasricky: checks 
+fourz4444: bets $0.20
+vegasricky: folds 
+Uncalled bet ($0.20) returned to fourz4444
+fourz4444 collected $0.11 from pot
+fourz4444: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.11 | Rake $0 
+Board [Jc Js 5h]
+Seat 1: HortonRoundtree folded before Flop (didn't bet)
+Seat 2: fourz4444 collected ($0.11)
+Seat 3: CashMatteo (button) folded before Flop (didn't bet)
+Seat 4: bouchizzle (small blind) folded before Flop
+Seat 5: ljab26 (big blind) folded before Flop
+Seat 6: vegasricky folded on the Flop
+
+Hand #10: 
+
+PokerStars Hand #246222415143:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:04:06 ET
+Table 'Alya III' 6-max Seat #4 is the button
+Seat 1: HortonRoundtree ($1.79 in chips) 
+Seat 2: fourz4444 ($1.57 in chips) 
+Seat 3: CashMatteo ($2.34 in chips) 
+Seat 4: bouchizzle ($2.30 in chips) 
+Seat 5: ljab26 ($2.61 in chips) 
+Seat 6: vegasricky ($1.74 in chips) 
+ljab26: posts small blind $0.01
+vegasricky: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [2d 4h]
+HortonRoundtree: calls $0.02
+fourz4444: raises $0.20 to $0.22
+CashMatteo: folds 
+bouchizzle: folds 
+ljab26: folds 
+vegasricky: folds 
+HortonRoundtree: folds 
+Uncalled bet ($0.20) returned to fourz4444
+fourz4444 collected $0.07 from pot
+fourz4444: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.07 | Rake $0 
+Seat 1: HortonRoundtree folded before Flop
+Seat 2: fourz4444 collected ($0.07)
+Seat 3: CashMatteo folded before Flop (didn't bet)
+Seat 4: bouchizzle (button) folded before Flop (didn't bet)
+Seat 5: ljab26 (small blind) folded before Flop
+Seat 6: vegasricky (big blind) folded before Flop
+
+Hand #11: 
+
+PokerStars Hand #246222418846:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:04:33 ET
+Table 'Alya III' 6-max Seat #5 is the button
+Seat 1: HortonRoundtree ($1.77 in chips) 
+Seat 2: fourz4444 ($1.62 in chips) 
+Seat 3: CashMatteo ($2.34 in chips) 
+Seat 4: bouchizzle ($2.30 in chips) 
+Seat 5: ljab26 ($2.60 in chips) 
+Seat 6: vegasricky ($1.72 in chips) 
+vegasricky: posts small blind $0.01
+HortonRoundtree: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [Qc Qd]
+fourz4444: folds 
+CashMatteo: raises $0.04 to $0.06
+bouchizzle: folds 
+ljab26: folds 
+vegasricky: folds 
+HortonRoundtree: calls $0.04
+*** FLOP *** [4c 9h Kc]
+HortonRoundtree: checks 
+CashMatteo: bets $0.07
+HortonRoundtree: folds 
+Uncalled bet ($0.07) returned to CashMatteo
+CashMatteo collected $0.13 from pot
+CashMatteo: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.13 | Rake $0 
+Board [4c 9h Kc]
+Seat 1: HortonRoundtree (big blind) folded on the Flop
+Seat 2: fourz4444 folded before Flop (didn't bet)
+Seat 3: CashMatteo collected ($0.13)
+Seat 4: bouchizzle folded before Flop (didn't bet)
+Seat 5: ljab26 (button) folded before Flop (didn't bet)
+Seat 6: vegasricky (small blind) folded before Flop
+
+Hand #12: 
+
+PokerStars Hand #246222423272:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:05:04 ET
+Table 'Alya III' 6-max Seat #6 is the button
+Seat 1: HortonRoundtree ($1.71 in chips) 
+Seat 2: fourz4444 ($1.62 in chips) 
+Seat 3: CashMatteo ($2.41 in chips) 
+Seat 4: bouchizzle ($2.30 in chips) 
+Seat 5: ljab26 ($2.60 in chips) 
+Seat 6: vegasricky ($1.71 in chips) 
+HortonRoundtree: posts small blind $0.01
+fourz4444: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [Ks 4c]
+CashMatteo: calls $0.02
+bouchizzle: folds 
+ljab26: folds 
+vegasricky: folds 
+HortonRoundtree: folds 
+fourz4444: checks 
+*** FLOP *** [7h 2h Kc]
+fourz4444: checks 
+CashMatteo: bets $0.03
+fourz4444: folds 
+Uncalled bet ($0.03) returned to CashMatteo
+CashMatteo collected $0.05 from pot
+CashMatteo: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.05 | Rake $0 
+Board [7h 2h Kc]
+Seat 1: HortonRoundtree (small blind) folded before Flop
+Seat 2: fourz4444 (big blind) folded on the Flop
+Seat 3: CashMatteo collected ($0.05)
+Seat 4: bouchizzle folded before Flop (didn't bet)
+Seat 5: ljab26 folded before Flop (didn't bet)
+Seat 6: vegasricky (button) folded before Flop (didn't bet)
+
+Hand #13: 
+
+PokerStars Hand #246222429875:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:05:51 ET
+Table 'Alya III' 6-max Seat #1 is the button
+Seat 1: HortonRoundtree ($1.70 in chips) 
+Seat 2: fourz4444 ($1.60 in chips) 
+Seat 3: CashMatteo ($2.44 in chips) 
+Seat 4: bouchizzle ($2.30 in chips) 
+Seat 5: ljab26 ($2.60 in chips) 
+Seat 6: vegasricky ($1.71 in chips) 
+fourz4444: posts small blind $0.01
+CashMatteo: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [3s Jc]
+bouchizzle: folds 
+ljab26: folds 
+vegasricky: folds 
+HortonRoundtree: folds 
+fourz4444: calls $0.01
+CashMatteo: raises $0.04 to $0.06
+vegasricky leaves the table
+fourz4444: calls $0.04
+*** FLOP *** [5d 3c 8s]
+fourz4444: bets $1.54 and is all-in
+CashMatteo: folds 
+Uncalled bet ($1.54) returned to fourz4444
+fourz4444 collected $0.12 from pot
+fourz4444: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.12 | Rake $0 
+Board [5d 3c 8s]
+Seat 1: HortonRoundtree (button) folded before Flop (didn't bet)
+Seat 2: fourz4444 (small blind) collected ($0.12)
+Seat 3: CashMatteo (big blind) folded on the Flop
+Seat 4: bouchizzle folded before Flop (didn't bet)
+Seat 5: ljab26 folded before Flop (didn't bet)
+Seat 6: vegasricky folded before Flop (didn't bet)
+
+Hand #14: 
+
+PokerStars Hand #246222436059:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:06:35 ET
+Table 'Alya III' 6-max Seat #2 is the button
+Seat 1: HortonRoundtree ($1.70 in chips) 
+Seat 2: fourz4444 ($1.66 in chips) 
+Seat 3: CashMatteo ($2.38 in chips) 
+Seat 4: bouchizzle ($2.30 in chips) 
+Seat 5: ljab26 ($2.60 in chips) 
+CashMatteo: posts small blind $0.01
+bouchizzle: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [2d 5c]
+ljab26: folds 
+HortonRoundtree: folds 
+fourz4444: calls $0.02
+CashMatteo: folds 
+bouchizzle: raises $0.06 to $0.08
+fourz4444: calls $0.06
+*** FLOP *** [Qc 4s 8c]
+bouchizzle: bets $0.10
+fourz4444: folds 
+Uncalled bet ($0.10) returned to bouchizzle
+bouchizzle collected $0.16 from pot
+bouchizzle: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.17 | Rake $0.01 
+Board [Qc 4s 8c]
+Seat 1: HortonRoundtree folded before Flop (didn't bet)
+Seat 2: fourz4444 (button) folded on the Flop
+Seat 3: CashMatteo (small blind) folded before Flop
+Seat 4: bouchizzle (big blind) collected ($0.16)
+Seat 5: ljab26 folded before Flop (didn't bet)
+
+Hand #15: 
+
+PokerStars Hand #246222439147:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:06:57 ET
+Table 'Alya III' 6-max Seat #3 is the button
+Seat 1: HortonRoundtree ($1.70 in chips) 
+Seat 2: fourz4444 ($1.58 in chips) 
+Seat 3: CashMatteo ($2.37 in chips) 
+Seat 4: bouchizzle ($2.38 in chips) 
+Seat 5: ljab26 ($2.60 in chips) 
+bouchizzle: posts small blind $0.01
+ljab26: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [Ah 4h]
+HortonRoundtree: folds 
+fourz4444: calls $0.02
+CashMatteo: raises $0.04 to $0.06
+bouchizzle: folds 
+ljab26: folds 
+fourz4444: calls $0.04
+*** FLOP *** [9s 8s 2s]
+fourz4444: bets $1.52 and is all-in
+CashMatteo: folds 
+Uncalled bet ($1.52) returned to fourz4444
+fourz4444 collected $0.14 from pot
+fourz4444: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.01 
+Board [9s 8s 2s]
+Seat 1: HortonRoundtree folded before Flop (didn't bet)
+Seat 2: fourz4444 collected ($0.14)
+Seat 3: CashMatteo (button) folded on the Flop
+Seat 4: bouchizzle (small blind) folded before Flop
+Seat 5: ljab26 (big blind) folded before Flop
+
+Hand #16: 
+
+PokerStars Hand #246222443886:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:07:30 ET
+Table 'Alya III' 6-max Seat #4 is the button
+Seat 1: HortonRoundtree ($1.70 in chips) 
+Seat 2: fourz4444 ($1.66 in chips) 
+Seat 3: CashMatteo ($2.31 in chips) 
+Seat 4: bouchizzle ($2.37 in chips) 
+Seat 5: ljab26 ($2.58 in chips) 
+ljab26: posts small blind $0.01
+HortonRoundtree: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [Ks As]
+fourz4444: folds 
+CashMatteo: raises $0.04 to $0.06
+bouchizzle: folds 
+ljab26: calls $0.05
+HortonRoundtree: folds 
+*** FLOP *** [Ah 6s 5s]
+ljab26: checks 
+CashMatteo: checks 
+*** TURN *** [Ah 6s 5s] [Kd]
+ljab26: bets $0.04
+CashMatteo: calls $0.04
+*** RIVER *** [Ah 6s 5s Kd] [Qd]
+ljab26: bets $0.06
+CashMatteo: raises $0.17 to $0.23
+ljab26: calls $0.17
+*** SHOW DOWN ***
+CashMatteo: shows [Ks As] (two pair, Aces and Kings)
+ljab26: mucks hand 
+CashMatteo collected $0.66 from pot
+*** SUMMARY ***
+Total pot $0.68 | Rake $0.02 
+Board [Ah 6s 5s Kd Qd]
+Seat 1: HortonRoundtree (big blind) folded before Flop
+Seat 2: fourz4444 folded before Flop (didn't bet)
+Seat 3: CashMatteo showed [Ks As] and won ($0.66) with two pair, Aces and Kings
+Seat 4: bouchizzle (button) folded before Flop (didn't bet)
+Seat 5: ljab26 (small blind) mucked [Jc Ac]
+
+Hand #17: 
+
+PokerStars Hand #246222448512:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:08:03 ET
+Table 'Alya III' 6-max Seat #5 is the button
+Seat 1: HortonRoundtree ($1.68 in chips) 
+Seat 2: fourz4444 ($1.66 in chips) 
+Seat 3: CashMatteo ($2.64 in chips) 
+Seat 4: bouchizzle ($2.37 in chips) 
+Seat 5: ljab26 ($2.25 in chips) 
+HortonRoundtree: posts small blind $0.01
+fourz4444: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [9d 2s]
+CashMatteo has timed out
+CashMatteo: folds 
+bouchizzle: raises $0.04 to $0.06
+ljab26: folds 
+HortonRoundtree: folds 
+fourz4444: folds 
+Uncalled bet ($0.04) returned to bouchizzle
+bouchizzle collected $0.05 from pot
+bouchizzle: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.05 | Rake $0 
+Seat 1: HortonRoundtree (small blind) folded before Flop
+Seat 2: fourz4444 (big blind) folded before Flop
+Seat 3: CashMatteo folded before Flop (didn't bet)
+Seat 4: bouchizzle collected ($0.05)
+Seat 5: ljab26 (button) folded before Flop (didn't bet)
+
+Hand #18: 
+
+PokerStars Hand #246222451906:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:08:27 ET
+Table 'Alya III' 6-max Seat #1 is the button
+Seat 1: HortonRoundtree ($1.67 in chips) 
+Seat 2: fourz4444 ($1.64 in chips) 
+Seat 3: CashMatteo ($2.64 in chips) 
+Seat 4: bouchizzle ($2.40 in chips) 
+Seat 5: ljab26 ($2.25 in chips) 
+fourz4444: posts small blind $0.01
+CashMatteo: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [Kc 6s]
+bouchizzle: folds 
+ljab26: folds 
+HortonRoundtree: folds 
+fourz4444: folds 
+Uncalled bet ($0.01) returned to CashMatteo
+CashMatteo collected $0.02 from pot
+CashMatteo: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.02 | Rake $0 
+Seat 1: HortonRoundtree (button) folded before Flop (didn't bet)
+Seat 2: fourz4444 (small blind) folded before Flop
+Seat 3: CashMatteo (big blind) collected ($0.02)
+Seat 4: bouchizzle folded before Flop (didn't bet)
+Seat 5: ljab26 folded before Flop (didn't bet)
+
+Hand #19: 
+
+PokerStars Hand #246222453602:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:08:39 ET
+Table 'Alya III' 6-max Seat #2 is the button
+Seat 1: HortonRoundtree ($1.67 in chips) 
+Seat 2: fourz4444 ($1.63 in chips) 
+Seat 3: CashMatteo ($2.65 in chips) 
+Seat 4: bouchizzle ($2.40 in chips) 
+Seat 5: ljab26 ($2.25 in chips) 
+CashMatteo: posts small blind $0.01
+bouchizzle: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [Jd 5c]
+ljab26: folds 
+HortonRoundtree: folds 
+fourz4444: folds 
+CashMatteo: calls $0.01
+bouchizzle: checks 
+*** FLOP *** [7s 3d 2h]
+CashMatteo: checks 
+bouchizzle: checks 
+*** TURN *** [7s 3d 2h] [Ts]
+CashMatteo: checks 
+bouchizzle: checks 
+*** RIVER *** [7s 3d 2h Ts] [Jc]
+CashMatteo: bets $0.02
+bouchizzle: folds 
+Uncalled bet ($0.02) returned to CashMatteo
+CashMatteo collected $0.04 from pot
+CashMatteo: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.04 | Rake $0 
+Board [7s 3d 2h Ts Jc]
+Seat 1: HortonRoundtree folded before Flop (didn't bet)
+Seat 2: fourz4444 (button) folded before Flop (didn't bet)
+Seat 3: CashMatteo (small blind) collected ($0.04)
+Seat 4: bouchizzle (big blind) folded on the River
+Seat 5: ljab26 folded before Flop (didn't bet)
+
+Hand #20: 
+
+PokerStars Hand #246222462554:  Hold'em No Limit ($0.01/$0.02 CAD) - 2023/09/27 23:09:44 ET
+Table 'Alya III' 6-max Seat #3 is the button
+Seat 1: HortonRoundtree ($1.67 in chips) 
+Seat 2: fourz4444 ($1.63 in chips) 
+Seat 3: CashMatteo ($2.67 in chips) 
+Seat 4: bouchizzle ($2.38 in chips) 
+Seat 5: ljab26 ($2.25 in chips) 
+bouchizzle: posts small blind $0.01
+ljab26: posts big blind $0.02
+*** HOLE CARDS ***
+Dealt to CashMatteo [Qs As]
+HortonRoundtree: folds 
+fourz4444: folds 
+CashMatteo: raises $0.04 to $0.06
+bouchizzle: folds 
+ljab26: folds 
+Uncalled bet ($0.04) returned to CashMatteo
+CashMatteo collected $0.05 from pot
+CashMatteo: doesn't show hand 
+*** SUMMARY ***
+Total pot $0.05 | Rake $0 
+Seat 1: HortonRoundtree folded before Flop (didn't bet)
+Seat 2: fourz4444 folded before Flop (didn't bet)
+Seat 3: CashMatteo (button) collected ($0.05)
+Seat 4: bouchizzle (small blind) folded before Flop
+Seat 5: ljab26 (big blind) folded before Flop
