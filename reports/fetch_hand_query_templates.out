@@ -1,0 +1,29 @@
+  id | session_id | total_pot | rake |      played_at      | table_name | game_type | small_blind | big_blind | flop_card1 | flop_card2 | flop_card3 | turn_card | river_card 
+----+------------+-----------+------+---------------------+------------+-----------+-------------+-----------+------------+------------+------------+-----------+------------
+ 12 |          2 |      0.05 | 0.00 | 2023-09-27 23:05:04 | Alya III   | Cash      |        0.01 |      0.02 | 7h         | 2h         | Kc         |           | 
+
+ id |      name       | id  | hand_id | action_type | amount | betting_round 
+----+-----------------+-----+---------+-------------+--------+---------------
+  1 | HortonRoundtree | 153 |      12 | ante        |   0.01 | Preflop
+  2 | fourz4444       | 154 |      12 | ante        |   0.02 | Preflop
+  3 | CashMatteo      | 155 |      12 | call        |   0.02 | Preflop
+  6 | bouchizzle      | 156 |      12 | fold        |        | Preflop
+  4 | ljab26          | 157 |      12 | fold        |        | Preflop
+  5 | vegasricky      | 158 |      12 | fold        |        | Preflop
+  1 | HortonRoundtree | 159 |      12 | fold        |        | Preflop
+  2 | fourz4444       | 160 |      12 | check       |        | Preflop
+  2 | fourz4444       | 161 |      12 | check       |        | Flop
+  3 | CashMatteo      | 162 |      12 | bet         |   0.03 | Flop
+  2 | fourz4444       | 163 |      12 | fold        |        | Flop
+  3 | CashMatteo      | 164 |      12 | collect     |   0.05 | Showdown
+
+ id |      name       | hand_id | hole_card1 | hole_card2 | position | stack_size 
+----+-----------------+---------+------------+------------+----------+------------
+  1 | HortonRoundtree |      12 |            |            |        1 |       1.71
+  2 | fourz4444       |      12 |            |            |        2 |       1.62
+  3 | CashMatteo      |      12 |            |            |        3 |       2.41
+  6 | bouchizzle      |      12 |            |            |        4 |       2.30
+  4 | ljab26          |      12 |            |            |        5 |       2.60
+  5 | vegasricky      |      12 |            |            |        6 |       1.71
+(6 rows)
+
