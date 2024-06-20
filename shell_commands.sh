@@ -26,5 +26,5 @@ load_data() {
 reset_database() {
     drop_tables
     create_tables
-    load_data
+    load_data "$1"
 }
