@@ -1,3 +1,4 @@
+import argparse
 from convert_history import parse_hand_history
 from db_commands import execute_query
 import bcrypt
@@ -26,6 +27,13 @@ def create_user(username: str, email: str, password: str):
     execute_query(query, (username, email, hashed_password, salt))
 
 if __name__ == "__main__":
+    
+    parser = argparse.ArgumentParser(description="Process hand history file and create user.")
+    parser.add_argument('hand_history_path', type=str, help='Path to the hand history file')
+
+    args = parser.parse_args()
+    hand_history_path = args.hand_history_path
+
     create_user("test_user", "test_email", "test_password")
     print("Parsing hand history...")
-    parse_hand_history("../hand_histories/poker_stars/sample_handHistory.txt", 1)
+    parse_hand_history(hand_history_path, 1)
