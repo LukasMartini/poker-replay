@@ -101,5 +101,6 @@ CREATE TABLE authorized (
     user_id INT, -- user authorized
     hand_id INT, -- hand authorized to view
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (hand_id) REFERENCES poker_hand(id)
+    FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
+    PRIMARY KEY (user_id, hand_id)
 );
