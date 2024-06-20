@@ -28,4 +28,4 @@ def create_user(username: str, email: str, password: str):
 if __name__ == "__main__":
     create_user("test_user", "test_email", "test_password")
     print("Parsing hand history...")
-    parse_hand_history("../hand_histories/poker_stars/handHistory-126997.txt", 1)
+    parse_hand_history("../hand_histories/poker_stars/sample_handHistory.txt", 1)
