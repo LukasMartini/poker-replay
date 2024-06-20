@@ -14,6 +14,7 @@ CREATE TABLE users (
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE,
     password_hash CHAR(60), -- Assuming bcrypt hash which outputs 60 characters
+    salt CHAR(29), -- Storing bcrypt salt, which is 29 characters long
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

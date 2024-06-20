@@ -14,16 +14,18 @@ def create_user(username: str, email: str, password: str):
         print("User already exists")
         return
 
-    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode(), salt)
     hashed_password = hashed_password.decode('utf-8')
+    salt = salt.decode('utf-8')
 
     query = """
-    INSERT INTO users (username, email, password_hash)
-    VALUES (%s, %s, %s)
+    INSERT INTO users (username, email, password_hash, salt)
+    VALUES (%s, %s, %s, %s)
     """
-    execute_query(query, (username, email, hashed_password))
-    print("User created")
+    execute_query(query, (username, email, hashed_password, salt))
 
 if __name__ == "__main__":
     create_user("test_user", "test_email", "test_password")
+    print("Parsing hand history...")
     parse_hand_history("../hand_histories/poker_stars/handHistory-126997.txt", 1)
