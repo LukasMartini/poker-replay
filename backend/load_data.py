@@ -5,7 +5,6 @@ import bcrypt
 
 
 def create_user(username: str, email: str, password: str, token: str):
-    
     query = """
     SELECT COUNT(*) FROM users WHERE username = %s OR email = %s
     """
@@ -14,7 +13,6 @@ def create_user(username: str, email: str, password: str, token: str):
     if result[0][0] > 0:
         print("User already exists")
         return
-
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode(), salt)
     hashed_password = hashed_password.decode('utf-8')
@@ -37,4 +35,3 @@ if __name__ == "__main__":
     print("Parsing hand history...")
     parse_hand_history(hand_history_path, 1)
     create_user("user2", "testemail2", "test_password", "f273d736-807e-4f8e-b919-0bc7a558d59b")
-    

@@ -1,0 +1,102 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry} % Set margins
+\usepackage{hyperref} % For links
+\usepackage{verbatim}
+
+%%% "Set and Forgets"
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%%% For better newlines
+\usepackage{parskip}
+
+\begin{document}
+
+\section*{Application Features}
+    \subsection*{R6 - Content Search}
+
+        One of the core features of our application is the ability to search for and view information about any given hand that a user has played. While conceptually simple, the implementation 
+        will make use of every part of our technology stack. To find a played hand, its unique identifier must be given by the user in our web interface. 
+        From there, we can query our database for results from all of the relevant tables (player\textunderscore action, player\textunderscore cards, board\textunderscore cards) 
+        to return a summary of information about a hand, the session it was played in, and the actions of each player. This data is then sent back to the front-end for viewing. 
+
+        An example of how this feature will look can be seen in our database-driven application submitted with Milestone 1.
+
+        The query template used for every query in this feature is SELECT FROM WHERE, implemented as follows:
+
+        \begin{verbatim}
+PREPARE one_time_hand_info AS (
+        SELECT poker_hand.id, poker_hand.session_id, poker_hand.total_pot, 
+               poker_hand.rake, poker_hand.played_at, poker_session.table_name, 
+               poker_session.game_type, poker_hand.small_blind, poker_hand.big_blind, 
+               board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
+               board_cards.turn_card, board_cards.river_card
+        FROM poker_hand, poker_session, board_cards
+        WHERE poker_hand.id = $1 AND poker_hand.session_id = poker_session.id 
+              AND board_cards.hand_id = $1
+);
+                
+PREPARE player_actions_in_hand AS (
+        SELECT player.id, player.name, player_action.id, player_action.hand_id, 
+               player_action.action_type, player_action.amount, 
+               player_action.betting_round
+        FROM player, player_action
+        WHERE player_action.hand_id = $1 AND player_action.player_id = player.id
+);
+                
+PREPARE player_cards_in_hand AS (
+        SELECT player.id, player.name, player_cards.hand_id, player_cards.hole_card1, 
+               player_cards.hole_card2, player_cards.position, player_cards.stack_size
+        FROM player, player_cards
+        WHERE player_cards.hand_id = $1 AND player_cards.player_id = player.id
+);
+        \end{verbatim}
+        with the selected data only coming from rows where the inputted hand\textunderscore id matches with the queried tables.
+        Each of the three queries fulfills a different roll; the first searches for data that remains constant throughout a hand,
+        the second returns a list of actions taken by each player, and the third queries for the cards each player is dealt. Additional
+        contextual information is provided with each query as well to aid in preparing them for user consumption.
+
+        If we run each of the above queries on our sample dataset using a hand\textunderscore id of 12, the results are:
+        \begin{verbatim}
+one_time_hand_info: 
+id | session_id | total_pot | rake |      played_at      | table_name | game_type | 
+----+------------+-----------+------+---------------------+------------+-----------+
+ 12 |          2 |      0.05 | 0.00 | 2023-09-27 23:05:04 | Alya III   | Cash      |
+        \end{verbatim}
+        \newpage
+        \begin{verbatim}
+ small_blind | big_blind | flop_card1 | flop_card2 | flop_card3 | turn_card | river_card 
+ -------------+-----------+------------+------------+------------+-----------+------------
+ 0.01 |      0.02 | 7h         | 2h         | Kc         |           | 
+
+player_actions_in_hand: 
+id |      name       | id  | hand_id | action_type | amount | betting_round 
+----+-----------------+-----+---------+-------------+--------+---------------
+  1 | HortonRoundtree | 153 |      12 | ante        |   0.01 | Preflop
+  2 | fourz4444       | 154 |      12 | ante        |   0.02 | Preflop
+  3 | CashMatteo      | 155 |      12 | call        |   0.02 | Preflop
+  6 | bouchizzle      | 156 |      12 | fold        |        | Preflop
+  4 | ljab26          | 157 |      12 | fold        |        | Preflop
+  5 | vegasricky      | 158 |      12 | fold        |        | Preflop
+  1 | HortonRoundtree | 159 |      12 | fold        |        | Preflop
+  2 | fourz4444       | 160 |      12 | check       |        | Preflop
+  2 | fourz4444       | 161 |      12 | check       |        | Flop
+  3 | CashMatteo      | 162 |      12 | bet         |   0.03 | Flop
+  2 | fourz4444       | 163 |      12 | fold        |        | Flop
+  3 | CashMatteo      | 164 |      12 | collect     |   0.05 | Showdown
+
+player_cards_in_hand: 
+id |      name       | hand_id | hole_card1 | hole_card2 | position | stack_size 
+----+-----------------+---------+------------+------------+----------+------------
+  1 | HortonRoundtree |      12 |            |            |        1 |       1.71
+  2 | fourz4444       |      12 |            |            |        2 |       1.62
+  3 | CashMatteo      |      12 |            |            |        3 |       2.41
+  6 | bouchizzle      |      12 |            |            |        4 |       2.30
+  4 | ljab26          |      12 |            |            |        5 |       2.60
+  5 | vegasricky      |      12 |            |            |        6 |       1.71
+
+        \end{verbatim}
+
+
+\end{document}

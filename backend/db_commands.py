@@ -5,7 +5,7 @@ import psycopg2
 DB_PARAMS = {
     "host": "localhost",
     "database": "cs348",
-    "user": "admin",
+    "user": "almostfishy",
     "password": "admin123"
 }
 
@@ -17,14 +17,15 @@ def execute_query(query, data=None, fetch=False):
     conn = get_db_connection()
     if conn is not None:
         try:
-            with conn:
-                with conn.cursor() as cur:
-                    if data is not None:
-                        cur.execute(query, data)
-                    else:
-                        cur.execute(query)
-                    if fetch:
-                        return cur.fetchall()
+            with conn.cursor() as cur:
+                if data is not None:
+                    cur.execute(query, data)
+                    conn.commit()
+                else:
+                    cur.execute(query)
+                    conn.commit()
+                if fetch:
+                    return cur.fetchall()
         finally:
             conn.close()
 

@@ -160,3 +160,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+backend/test.py
+reports/drafts.aux
+reports/drafts.out
+reports/drafts.pdf
