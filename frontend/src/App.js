@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import 'dotenv/config'
+
+const API = process.env.API;
 
 function App() {
   const [data, setData] = useState(null);
@@ -7,7 +10,7 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/hands/320230203') // Replace with your API endpoint
+    fetch(`${API}/api/hands/320230203`) // Replace with your API endpoint
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');

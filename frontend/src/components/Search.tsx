@@ -2,6 +2,9 @@
 import { useSearchParams, usePathname, useRouter} from "next/navigation"
 import { useState } from "react";
 import HandCard from "@/components/HandCard";
+import 'dotenv/config'
+
+const API = process.env.API;
 
 const SearchBar = () => {
     const searchParams = useSearchParams();
@@ -18,9 +21,9 @@ const SearchBar = () => {
     var response3 = new Response();
 
     const handleSearch = async (searchTerm: string) => {
-        response1 = await fetch(`http://localhost:5001/api/hand_summary/${searchTerm}`);
-        response2 = await fetch(`http://localhost:5001/api/player_actions/${searchTerm}`);
-        response3 = await fetch(`http://localhost:5001/api/player_cards/${searchTerm}`);
+        response1 = await fetch(`${API}/api/hand_summary/${searchTerm}`);
+        response2 = await fetch(`${API}/api/player_actions/${searchTerm}`);
+        response3 = await fetch(`${API}/api/player_cards/${searchTerm}`);
 
         setResponse1(await response1.json());
         setResponse2(await response2.json());
