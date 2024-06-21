@@ -10,7 +10,7 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${API}/api/hands/320230203`) // Replace with your API endpoint
+    fetch(`http://146.190.240.220:5001/api/hands/320230203`) // Replace with your API endpoint
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
