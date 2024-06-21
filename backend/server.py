@@ -9,13 +9,13 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-@app.route('/')
 @cross_origin()
+@app.route('/')
 def homepage():
     return Response(status=200)
 
-@app.route('/api/hand_summary/<int:id>', methods=['GET'])
 @cross_origin()
+@app.route('/api/hand_summary/<int:id>', methods=['GET'])
 def hand_summary(id: int) -> Response:
     # result = execute_query(f'EXECUTE one_time_hand_info({id});')
     cur.execute(f'EXECUTE one_time_hand_info({id});')
@@ -25,8 +25,8 @@ def hand_summary(id: int) -> Response:
 
     return jsonify(data), 200
 
-@app.route("/api/player_actions/<int:id>", methods=['GET'])
 @cross_origin()
+@app.route("/api/player_actions/<int:id>", methods=['GET'])
 def player_actions(id: int) -> Response:
     # result = execute_query(f'EXECUTE player_actions_in_hand({id});')
     cur.execute(f'EXECUTE player_actions_in_hand({id});')
@@ -36,8 +36,8 @@ def player_actions(id: int) -> Response:
 
     return jsonify(data), 200
 
-@app.route("/api/player_cards/<int:id>", methods=['GET'])
 @cross_origin()
+@app.route("/api/player_cards/<int:id>", methods=['GET'])
 def player_cards(id: int) -> Response:
     # result = execute_query(f'EXECUTE player_cards_in_hand({id});')
     cur.execute(f'EXECUTE player_cards_in_hand({id});')
