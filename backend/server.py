@@ -48,7 +48,7 @@ def player_cards(id: int) -> Response:
     return jsonify(data), 200
 
 if __name__ == '__main__':
-    cur.execute(open('/sql/R6/fetch_hand_query_templates.sql').read())
+    cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())
 
     app.run(host="localhost", port=5001, debug=True)
     
