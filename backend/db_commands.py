@@ -5,7 +5,7 @@ import psycopg2
 DB_PARAMS = {
     "host": "localhost",
     "database": "cs348",
-    "user": "almostfishy",
+    "user": "admin",
     "password": "admin123"
 }
 
