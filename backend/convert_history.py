@@ -13,20 +13,18 @@ from db_commands import (
     update_player_cards
 )
 
-def parse_hand_history(file_path, user_id):
+def parse_hand_history(content, user_id, upload_id):
     '''Populates the database with the hand history from the given file path. (PokerStars)'''
-    with open(file_path, 'r') as file:
-        content = file.read()
         
     hands = re.split(r'(?<=\n\n)(?=Hand\s*#\s*\d+: \n\n)', content)
     hands[0] = hands[0].replace('\nHand #', 'Hand #')
     
     with ThreadPoolExecutor() as executor:
-        futures = [executor.submit(parse_hand, hand, user_id) for hand in hands]
+        futures = [executor.submit(parse_hand, hand, user_id, upload_id) for hand in hands]
         for future in futures:
             future.result()
 
-def parse_hand(hand, user_id):
+def parse_hand(hand, user_id, upload_id):
     lines = hand.split('\n')
     
     if "*** HOLE CARDS ***" not in lines:
@@ -64,7 +62,7 @@ def parse_hand(hand, user_id):
         small_blind, part = stakes.replace('$', '').split('/')
         big_blind, currency = part.split()
         
-        session_id = get_or_create_cash_session(user_id, table_name, game_type, currency, table_size, datetime_obj)
+        session_id = get_or_create_cash_session(user_id, upload_id, table_name, game_type, currency, table_size, datetime_obj)
         hand_id = create_hand(session_id, pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj)
     else:
         buy_in , part = stakes.replace('$', '').split('+')
@@ -72,7 +70,7 @@ def parse_hand(hand, user_id):
         total_buy_in = float(buy_in) + float(rake)
         
         level, small_blind, big_blind = re.search(r"(\w+)\s*\((\d+)/(\d+)\)", tournament_level).groups()            
-        session_id = get_or_create_tournament_session(user_id, tournament_id, total_buy_in, table_name, game_type, currency, table_size, datetime_obj)
+        session_id = get_or_create_tournament_session(user_id, upload_id, tournament_id, total_buy_in, table_name, game_type, currency, table_size, datetime_obj)
         hand_id = create_hand(session_id, pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj)
     
     seat_pattern = re.compile(r"Seat (\d+): ([^:]+) \(\$?([\d.]+) in chips\)")

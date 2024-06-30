@@ -18,9 +18,20 @@ CREATE TABLE users (
     token CHAR(36)
 );
 
+CREATE TABLE uploads (
+    id SERIAL PRIMARY KEY,
+    user_id INT,
+    file_name VARCHAR(255),
+    status VARCHAR(50),
+    uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    CHECK (status IN ('processing', 'completed', 'failed'))
+);
+
 CREATE TABLE poker_session (
     id SERIAL PRIMARY KEY,
     user_id INT,
+    upload_id INT,
     tournament_id BIGINT NULL,
     buy_in NUMERIC(10, 2), -- Only applicable for tournaments
     table_name VARCHAR(50),
@@ -31,6 +42,7 @@ CREATE TABLE poker_session (
     start_time TIMESTAMP,
     end_time TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id), -- User that uploaded this session
+    FOREIGN KEY (upload_id) REFERENCES uploads(id) ON DELETE CASCADE,
     CHECK (end_time IS NULL OR end_time >= start_time)
 );
 
@@ -43,7 +55,7 @@ CREATE TABLE poker_hand (
     total_pot NUMERIC(10, 2),
     rake NUMERIC(10, 2),
     played_at TIMESTAMP,
-    FOREIGN KEY (session_id) REFERENCES poker_session(id)
+    FOREIGN KEY (session_id) REFERENCES poker_session(id) ON DELETE CASCADE
 );
 
 CREATE TABLE player (
@@ -61,7 +73,7 @@ CREATE TABLE player_action (
     action_type VARCHAR(50),
     amount NUMERIC(10, 2),
     FOREIGN KEY (player_id) REFERENCES player(id),
-    FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
+    FOREIGN KEY (hand_id) REFERENCES poker_hand(id) ON DELETE CASCADE,
     CHECK (betting_round IN ('Preflop', 'Flop', 'Turn', 'River', 'Showdown')),
     CHECK (action_type IN ('fold', 'check', 'call', 'bet', 'raise', 'collect', 'ante'))
 );
@@ -74,7 +86,7 @@ CREATE TABLE player_cards (
     hole_card2 CHAR(2) NULL,
     position INT,
     stack_size NUMERIC(10, 2),
-    FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
+    FOREIGN KEY (hand_id) REFERENCES poker_hand(id) ON DELETE CASCADE,
     FOREIGN KEY (player_id) REFERENCES player(id),
     CHECK (is_valid_card(hole_card1)),
     CHECK (is_valid_card(hole_card2))
@@ -88,7 +100,7 @@ CREATE TABLE board_cards (
     flop_card3 CHAR(2) NULL,
     turn_card CHAR(2) NULL,
     river_card CHAR(2) NULL,
-    FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
+    FOREIGN KEY (hand_id) REFERENCES poker_hand(id) ON DELETE CASCADE,
     CHECK (is_valid_card(flop_card1)),
     CHECK (is_valid_card(flop_card2)),
     CHECK (is_valid_card(flop_card3)),
@@ -100,7 +112,7 @@ CREATE TABLE authorized (
     user_id INT, -- user authorized
     hand_id INT, -- hand authorized to view
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (hand_id) REFERENCES poker_hand(id),
+    FOREIGN KEY (hand_id) REFERENCES poker_hand(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, hand_id)
 );
 
