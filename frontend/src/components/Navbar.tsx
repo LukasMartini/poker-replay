@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Button } from './ui/button'
 
 const Navbar = () => {
     return (
@@ -25,6 +26,15 @@ const Navbar = () => {
                         Add history
                     </p>
                 </Link>
+                <div>
+                    <Link href={'/login'}>
+                        <Button variant="secondary">Login</Button>
+                    </Link>
+                    <Link href={'/signup'}>
+                        <Button className="ml-2" type='submit'>Sign Up</Button>
+                    </Link>
+
+                </div>
             </div>
             
         </div>
