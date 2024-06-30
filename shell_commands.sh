@@ -16,9 +16,14 @@ create_tables() {
 
 # Function to load data
 load_data() {
-    echo "Loading data..."
+    local file_path="$1"
+    # Set default file path if not provided
+    if [ -z "$file_path" ]; then
+        file_path="../hand_histories/poker_stars/handHistory.txt"
+    fi
+    echo "Loading data from $file_path..."
     cd $POKER_REPLAY_ROOT/backend
-    python load_data.py "$1"
+    python load_data.py "$file_path"
     echo "Data loaded successfully."
 }
 
