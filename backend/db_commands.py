@@ -1,5 +1,6 @@
 from functools import lru_cache
 import psycopg2
+from psycopg2 import pool
 
 
 DB_PARAMS = {
@@ -9,26 +10,46 @@ DB_PARAMS = {
     "password": "admin123"
 }
 
-def get_db_connection():
-    conn = psycopg2.connect(**DB_PARAMS)
-    return conn
+connection_pool = pool.SimpleConnectionPool(1, 20, **DB_PARAMS)
 
-def execute_query(query, data=None, fetch=False):
+def get_db_connection(pool=False):
+    if pool:
+        return connection_pool.getconn()
+    else:
+        return psycopg2.connect(**DB_PARAMS)
+
+def release_db_connection(conn):
+    connection_pool.putconn(conn)
+
+def execute_batch_insert(query, data_list):
     conn = get_db_connection()
+    if conn is not None:
+        try:
+            with conn.cursor() as cur:
+                psycopg2.extras.execute_batch(cur, query, data_list)
+                conn.commit()
+        finally:
+            release_db_connection(conn)
+
+def execute_query(query, data=None, fetch=False, pool=False):
+    conn = get_db_connection(pool=pool)
     if conn is not None:
         try:
             with conn.cursor() as cur:
                 if data is not None:
                     cur.execute(query, data)
-                    conn.commit()
                 else:
                     cur.execute(query)
-                    conn.commit()
+                conn.commit()
                 if fetch:
                     return cur.fetchall()
         finally:
-            conn.close()
+            if pool:
+                release_db_connection(conn)
+            else:
+                conn.close()
 
+@lru_cache()
 def get_or_create_cash_session(user_id, table_name, game_type, currency, table_size, datetime_obj):
     '''Checks if a session already exists in the database, and if not, creates a new session.'''
 
@@ -51,6 +72,7 @@ def get_or_create_cash_session(user_id, table_name, game_type, currency, table_s
         result = execute_query(insert_query, (user_id, table_name, game_type, currency, 0, table_size, datetime_obj), fetch=True)
         return result[0][0]
 
+@lru_cache()
 def get_or_create_tournament_session(user_id, tournament_id, buy_in, table_name, game_type, currency, table_size, datetime_obj):   
     '''Checks if a session already exists in the database, and if not, creates a new session.'''
     
@@ -112,7 +134,7 @@ def create_player(hand_id, player_name, position, stack_size):
     INSERT INTO player_cards (hand_id, player_id, position, stack_size) 
     VALUES (%s, %s, %s, %s)
     """
-    execute_query(insert_cards_query, (hand_id, player_id, position, stack_size))
+    execute_query(insert_cards_query, (hand_id, player_id, position, stack_size), pool=True)
 
 def link_player_to_user(player_name, user_id):
     '''Links a player to a user in the database.'''
@@ -133,7 +155,7 @@ def update_player_cards(hand_id, player_name, hole_cards):
     UPDATE player_cards SET hole_card1 = %s, hole_card2 = %s
     WHERE hand_id = %s AND player_id = %s
     """
-    execute_query(update_cards_query, (hole_card1, hole_card2, hand_id, player_id))
+    execute_query(update_cards_query, (hole_card1, hole_card2, hand_id, player_id), pool=True)
 
 def create_action(hand_id, player_name, betting_round, action, amount):
     '''Inserts a new action into the database.'''
@@ -153,7 +175,7 @@ def create_action(hand_id, player_name, betting_round, action, amount):
     INSERT INTO player_action (hand_id, player_id, betting_round, action_type, amount)
     VALUES (%s, %s, %s, %s, %s)
     """
-    execute_query(insert_action_query, (hand_id, player_id, betting_round, action, amount))
+    execute_query(insert_action_query, (hand_id, player_id, betting_round, action, amount), pool=True)
 
 def create_board(hand_id, flop_cards=None, turn_card=None, river_card=None):
     '''Inserts new board cards into the database.'''
@@ -166,4 +188,4 @@ def create_board(hand_id, flop_cards=None, turn_card=None, river_card=None):
     INSERT INTO board_cards (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card)
     VALUES (%s, %s, %s, %s, %s, %s)
     """
-    execute_query(insert_board_query, (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card))
+    execute_query(insert_board_query, (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card), pool=True)

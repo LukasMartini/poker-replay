@@ -26,5 +26,10 @@ load_data() {
 reset_database() {
     drop_tables
     create_tables
+    start_time=$(date +%s)
     load_data "$1"
+    end_time=$(date +%s)
+    duration=$((end_time - start_time))
+    echo "Parsing completed in $duration seconds."
+    return $duration
 }

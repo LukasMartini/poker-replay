@@ -1,7 +1,16 @@
 import re
 from datetime import datetime
 
-from db_commands import create_action, create_board, create_hand, create_player, execute_query, get_or_create_cash_session, get_or_create_tournament_session, link_player_to_user, update_player_cards
+from db_commands import (
+    create_action,
+    create_board,
+    create_hand,
+    create_player,
+    get_or_create_cash_session,
+    get_or_create_tournament_session,
+    link_player_to_user,
+    update_player_cards
+)
 
 def parse_hand_history(file_path, user_id):
     '''Populates the database with the hand history from the given file path. (PokerStars)'''
