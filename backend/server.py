@@ -56,6 +56,15 @@ def hand_quantity(id: int) -> Response:
 
     return jsonify(data), 200
 
+@app.route("/api/cash_flow/<int:id>+<int:limit>+<int:offset>", methods=['GET'])
+@cross_origin()
+def hand_quantity(id: int, limit: int, offset: int) -> Response:
+    result = get_hand_count(str(id))
+    column_names = [description[0] for description in cur.description]
+    data = [dict(zip(column_names, row)) for row in result]
+
+    return jsonify(data), 200
+
 if __name__ == '__main__':
     cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())
 

@@ -172,14 +172,14 @@ def get_hand_count(user_id):
     '''Gets the number of hands registered for a user_id.'''
 
     get_hand_query="""
-    SELECT COUNT(*) numHands
+    SELECT COUNT(*) hands
     FROM poker_session session
     JOIN poker_hand hand ON session.id = hand.session_id
     WHERE user_id = %s AND session.game_type = 'Cash'
     """
     return execute_query(get_hand_query, (user_id), fetch=True)
 
-def get_cash_flow(user_id, count=30, offset=0):
+def get_cash_flow(user_id, count='30', offset='0'):
     '''Returns the cash flow from a user_id for [count] hands starting from their [offset] most recent hand.'''
 
     # Don't love injecting user_id twice, but oh well sacrifices must be made
