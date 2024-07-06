@@ -51,7 +51,7 @@ def player_cards(id: int) -> Response:
 @app.route("/api/hand_count/<int:id>", methods=['GET'])
 @cross_origin()
 def hand_quantity(id: int) -> Response:
-    result = get_hand_count(id)
+    result = get_hand_count(str(id))
     print(result)
 
 if __name__ == '__main__':

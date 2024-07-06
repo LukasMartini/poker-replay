@@ -175,7 +175,7 @@ def get_hand_count(user_id):
     SELECT COUNT(*) numHands
     FROM poker_session session
     JOIN poker_hand hand ON session.id = hand.session_id
-    WHERE user_id = %i AND session.game_type = 'Cash'
+    WHERE user_id = %s AND session.game_type = 'Cash'
     """
     return execute_query(get_hand_query, (user_id), fetch=True)
 
@@ -185,13 +185,13 @@ def get_cash_flow(user_id, count=30, offset=0):
     # Don't love injecting user_id twice, but oh well sacrifices must be made
     get_cash_flow_query="""
     WITH user_player AS (
-        SELECT id FROM player WHERE player.user_id = %i
+        SELECT id FROM player WHERE player.user_id = %s
     ),
     hands AS (
         SELECT hand.id id, played_at
         FROM poker_session session
         JOIN poker_hand hand ON session.id = hand.session_id
-        WHERE user_id = %i AND session.game_type = 'Cash'
+        WHERE user_id = %s AND session.game_type = 'Cash'
     ),
     bet_amounts AS (
         SELECT hand_id, SUM(
@@ -210,8 +210,8 @@ def get_cash_flow(user_id, count=30, offset=0):
     JOIN bet_amounts on hand.id = bet_amounts.hand_id
     GROUP BY hand.id, played_at
     ORDER BY played_at
-    LIMIT %i
-    OFFSET %i
+    LIMIT %s
+    OFFSET %s
     """
 
     return execute_query(get_cash_flow_query, (user_id, user_id, count, offset), fetch=True)
