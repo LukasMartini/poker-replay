@@ -44,7 +44,7 @@ def player_cards(id: int) -> Response:
     cur.execute(f'EXECUTE player_cards_in_hand({id});')
     result = cur.fetchall()
     column_names = [description[0] for description in cur.description]
-    data = [dict(zip(column_names, row)) for row in result]
+    data = [{"hands": result[0][0]}]
 
     return jsonify(data), 200
 
@@ -52,7 +52,10 @@ def player_cards(id: int) -> Response:
 @cross_origin()
 def hand_quantity(id: int) -> Response:
     result = get_hand_count(str(id))
-    print(result)
+    column_names = [description[0] for description in cur.description]
+    data = [dict(["hands", result[0]])]
+
+    return jsonify(data), 200
 
 if __name__ == '__main__':
     cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())
