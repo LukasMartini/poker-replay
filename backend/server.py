@@ -59,7 +59,7 @@ def hand_quantity(id: int) -> Response:
 @app.route("/api/cash_flow/<int:id>+<int:limit>+<int:offset>", methods=['GET'])
 @cross_origin()
 def cash_flow(id: int, limit: int, offset: int) -> Response:
-    result = get_hand_count(str(id))
+    result = get_cash_flow(str(id), str(limit), str(offset))
     column_names = [description[0] for description in cur.description]
     data = [dict(zip(column_names, row)) for row in result]
 
