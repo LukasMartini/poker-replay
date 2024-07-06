@@ -1,6 +1,7 @@
 from flask import Flask, Response, jsonify
 from db_commands import get_db_connection, execute_query
 from flask_cors import CORS, cross_origin
+from db_commands import get_hand_count, get_cash_flow
 
 conn = get_db_connection()
 cur = conn.cursor()
@@ -46,6 +47,12 @@ def player_cards(id: int) -> Response:
     data = [dict(zip(column_names, row)) for row in result]
 
     return jsonify(data), 200
+
+@app.route("/api/hand_count/<int:id>", methods=['GET'])
+@cross_origin()
+def hand_quantity(id: int) -> Response:
+    result = get_hand_count(id)
+    print(result)
 
 if __name__ == '__main__':
     cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())

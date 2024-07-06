@@ -12,6 +12,7 @@ const API = process.env.API;
 Chart.register(CategoryScale);
 
 // temporary, to be returned from API call
+// needs handCount and cashFlow(NUM,OFFSET)
 export const Data = [
   {
     id: 1,
