@@ -60,8 +60,11 @@ def hand_quantity(id: int) -> Response:
 @cross_origin()
 def cash_flow(id: int, limit: int, offset: int) -> Response:
     result = get_cash_flow(str(id), str(limit), str(offset))
-    column_names = [description[0] for description in cur.description]
-    data = [dict(zip(column_names, row)) for row in result]
+    data = [{
+        "played_at": row[0],
+        "hand_id": row[1],
+        "amount": row[2]
+    } for row in result]
 
     return jsonify(data), 200
 
