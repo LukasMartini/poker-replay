@@ -1,11 +1,11 @@
 import os
-
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS, cross_origin
 
 from load_data import create_upload, delete_upload, update_upload_status
 from db_commands import get_db_connection, get_hand_count, get_cash_flow
 from convert_history import parse_hand_history
+
 
 conn = get_db_connection()
 cur = conn.cursor()
@@ -21,7 +21,6 @@ app.config['UPLOAD_FOLDER'] = './uploads/'
 def homepage():
     return Response(status=200)
 
-
 @app.route('/api/hand_summary/<int:id>', methods=['GET'])
 @cross_origin()
 def hand_summary(id: int) -> Response:
@@ -32,7 +31,6 @@ def hand_summary(id: int) -> Response:
 
     return jsonify(data), 200
 
-
 @app.route("/api/player_actions/<int:id>", methods=['GET'])
 @cross_origin()
 def player_actions(id: int) -> Response:
@@ -42,7 +40,6 @@ def player_actions(id: int) -> Response:
     data = [dict(zip(column_names, row)) for row in result]
 
     return jsonify(data), 200
-
 
 @app.route("/api/player_cards/<int:id>", methods=['GET'])
 @cross_origin()
@@ -92,9 +89,9 @@ def file_upload():
             update_upload_status(upload_id, 'completed')
         except:  # Bad practice
             delete_upload(upload_id)
+        os.remove(file_path)
 
     return {'status': 'success', 'message': f'{len(uploaded_files)} files uploaded successfully!'}
-
 
 if __name__ == '__main__':
     cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())
