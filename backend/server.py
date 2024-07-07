@@ -1,5 +1,5 @@
-from backend.convert_history import parse_hand_history
-from backend.load_data import create_upload, delete_upload, update_upload_status
+from convert_history import parse_hand_history
+from load_data import create_upload, delete_upload, update_upload_status
 from flask import Flask, Response, jsonify, request
 from db_commands import get_db_connection
 from flask_cors import CORS, cross_origin
