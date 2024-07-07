@@ -1,121 +1,15 @@
 "use client"
 import { useSearchParams, usePathname, useRouter} from "next/navigation"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Chart from 'chart.js/auto'
 import { CategoryScale } from "chart.js";
-import { BarChart } from "./BarChart";
+import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
 import 'dotenv/config'
 
 const API = process.env.API;
 
 Chart.register(CategoryScale);
-
-// temporary, to be returned from API call
-// needs handCount and cashFlow(NUM,OFFSET)
-export const Data = [
-  {
-    id: 1,
-    played_at: new Date(2023, 9, 27, 22, 56, 41),
-    amount: -0.02
-  },
-  {
-    id: 2,
-    played_at: new Date(2023, 9, 27, 22, 57, 21),
-    amount: -0.01
-  },
-  {
-    id: 3,
-    played_at: new Date(2023, 9, 27, 22, 58, 9),
-    amount: -0.04
-  },
-  {
-    id: 4,
-    played_at: new Date(2023, 9, 27, 22, 58, 38),
-    amount: 0
-  },
-  {
-    id: 5,
-    played_at: new Date(2023, 9, 27, 22, 59, 28),
-    amount: -0.02
-  },
-  {
-    id: 6,
-    played_at: new Date(2023, 9, 27, 23, 0, 26),
-    amount: -0.01
-  },
-  {
-    id: 7,
-    played_at: new Date(2023, 9, 27, 23, 0, 49),
-    amount: 0.40
-  },
-  {
-    id: 8,
-    played_at: new Date(2023, 9, 27, 23, 2, 22),
-    amount: -0.02
-  },
-  {
-    id: 9,
-    played_at: new Date(2023, 9, 27, 23, 3, 22),
-    amount: 0
-  },
-
-  {
-    id: 10,
-    played_at: new Date(2023,9,27,23,4,6),
-    amount:	0
-  },
-  {
-    id: 11,
-    played_at: new Date(2023,9,27,23,4,33),
-    amount: 0.00
-  },
-  {
-    id: 12,
-    played_at: new Date(2023,9,27,23,5,4),
-    amount: 0.00
-  },
-  {
-    id: 13,
-    played_at: new Date(2023,9,27,23,5,51),
-    amount: -0.08
-  },
-  {
-    id: 14,
-    played_at: new Date(2023,9,27,23,6,35),
-    amount: -0.01
-  },
-  {
-    id: 15,
-    played_at: new Date(2023,9,27,23,6,57),
-    amount: -0.06
-  },
-  {
-    id: 16,
-    played_at: new Date(2023,9,27,23,7,30),
-    amount: 0.33
-  },
-  {
-    id: 17,
-    played_at: new Date(2023,9,27,23,8,3),
-    amount: 0
-  },
-  {
-    id: 18,
-    played_at: new Date(2023,9,27,23,8,27),
-    amount: 0.00
-  },
-  {
-    id: 19,
-    played_at: new Date(2023,9,27,23,8,39),
-    amount: -0.04
-  },
-  {
-    id: 20,
-    played_at: new Date(2023,9,27,23,9,44),
-    amount: -0.01
-  },
-];
 
 const SearchBar = () => {
     const searchParams = useSearchParams();
@@ -130,6 +24,10 @@ const SearchBar = () => {
     var response1 = new Response();
     var response2 = new Response();
     var response3 = new Response();
+
+    var [handCount, setHandCount] = useState(0); // this *should* be useState, not required until pagination
+    var [chartData, setChartData] = useState(generateChartData([]));
+    var [links, setLinks] = useState([]);
 
     const handleSearch = async (searchTerm: string) => {
         response1 = await fetch(`http://146.190.240.220/api/hand_summary/${searchTerm}`);
@@ -153,37 +51,37 @@ const SearchBar = () => {
     //   replace(`${pathname}?${params.toString()}`)
     }
 
-    // find max and min for interpolation
-    const maxAmount = Math.max(...Data.map((d) => d.amount));
-    const minAmount = Math.min(...Data.map((d) => d.amount));
-
-    // now run through and calculate colours and hyperlinks for every bar
-    const colours = Data.map((data) => {
-      const amount = data.amount;
-      if (amount < 0) {
-        const col = 255 - (amount / minAmount) * 128;
-        return `rgba(255, ${col}, ${col}, 1)`;
-      } else if (amount > 0) {
-        const col = 255 - (amount / maxAmount) * 128;
-        return `rgba(${col}, 255, ${col}, 1)`;
-      } else {
-        return "rgba(128, 128, 128, 0.7)";
-      }
-    });
+    useEffect(() => {
+      const fetchQuantity = async () => {
+        await fetch(`http://146.190.240.220/api/hand_count/1`)
+          .then(resp => resp.clone().json())
+          .then(data => {
+              if (data === 'undefined') {
+                return console.log("Hand count request returned undefined");
+              }
   
-    const links = Data.map((data) => `http://localhost:3000/${data.id}`);
+              setHandCount(data[0].hands);
+              console.log(`Found ${handCount} hands for userID 1, server returned ${data[0].hands}`);
+              fetchCashData(0, Math.min(30, data[0].hands as number));
+          });
+      }
+  
+      const fetchCashData = async (offset: number, amount: number = 30) => {
+        // fetch an amount of data from the given offset
+        await fetch(`http://146.190.240.220/api/cash_flow/1+${amount}+${offset}`)
+          .then(resp => resp.clone().json())
+          .then(data => {
+            if (data === 'undefined') {
+              return console.log("Hand count request returned undefined");
+            }
 
-    const chartData = {
-      labels: Data.map((data) => data.played_at.toDateString()),
-      datasets: [
-        {
-          label: "Users Gained",
-          data: Data.map((data) => (data.amount === 0 ? 0.004 : data.amount)),
-          backgroundColor: colours,
-          borderWidth: 0,
-        },
-      ],
-    };
+            setLinks(data.map((hand: any) => `http://localhost:3000/${hand.hand_id}`));
+            setChartData(generateChartData(data));
+          });
+      }
+
+      fetchQuantity()
+    }, []);
 
     // console.log("Hyperlinks: " + links)
   

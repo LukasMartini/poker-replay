@@ -6,9 +6,36 @@ interface BarChartProps {
   hyperlinks: string[];
 }
 
-// export interface DataType 
-//   { id: number, year: number, userGain: number, userLost: number }
+export const generateChartData = (handData: any) => {
+  let maxAmount = Math.max(...handData.map((d: any) => d.amount));
+  let minAmount = Math.min(...handData.map((d: any) => d.amount));
 
+  // now run through and calculate colours and hyperlinks for every bar
+  let colours = handData.map((data: any) => {
+    const amount = data.amount;
+    if (amount < 0) {
+      const col = 255 - (amount / minAmount) * 128;
+      return `rgba(255, ${col}, ${col}, 1)`;
+    } else if (amount > 0) {
+      const col = 255 - (amount / maxAmount) * 128;
+      return `rgba(${col}, 255, ${col}, 1)`;
+    } else {
+      return "rgba(128, 128, 128, 0.7)";
+    }
+  });
+
+  return {
+    labels: handData.map((data: any) => data.played_at),
+    datasets: [
+      {
+        label: "Users Gained",
+        data: handData.map((data: any) => (data.amount == 0 ? 0.004 : data.amount)),
+        backgroundColor: colours,
+        borderWidth: 0,
+      },
+    ],
+  }
+}
 
 export const BarChart: React.FC<BarChartProps> = ( { chartData, hyperlinks }: any ) => {
   

@@ -51,7 +51,6 @@ def player_cards(id: int) -> Response:
 
     return jsonify(data), 200
 
-  
 @app.route("/api/hand_count/<int:id>", methods=['GET'])
 @cross_origin()
 def hand_quantity(id: int) -> Response:
@@ -59,7 +58,6 @@ def hand_quantity(id: int) -> Response:
     data = [{"hands": result[0][0]}]
 
     return jsonify(data), 200
-
 
 @app.route("/api/cash_flow/<int:id>+<int:limit>+<int:offset>", methods=['GET'])
 @cross_origin()
@@ -73,7 +71,6 @@ def cash_flow(id: int, limit: int, offset: int) -> Response:
 
     return jsonify(data), 200
 
- 
 @app.route('/api/upload', methods=['POST'])
 @cross_origin()
 def file_upload():
