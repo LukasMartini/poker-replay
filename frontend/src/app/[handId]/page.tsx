@@ -15,19 +15,19 @@ export default async function HandDetails() { // Asynchronous server component f
 
     const apiCall = async (searchTerm: string) => {
         // Run SQL queries to fetch appropriate data. See server.py for further information.
-        await fetch(`http://localhost:5001/api/hand_summary/${searchTerm}`)
+        await fetch(`http://146.190.240.220/api/hand_summary/${searchTerm}`)
                 .then(resp => resp.json())
                 .then(data => {
                     othiResult = data;
                 });
 
-        await fetch(`http://localhost:5001/api/player_actions/${searchTerm}`)
+        await fetch(`http://146.190.240.220/api/player_actions/${searchTerm}`)
                 .then(resp => resp.json())
                 .then(data => {
                     paResult = data;
                 });
 
-        await fetch(`http://localhost:5001/api/player_cards/${searchTerm}`)
+        await fetch(`http://146.190.240.220/api/player_cards/${searchTerm}`)
                 .then(resp => resp.json())
                 .then(data => {
                     pcResult = data;
