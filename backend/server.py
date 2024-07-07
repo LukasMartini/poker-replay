@@ -1,4 +1,6 @@
-from flask import Flask, Response, jsonify
+from backend.convert_history import parse_hand_history
+from backend.load_data import create_upload, delete_upload, update_upload_status
+from flask import Flask, Response, jsonify, request
 from db_commands import get_db_connection, execute_query
 from flask_cors import CORS, cross_origin
 from db_commands import get_hand_count, get_cash_flow
@@ -71,6 +73,23 @@ def cash_flow(id: int, limit: int, offset: int) -> Response:
 if __name__ == '__main__':
     cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())
 
+@app.route('/api/upload', methods=['POST'])
+@cross_origin()
+def file_upload():
+    user_id = 1 # Temporary user_id
+    uploaded_files = request.files.getlist('file')
+    for file in uploaded_files:
+        content = file.read().decode('utf-8')
+        upload_id = create_upload(user_id, file.filename)
+        try:
+            parse_hand_history(content, user_id, upload_id)
+            update_upload_status(upload_id, 'complete')
+        except Exception as e: # Bad practice
+            delete_upload(upload_id)
+            
+    return {'status': 'success', 'message': f'{len(uploaded_files)} files uploaded successfully!'}
+
+if __name__ == '__main__':
     app.run(host="localhost", port=5001, debug=True)
     
     cur.close()
