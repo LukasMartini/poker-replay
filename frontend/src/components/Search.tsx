@@ -3,7 +3,7 @@ import { useSearchParams, usePathname, useRouter} from "next/navigation"
 import { useState } from "react";
 import Chart from 'chart.js/auto'
 import { CategoryScale } from "chart.js";
-import { BarChart } from "./timeline";
+import { BarChart } from "./BarChart";
 import HandCard from "@/components/HandCard";
 import 'dotenv/config'
 
@@ -154,50 +154,36 @@ const SearchBar = () => {
     }
 
     // find max and min for interpolation
-    var maxAmount = 0
-    var minAmount = 0
-    // load them immediately
-    for (let hand of Data) {
-      if (hand.amount < minAmount) {
-        minAmount = hand.amount
-      }
-      if (hand.amount > maxAmount) {
-        maxAmount = hand.amount
-      }
-    }
+    const maxAmount = Math.max(...Data.map((d) => d.amount));
+    const minAmount = Math.min(...Data.map((d) => d.amount));
+
     // now run through and calculate colours and hyperlinks for every bar
-    var colours: string[] = []
-    var links: string[] = []
-    for (let hand in Data) {
-      // colour
-      let amount = Data[hand].amount
+    const colours = Data.map((data) => {
+      const amount = data.amount;
       if (amount < 0) {
-        let col = 255 - amount/minAmount * 128
-        colours[hand] = `rgba(255, ${col}, ${col}, 1)`
+        const col = 255 - (amount / minAmount) * 128;
+        return `rgba(255, ${col}, ${col}, 1)`;
+      } else if (amount > 0) {
+        const col = 255 - (amount / maxAmount) * 128;
+        return `rgba(${col}, 255, ${col}, 1)`;
+      } else {
+        return "rgba(128, 128, 128, 0.7)";
       }
-      
-      if (amount > 0) {
-        let col = 255 - amount/maxAmount * 128
-        colours[hand] = `rgba(${col}, 255, ${col}, 1)`
-      }
+    });
+  
+    const links = Data.map((data) => `http://localhost:3000/${data.id}`);
 
-      // hyperlink
-      links[hand] = `http://localhost:3000/${Data[hand].id}`
-    }
-
-    const [chartData, setChartData] = useState({
-      labels: Data.map((data) => data.played_at.toDateString()), 
+    const chartData = {
+      labels: Data.map((data) => data.played_at.toDateString()),
       datasets: [
         {
-          label: "Users Gained ",
-          data: Data.map((data) => data.amount),
-          // pre-generated list of colours based off the data
+          label: "Users Gained",
+          data: Data.map((data) => (data.amount === 0 ? 0.004 : data.amount)),
           backgroundColor: colours,
-          borderColor: "black",
-          borderWidth: 3
-        }
-      ]
-    });
+          borderWidth: 0,
+        },
+      ],
+    };
 
     // console.log("Hyperlinks: " + links)
   
