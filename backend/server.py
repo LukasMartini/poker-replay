@@ -3,6 +3,7 @@ from backend.load_data import create_upload, delete_upload, update_upload_status
 from flask import Flask, Response, jsonify, request
 from db_commands import get_db_connection, execute_query
 from flask_cors import CORS, cross_origin
+from db_commands import get_hand_count, get_cash_flow
 
 conn = get_db_connection()
 cur = conn.cursor()
@@ -49,7 +50,30 @@ def player_cards(id: int) -> Response:
 
     return jsonify(data), 200
 
-@app.route('/upload', methods=['POST'])
+@app.route("/api/hand_count/<int:id>", methods=['GET'])
+@cross_origin()
+def hand_quantity(id: int) -> Response:
+    result = get_hand_count(str(id))
+    data = [{"hands": result[0][0]}]
+
+    return jsonify(data), 200
+
+@app.route("/api/cash_flow/<int:id>+<int:limit>+<int:offset>", methods=['GET'])
+@cross_origin()
+def cash_flow(id: int, limit: int, offset: int) -> Response:
+    result = get_cash_flow(str(id), str(limit), str(offset))
+    data = [{
+        "played_at": row[0],
+        "hand_id": row[1],
+        "amount": row[2]
+    } for row in result]
+
+    return jsonify(data), 200
+
+if __name__ == '__main__':
+    cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())
+
+@app.route('/api/upload', methods=['POST'])
 @cross_origin()
 def file_upload():
     user_id = 1 # Temporary user_id
