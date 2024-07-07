@@ -3,7 +3,7 @@ from flask import Flask, Response, jsonify, request
 from flask_cors import CORS, cross_origin
 
 from load_data import create_upload, delete_upload, update_upload_status
-from db_commands import get_db_connection, get_hand_count, get_cash_flow
+from db_commands import get_db_connection, get_hand_count, get_cash_flow, one_time_hand_info, player_actions_in_hand, player_cards_in_hand
 from convert_history import parse_hand_history
 
 
@@ -24,30 +24,21 @@ def homepage():
 @app.route('/api/hand_summary/<int:id>', methods=['GET'])
 @cross_origin()
 def hand_summary(id: int) -> Response:
-    cur.execute(f'EXECUTE one_time_hand_info({id});')
-    result = cur.fetchall()
-    column_names = [description[0] for description in cur.description]
-    data = [dict(zip(column_names, row)) for row in result]
+    data = one_time_hand_info(id)
 
     return jsonify(data), 200
 
 @app.route("/api/player_actions/<int:id>", methods=['GET'])
 @cross_origin()
 def player_actions(id: int) -> Response:
-    cur.execute(f'EXECUTE player_actions_in_hand({id});')
-    result = cur.fetchall()
-    column_names = [description[0] for description in cur.description]
-    data = [dict(zip(column_names, row)) for row in result]
+    data = player_actions_in_hand(id)
 
     return jsonify(data), 200
 
 @app.route("/api/player_cards/<int:id>", methods=['GET'])
 @cross_origin()
 def player_cards(id: int) -> Response:
-    cur.execute(f'EXECUTE player_cards_in_hand({id});')
-    result = cur.fetchall()
-    column_names = [description[0] for description in cur.description]
-    data = [dict(zip(column_names, row)) for row in result]
+    data = player_cards_in_hand(id)
 
     return jsonify(data), 200
 
