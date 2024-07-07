@@ -242,7 +242,7 @@ def get_cash_flow(user_id, count='30', offset='0'):
     FROM hands hand
     JOIN bet_amounts on hand.id = bet_amounts.hand_id
     GROUP BY hand.id, played_at
-    ORDER BY played_at
+    ORDER BY played_at DESC
     LIMIT %s
     OFFSET %s
     """
