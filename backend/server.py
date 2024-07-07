@@ -1,9 +1,11 @@
-from convert_history import parse_hand_history
-from load_data import create_upload, delete_upload, update_upload_status
+import os
+
 from flask import Flask, Response, jsonify, request
-from db_commands import get_db_connection
 from flask_cors import CORS, cross_origin
-from db_commands import get_hand_count, get_cash_flow
+
+from load_data import create_upload, delete_upload, update_upload_status
+from db_commands import get_db_connection, get_hand_count, get_cash_flow
+from convert_history import parse_hand_history
 
 conn = get_db_connection()
 cur = conn.cursor()
@@ -11,6 +13,7 @@ cur = conn.cursor()
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['UPLOAD_FOLDER'] = './uploads/'
 
 
 @app.route('/')
@@ -77,12 +80,17 @@ def file_upload():
     user_id = 1  # Temporary user_id
     uploaded_files = request.files.getlist('file')
     for file in uploaded_files:
-        content = file.read().decode('utf-8')
-        upload_id = create_upload(user_id, file.filename)
+        file_name = file.filename
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+        file.save(file_path)
+        
+        upload_id = create_upload(user_id, file_name)
         try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                content = file.read()
             parse_hand_history(content, user_id, upload_id)
-            update_upload_status(upload_id, 'complete')
-        except Exception as e:  # Bad practice
+            update_upload_status(upload_id, 'completed')
+        except:  # Bad practice
             delete_upload(upload_id)
 
     return {'status': 'success', 'message': f'{len(uploaded_files)} files uploaded successfully!'}
