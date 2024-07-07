@@ -7,11 +7,11 @@ interface BarChartProps {
 }
 
 export const generateChartData = (handData: any) => {
-  const maxAmount = Math.max(...handData.map((d: any) => d.amount));
-  const minAmount = Math.min(...handData.map((d: any) => d.amount));
+  let maxAmount = Math.max(...handData.map((d: any) => d.amount));
+  let minAmount = Math.min(...handData.map((d: any) => d.amount));
 
   // now run through and calculate colours and hyperlinks for every bar
-  const colours = handData.map((data: any) => {
+  let colours = handData.map((data: any) => {
     const amount = data.amount;
     if (amount < 0) {
       const col = 255 - (amount / minAmount) * 128;
@@ -29,7 +29,7 @@ export const generateChartData = (handData: any) => {
     datasets: [
       {
         label: "Users Gained",
-        data: handData.map((data: any) => (data.amount === 0 ? 0.004 : data.amount)),
+        data: handData.map((data: any) => (data.amount == 0 ? 0.004 : data.amount)),
         backgroundColor: colours,
         borderWidth: 0,
       },

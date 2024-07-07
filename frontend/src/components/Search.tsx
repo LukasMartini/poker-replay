@@ -76,8 +76,7 @@ const SearchBar = () => {
               return console.log("Hand count request returned undefined");
             }
 
-            // console.log(data);
-            setLinks(data.map((data: any) => `http://localhost:3000/${data.id}`));
+            setLinks(data.map((hand: any) => `http://localhost:3000/${hand.hand_id}`));
             setChartData(generateChartData(data));
           });
       }
