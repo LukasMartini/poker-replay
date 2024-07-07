@@ -199,4 +199,52 @@ def create_board(hand_id, flop_cards=None, turn_card=None, river_card=None):
     INSERT INTO board_cards (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card)
     VALUES (%s, %s, %s, %s, %s, %s)
     """
-    execute_query(insert_board_query, (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card), pool=True)
+    execute_query(insert_board_query, (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card))
+
+def get_hand_count(user_id):
+    '''Gets the number of hands registered for a user_id.'''
+
+    get_hand_query="""
+    SELECT COUNT(*) hands
+    FROM poker_session session
+    JOIN poker_hand hand ON session.id = hand.session_id
+    WHERE user_id = %s AND session.game_type = 'Cash'
+    """
+    return execute_query(get_hand_query, (user_id), fetch=True)
+
+def get_cash_flow(user_id, count='30', offset='0'):
+    '''Returns the cash flow from a user_id for [count] hands starting from their [offset] most recent hand.'''
+
+    # Don't love injecting user_id twice, but oh well sacrifices must be made
+    get_cash_flow_query="""
+    WITH user_player AS (
+        SELECT id FROM player WHERE player.user_id = %s
+    ),
+    hands AS (
+        SELECT hand.id id, played_at
+        FROM poker_session session
+        JOIN poker_hand hand ON session.id = hand.session_id
+        WHERE user_id = %s AND session.game_type = 'Cash'
+    ),
+    bet_amounts AS (
+        SELECT hand_id, SUM(
+        CASE
+            WHEN action_type = 'collect' THEN amount
+            ELSE -amount
+        END
+        ) as amount
+        FROM user_player, player_action
+        JOIN hands ON hands.id = player_action.hand_id
+        WHERE player_id = user_player.id
+        GROUP BY hand_id, player_id
+    )
+    SELECT played_at, hand.id, COALESCE(SUM(amount), 0) amount
+    FROM hands hand
+    JOIN bet_amounts on hand.id = bet_amounts.hand_id
+    GROUP BY hand.id, played_at
+    ORDER BY played_at DESC
+    LIMIT %s
+    OFFSET %s
+    """
+
+    return execute_query(get_cash_flow_query, (user_id, user_id, count, offset), fetch=True)

@@ -58,5 +58,5 @@ if __name__ == "__main__":
     with open(hand_history_path, 'r', encoding='utf-8') as file:
         content = file.read()
         parse_hand_history(content, 1, upload_id)
-        update_upload_status(upload_id, 'complete')
+        update_upload_status(upload_id, 'completed')
     create_user("user2", "testemail2", "test_password", "f273d736-807e-4f8e-b919-0bc7a558d59b")
