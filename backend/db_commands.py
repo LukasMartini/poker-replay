@@ -42,17 +42,17 @@ def execute_query(query, data=None, fetch=False, pool=False):
                 conn.close()
 
 @lru_cache()
-def get_or_create_cash_session(user_id, table_name, game_type, currency, table_size, datetime_obj):
+def get_or_create_cash_session(user_id, upload_id, table_name, game_type, currency, table_size, datetime_obj):
     '''Checks if a session already exists in the database, and if not, creates a new session.'''
     with session_creation_lock:
         query = """
         WITH existing_session AS (
             SELECT id FROM poker_session
-            WHERE user_id = %s AND table_name = %s AND game_type = %s AND currency = %s
+            WHERE user_id = %s AND upload_id = %s AND table_name = %s AND game_type = %s AND currency = %s
         ),
         inserted_session AS (
-            INSERT INTO poker_session (user_id, table_name, game_type, currency, total_hands, max_players, start_time)
-            SELECT %s, %s, %s, %s, 0, %s, %s
+            INSERT INTO poker_session (user_id, upload_id, table_name, game_type, currency, total_hands, max_players, start_time)
+            SELECT %s, %s, %s, %s, %s, 0, %s, %s
             WHERE NOT EXISTS (SELECT 1 FROM existing_session)
             RETURNING id
         )
@@ -62,22 +62,22 @@ def get_or_create_cash_session(user_id, table_name, game_type, currency, table_s
         LIMIT 1
         """
         
-        result = execute_query(query, (user_id, table_name, game_type, currency,
-                                       user_id, table_name, game_type, currency, table_size, datetime_obj), fetch=True)
+        result = execute_query(query, (user_id, upload_id, table_name, game_type, currency,
+                                       user_id, upload_id, table_name, game_type, currency, table_size, datetime_obj), fetch=True)
         return result[0][0]
 
 @lru_cache()
-def get_or_create_tournament_session(user_id, tournament_id, buy_in, table_name, game_type, currency, table_size, datetime_obj):
+def get_or_create_tournament_session(user_id, upload_id, tournament_id, buy_in, table_name, game_type, currency, table_size, datetime_obj):
     '''Checks if a session already exists in the database, and if not, creates a new session.'''
     with session_creation_lock:
         query = """
         WITH existing_session AS (
             SELECT id FROM poker_session
-            WHERE user_id = %s AND tournament_id = %s AND buy_in = %s AND table_name = %s AND game_type = %s AND currency = %s
+            WHERE user_id = %s AND upload_id = %s AND tournament_id = %s AND buy_in = %s AND table_name = %s AND game_type = %s AND currency = %s
         ),
         inserted_session AS (
-            INSERT INTO poker_session (user_id, tournament_id, buy_in, table_name, game_type, currency, total_hands, max_players, start_time)
-            SELECT %s, %s, %s, %s, %s, %s, 0, %s, %s
+            INSERT INTO poker_session (user_id, upload_id, tournament_id, buy_in, table_name, game_type, currency, total_hands, max_players, start_time)
+            SELECT %s, %s, %s, %s, %s, %s, %s, 0, %s, %s
             WHERE NOT EXISTS (SELECT 1 FROM existing_session)
             RETURNING id
         )
@@ -87,8 +87,8 @@ def get_or_create_tournament_session(user_id, tournament_id, buy_in, table_name,
         LIMIT 1
         """
         
-        result = execute_query(query, (user_id, tournament_id, buy_in, table_name, game_type, currency,
-                                    user_id, tournament_id, buy_in, table_name, game_type, currency, table_size, datetime_obj), fetch=True)
+        result = execute_query(query, (user_id, upload_id, tournament_id, buy_in, table_name, game_type, currency,
+                                       user_id, upload_id, tournament_id, buy_in, table_name, game_type, currency, table_size, datetime_obj), fetch=True)
         return result[0][0]
 
 def create_hand(session_id, pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj):

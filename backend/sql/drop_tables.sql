@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS player;
 DROP TABLE IF EXISTS authorized;
 DROP TABLE IF EXISTS poker_hand;
 DROP TABLE IF EXISTS poker_session;
+DROP TABLE IF EXISTS uploads;
 DROP TABLE IF EXISTS users;
 
 -- Drop functions
