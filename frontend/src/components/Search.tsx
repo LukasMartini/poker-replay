@@ -11,7 +11,6 @@ const API = process.env.API;
 
 Chart.register(CategoryScale);
 
-
 const SearchBar = () => {
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -102,10 +101,7 @@ const SearchBar = () => {
                    return  <HandCard handId={info.id} played_at={info.played_at} tableName={info.table_name} key={index} />
                 })}
             </div>
-            <BarChart 
-              chartData={chartData}
-              hyperlinks={links}
-            />
+            <BarChart chartData={chartData} hyperlinks={links} />
         </div>
         
     )
