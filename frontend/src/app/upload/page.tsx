@@ -7,7 +7,7 @@ const UploadPage = () => {
                 Upload Hand History
             </h2>
 
-            <Dropzone className="p-12 mt-2 border border-[#2CBDC7] bg-[#292F30] rounded-md" />
+            <Dropzone className="h-52 border flex items-center justify-center border-[#2CBDC7] bg-[#292F30] rounded-md cursor-pointer" />
 
         </div>
     )
