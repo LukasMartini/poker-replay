@@ -6,6 +6,7 @@ import { CategoryScale } from "chart.js";
 import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
 import 'dotenv/config'
+import Image from "next/image";
 
 const API = process.env.API;
 
@@ -18,6 +19,7 @@ const SearchBar = () => {
     const [r1, setResponse1] = useState([]);
     const [r2, setResponse2] = useState([]);
     const [r3, setResponse3] = useState([]);
+    const [offset, setOffset] = useState(0);
 
     var combinedData = [];
     
@@ -28,6 +30,14 @@ const SearchBar = () => {
     var [handCount, setHandCount] = useState(0); // this *should* be useState, not required until pagination
     var [chartData, setChartData] = useState(generateChartData([]));
     var [links, setLinks] = useState([]);
+
+    useEffect(() => {
+      fetchQuantity()
+    }, []);
+
+    useEffect(() => {
+      fetchCashData(offset, 30);
+    }, [offset]);
 
     const handleSearch = async (searchTerm: string) => {
         response1 = await fetch(`http://146.190.240.220/api/hand_summary/${searchTerm}`);
@@ -40,51 +50,55 @@ const SearchBar = () => {
 
         combinedData = [r1, r2, r3];
         console.log(combinedData);
-
-    //     const params = new URLSearchParams(searchParams);
-    //     if (searchTerm) {
-    //         params.set("query", searchTerm);
-    //     } 
-    //     else {
-    //         params.delete("query");
-    //     }
-    //   replace(`${pathname}?${params.toString()}`)
     }
 
-    useEffect(() => {
-      const fetchQuantity = async () => {
-        await fetch(`http://146.190.240.220/api/hand_count/1`)
-          .then(resp => resp.clone().json())
-          .then(data => {
-              if (data === 'undefined') {
-                return console.log("Hand count request returned undefined");
-              }
+    const fetchQuantity = async () => {
+      const response = await fetch(`http://146.190.240.220/api/hand_count/1`);
+      const data = await response.json();
   
-              setHandCount(data[0].hands);
-              console.log(`Found ${handCount} hands for userID 1, server returned ${data[0].hands}`);
-              fetchCashData(0, Math.min(30, data[0].hands as number));
-          });
+      if (data === 'undefined') {
+        console.log("Hand count request returned undefined");
+        return;
       }
   
-      const fetchCashData = async (offset: number, amount: number = 30) => {
-        // fetch an amount of data from the given offset
-        await fetch(`http://146.190.240.220/api/cash_flow/1+${amount}+${offset}`)
-          .then(resp => resp.clone().json())
-          .then(data => {
-            if (data === 'undefined') {
-              return console.log("Hand count request returned undefined");
-            }
-
-            setLinks(data.map((hand: any) => `http://localhost:3000/${hand.hand_id}`));
-            setChartData(generateChartData(data));
-          });
-      }
-
-      fetchQuantity()
-    }, []);
-
-    // console.log("Hyperlinks: " + links)
+      setHandCount(data[0].hands);
+      console.log(`Found ${data[0].hands} hands for userID 1, server returned ${data[0].hands}`);
+    };
   
+
+    const fetchCashData = async (offset: number, amount = 30) => {
+      let actualOffset = offset;
+      if (offset + amount > handCount) {
+        actualOffset = handCount - amount;
+        actualOffset = actualOffset < 0 ? 0 : actualOffset;
+      }
+  
+      const response = await fetch(`http://146.190.240.220/api/cash_flow/1+${amount}+${actualOffset}`);
+      const data = await response.json();
+  
+      if (data === 'undefined') {
+        console.log("Cash flow request returned undefined");
+        return;
+      }
+  
+      setLinks(data.map((hand: { hand_id: any; }) => `http://localhost:3000/${hand.hand_id}`));
+      setChartData(generateChartData(data));
+    };
+
+
+    const handleClickLeft = () => {
+      setOffset((prevOffset) => Math.max(prevOffset - 30, 0));
+    }
+    const handleClickRight = () => {
+      setOffset((prevOffset) => {
+        const newOffset = prevOffset + 30;
+        return newOffset < handCount ? newOffset : prevOffset;
+      });
+    }
+
+    const isLeftButtonDisabled = offset === 0 || handCount <= 30;
+    const isRightButtonDisabled = offset + 30 >= handCount || handCount <= 30;
+
     return (
         <div className="relative">
             <input 
@@ -100,6 +114,15 @@ const SearchBar = () => {
                     // console.log(info);
                    return  <HandCard handId={info.id} played_at={info.played_at} tableName={info.table_name} key={index} />
                 })}
+            </div>
+            <div className="flex justify-between translate-y-10">
+              <button onClick={handleClickLeft} disabled={isLeftButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-100 hover:scale-105">
+                <Image src={"/left-w.svg"} alt="left" width={24} height={24} />
+              </button>
+
+              <button onClick={handleClickRight} disabled={isRightButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-00 hover:scale-105">
+                <Image src={"/right-w.svg"} alt="right" width={24} height={24} />
+              </button>
             </div>
             <BarChart chartData={chartData} hyperlinks={links} />
         </div>
