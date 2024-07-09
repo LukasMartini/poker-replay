@@ -1,9 +1,6 @@
-from functools import lru_cache
-from threading import Lock
 import psycopg2
 from psycopg2 import pool
-
-session_creation_lock = Lock()
+import bcrypt
 
 DB_PARAMS = {
     "host": "localhost",
@@ -13,13 +10,6 @@ DB_PARAMS = {
 }
 
 connection_pool = pool.SimpleConnectionPool(1, 20, **DB_PARAMS)
-
-one_time_hand_info_query = '''SELECT poker_hand.id, poker_hand.session_id, poker_hand.total_pot, poker_hand.rake,
-               poker_hand.played_at, poker_session.table_name, poker_session.game_type, poker_hand.small_blind,
-               poker_hand.big_blind, board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
-               board_cards.turn_card, board_cards.river_card
-        FROM poker_hand, poker_session, board_cards
-        WHERE poker_hand.id = %s AND poker_hand.session_id = poker_session.id AND board_cards.hand_id = $1'''
 
 def get_db_connection(pool=False):
     if pool:
@@ -48,165 +38,47 @@ def execute_query(query, data=None, fetch=False, pool=False):
             else:
                 conn.close()
 
-@lru_cache()
-def get_or_create_cash_session(user_id, upload_id, table_name, game_type, currency, table_size, datetime_obj):
-    '''Checks if a session already exists in the database, and if not, creates a new session.'''
-    with session_creation_lock:
-        query = """
-        WITH existing_session AS (
-            SELECT id FROM poker_session
-            WHERE user_id = %s AND upload_id = %s AND table_name = %s AND game_type = %s AND currency = %s
-        ),
-        inserted_session AS (
-            INSERT INTO poker_session (user_id, upload_id, table_name, game_type, currency, total_hands, max_players, start_time)
-            SELECT %s, %s, %s, %s, %s, 0, %s, %s
-            WHERE NOT EXISTS (SELECT 1 FROM existing_session)
-            RETURNING id
-        )
-        SELECT id FROM existing_session
-        UNION ALL
-        SELECT id FROM inserted_session
-        LIMIT 1
-        """
-        
-        result = execute_query(query, (user_id, upload_id, table_name, game_type, currency,
-                                       user_id, upload_id, table_name, game_type, currency, table_size, datetime_obj), fetch=True)
-        return result[0][0]
-
-@lru_cache()
-def get_or_create_tournament_session(user_id, upload_id, tournament_id, buy_in, table_name, game_type, currency, table_size, datetime_obj):
-    '''Checks if a session already exists in the database, and if not, creates a new session.'''
-    with session_creation_lock:
-        query = """
-        WITH existing_session AS (
-            SELECT id FROM poker_session
-            WHERE user_id = %s AND upload_id = %s AND tournament_id = %s AND buy_in = %s AND table_name = %s AND game_type = %s AND currency = %s
-        ),
-        inserted_session AS (
-            INSERT INTO poker_session (user_id, upload_id, tournament_id, buy_in, table_name, game_type, currency, total_hands, max_players, start_time)
-            SELECT %s, %s, %s, %s, %s, %s, %s, 0, %s, %s
-            WHERE NOT EXISTS (SELECT 1 FROM existing_session)
-            RETURNING id
-        )
-        SELECT id FROM existing_session
-        UNION ALL
-        SELECT id FROM inserted_session
-        LIMIT 1
-        """
-        
-        result = execute_query(query, (user_id, upload_id, tournament_id, buy_in, table_name, game_type, currency,
-                                       user_id, upload_id, tournament_id, buy_in, table_name, game_type, currency, table_size, datetime_obj), fetch=True)
-        return result[0][0]
-
-def create_hand(session_id, pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj):
-    '''Inserts a new hand into the database. Also updates the total_hands, end_time, and start_time of the session.'''
-    
+def create_user(username: str, email: str, password: str, token: str):
     query = """
-    WITH updated_session AS (
-        UPDATE poker_session
-        SET total_hands = total_hands + 1,
-            end_time = CASE
-                WHEN end_time IS NULL OR %s > end_time THEN %s
-                ELSE end_time
-            END,
-            start_time = CASE
-                WHEN start_time IS NULL OR %s < start_time THEN %s
-                ELSE start_time
-            END
-        WHERE id = %s
-        RETURNING id
-    )
-    INSERT INTO poker_hand (session_id, site_hand_id, small_blind, big_blind, total_pot, rake, played_at)
-    VALUES ((SELECT id FROM updated_session), %s, %s, %s, %s, %s, %s)
-    RETURNING id;
+    SELECT COUNT(*) FROM users WHERE username = %s OR email = %s
     """
+    result = execute_query(query, (username, email), fetch=True)
     
-    result = execute_query(
-        query,
-        (datetime_obj, datetime_obj, datetime_obj, datetime_obj, session_id, 
-         pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj),
-        fetch=True
-    )
-    return result[0][0]
-    
-@lru_cache()
-def get_or_create_player_id(player_name):
-    '''Checks if a player already exists in the database, and if not, creates a new player.'''
+    if result[0][0] > 0:
+        print("User already exists")
+        return
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode(), salt)
+    hashed_password = hashed_password.decode('utf-8')
+    salt = salt.decode('utf-8')
+
     query = """
-    INSERT INTO player (name)
-    VALUES (%s)
-    ON CONFLICT (name) DO UPDATE
-    SET name = EXCLUDED.name
-    RETURNING id;
-    """
-    
-    result = execute_query(query, (player_name,), fetch=True)
-    return result[0][0]
-    
-def create_player(hand_id, player_name, position, stack_size):
-    '''Inserts a new player into the database, and adds their card details to the player_cards table.'''
-    player_id = get_or_create_player_id(player_name)
-
-    # Insert player card details
-    insert_cards_query = """
-    INSERT INTO player_cards (hand_id, player_id, position, stack_size) 
-    VALUES (%s, %s, %s, %s)
-    """
-    execute_query(insert_cards_query, (hand_id, player_id, position, stack_size), pool=True)
-
-def link_player_to_user(player_name, user_id):
-    '''Links a player to a user in the database.'''
-    player_id = get_or_create_player_id(player_name)
-    
-    update_player_query = """
-    UPDATE player SET user_id = %s WHERE id = %s
-    """
-    execute_query(update_player_query, (user_id, player_id))
-
-def update_player_cards(hand_id, player_name, hole_cards):
-    '''Updates the hole cards for a player in the database.'''
-    player_id = get_or_create_player_id(player_name)
-    
-    hole_card1, hole_card2 = hole_cards
-    
-    update_cards_query = """
-    UPDATE player_cards SET hole_card1 = %s, hole_card2 = %s
-    WHERE hand_id = %s AND player_id = %s
-    """
-    execute_query(update_cards_query, (hole_card1, hole_card2, hand_id, player_id), pool=True)
-
-def create_action(hand_id, player_name, betting_round, action, amount):
-    '''Inserts a new action into the database.'''
-    player_id = get_or_create_player_id(player_name)
-    
-    singular_forms = {
-        "calls": "call",
-        "folds": "fold",
-        "checks": "check",
-        "bets": "bet",
-        "raises": "raise"
-    }
-    
-    action = singular_forms.get(action, action)
-    
-    insert_action_query = """
-    INSERT INTO player_action (hand_id, player_id, betting_round, action_type, amount)
+    INSERT INTO users (username, email, password_hash, salt, token)
     VALUES (%s, %s, %s, %s, %s)
     """
-    execute_query(insert_action_query, (hand_id, player_id, betting_round, action, amount), pool=True)
+    execute_query(query, (username, email, hashed_password, salt, token))
 
-def create_board(hand_id, flop_cards=None, turn_card=None, river_card=None):
-    '''Inserts new board cards into the database.'''
-    if not flop_cards:
-        flop_card1, flop_card2, flop_card3 = None, None, None
-    else:
-        flop_card1, flop_card2, flop_card3 = flop_cards
-    
-    insert_board_query = """
-    INSERT INTO board_cards (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card)
-    VALUES (%s, %s, %s, %s, %s, %s)
+def create_upload(user_id: int, file_name: str) -> int:
+    query = """
+    INSERT INTO uploads (user_id, file_name, status)
+    VALUES (%s, %s, 'processing')
+    RETURNING id
     """
-    execute_query(insert_board_query, (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card))
+    result = execute_query(query, (user_id, file_name), fetch=True)
+    upload_id = result[0][0]
+    return upload_id
+
+def delete_upload(upload_id: int):
+    query = """
+    DELETE FROM uploads WHERE id = %s
+    """
+    execute_query(query, (upload_id))
+
+def update_upload_status(upload_id: int, status: str):
+    query = """
+    UPDATE uploads SET status = %s WHERE id = %s
+    """
+    execute_query(query, (status, upload_id))
 
 def get_hand_count(user_id):
     '''Gets the number of hands registered for a user_id.'''
