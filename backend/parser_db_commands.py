@@ -26,7 +26,7 @@ def get_or_create_cash_session(user_id, upload_id, table_name, game_type, curren
         """
         
         result = execute_query(query, (user_id, upload_id, table_name, game_type, currency,
-                                       user_id, upload_id, table_name, game_type, currency, table_size, datetime_obj), fetch=True)
+                                       user_id, upload_id, table_name, game_type, currency, table_size, datetime_obj), fetch=True, pool=True)
         return result[0][0]
 
 @lru_cache()
@@ -51,7 +51,7 @@ def get_or_create_tournament_session(user_id, upload_id, tournament_id, buy_in, 
         """
         
         result = execute_query(query, (user_id, upload_id, tournament_id, buy_in, table_name, game_type, currency,
-                                       user_id, upload_id, tournament_id, buy_in, table_name, game_type, currency, table_size, datetime_obj), fetch=True)
+                                       user_id, upload_id, tournament_id, buy_in, table_name, game_type, currency, table_size, datetime_obj), fetch=True, pool=True)
         return result[0][0]
 
 def create_hand(session_id, pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj):
@@ -81,7 +81,7 @@ def create_hand(session_id, pokerstars_id, small_blind, big_blind, total_pot, ra
         query,
         (datetime_obj, datetime_obj, datetime_obj, datetime_obj, session_id, 
          pokerstars_id, small_blind, big_blind, total_pot, rake, datetime_obj),
-        fetch=True
+        fetch=True, pool=True
     )
     return result[0][0]
     
@@ -96,7 +96,7 @@ def get_or_create_player_id(player_name):
     RETURNING id;
     """
     
-    result = execute_query(query, (player_name,), fetch=True)
+    result = execute_query(query, (player_name,), fetch=True, pool=True)
     return result[0][0]
     
 def create_player(hand_id, player_name, position, stack_size):
@@ -117,7 +117,7 @@ def link_player_to_user(player_name, user_id):
     update_player_query = """
     UPDATE player SET user_id = %s WHERE id = %s
     """
-    execute_query(update_player_query, (user_id, player_id))
+    execute_query(update_player_query, (user_id, player_id), pool=True)
 
 def update_player_cards(hand_id, player_name, hole_cards):
     '''Updates the hole cards for a player in the database.'''
@@ -162,4 +162,4 @@ def create_board(hand_id, flop_cards=None, turn_card=None, river_card=None):
     INSERT INTO board_cards (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card)
     VALUES (%s, %s, %s, %s, %s, %s)
     """
-    execute_query(insert_board_query, (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card))
+    execute_query(insert_board_query, (hand_id, flop_card1, flop_card2, flop_card3, turn_card, river_card), pool=True)
