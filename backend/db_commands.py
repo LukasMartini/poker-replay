@@ -146,20 +146,19 @@ def one_time_hand_info(hand_id):
 def player_actions_in_hand(hand_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute(f'''SELECT player.id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 
+    cur.execute(f'''SELECT player.id as player_id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 
                     player_action.amount, player_action.betting_round
                     FROM player, player_action
                     WHERE player_action.hand_id = {hand_id} AND player_action.player_id = player.id''')
     result = cur.fetchall()
     column_names = [description[0] for description in cur.description]
     data = [dict(zip(column_names, row)) for row in result]
-    
     return data
 
 def player_cards_in_hand(hand_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute(f'''SELECT player.id, player.name, player_cards.hand_id, player_cards.hole_card1, player_cards.hole_card2,
+    cur.execute(f'''SELECT player.id as player_id, player.name, player_cards.hand_id, player_cards.hole_card1, player_cards.hole_card2,
                     player_cards.position, player_cards.stack_size
                     FROM player, player_cards
                     WHERE player_cards.hand_id = {hand_id} AND player_cards.player_id = player.id''')
