@@ -16,7 +16,8 @@ CREATE TABLE users (
     salt CHAR(29), -- Storing bcrypt salt, which is 29 characters long
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     token CHAR(36),
-    expiry_date TIMESTAMP 
+    expiry_date TIMESTAMP,
+    CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,}$')
 );
 
 CREATE TABLE uploads (
