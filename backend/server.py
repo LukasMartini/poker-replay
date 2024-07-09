@@ -135,15 +135,19 @@ def login():
 @app.route('/api/upload', methods=['POST'])
 @cross_origin()
 def file_upload():
-    user_id = 1  # Temporary user_id
-    uploaded_files = request.files.getlist('file')
-    for file in uploaded_files:
-        file_name = file.filename
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
-        file.save(file_path)
-        threading.Thread(target=process_file, args=(user_id, file_path, file_name)).start()
-
-    return {'status': 'success', 'message': f'{len(uploaded_files)} files uploaded successfully!'}
+    try: 
+        user_id = auth(request.headers.get("Authorization"))
+        uploaded_files = request.files.getlist('file')
+        for file in uploaded_files:
+            file_name = file.filename
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+            file.save(file_path)
+            threading.Thread(target=process_file, args=(user_id, file_path, file_name)).start()
+                    
+        return {"success": True, 'message': f'{len(uploaded_files)} files uploaded successfully!'}, 200
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": str(e)}), 403 
 
 if __name__ == '__main__':
     cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())
