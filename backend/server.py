@@ -23,14 +23,11 @@ def auth(auth_header):
 
     try: 
         parts = auth_header.split()
-        print(auth_header)
         if len(parts) == 2 and parts[0].lower() == 'bearer':
             token = parts[1]
-            print(token)
             cur.execute("EXECUTE authorize(%s)", (token,))
             result = cur.fetchall()
             cur.close()
-            print(result)
             return result[0][0]
         else:
             raise Exception("Invalid authorization token.")
