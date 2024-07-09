@@ -79,7 +79,7 @@ const SearchBar = () => {
         return;
       }
   
-      setLinks(data.map((hand: { hand_id: any; }) => `${process.env.NEXT_PUBLIC_ROOT_URL}/${hand.hand_id}`));
+      setLinks(data.map((hand: { hand_id: any; }) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`));
       setChartData(generateChartData(data));
     };
 
