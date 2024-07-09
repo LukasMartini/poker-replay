@@ -14,13 +14,6 @@ DB_PARAMS = {
 
 connection_pool = pool.SimpleConnectionPool(1, 20, **DB_PARAMS)
 
-one_time_hand_info_query = '''SELECT poker_hand.id, poker_hand.session_id, poker_hand.total_pot, poker_hand.rake,
-               poker_hand.played_at, poker_session.table_name, poker_session.game_type, poker_hand.small_blind,
-               poker_hand.big_blind, board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
-               board_cards.turn_card, board_cards.river_card
-        FROM poker_hand, poker_session, board_cards
-        WHERE poker_hand.id = %s AND poker_hand.session_id = poker_session.id AND board_cards.hand_id = $1'''
-
 def get_db_connection(pool=False):
     if pool:
         return connection_pool.getconn()
@@ -274,7 +267,7 @@ def one_time_hand_info(hand_id):
 def player_actions_in_hand(hand_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute(f'''SELECT player.id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 
+    cur.execute(f'''SELECT player.id as player_id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 
                     player_action.amount, player_action.betting_round
                     FROM player, player_action
                     WHERE player_action.hand_id = {hand_id} AND player_action.player_id = player.id''')
@@ -287,7 +280,7 @@ def player_actions_in_hand(hand_id):
 def player_cards_in_hand(hand_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute(f'''SELECT player.id, player.name, player_cards.hand_id, player_cards.hole_card1, player_cards.hole_card2,
+    cur.execute(f'''SELECT player.id as player_id, player.name, player_cards.hand_id, player_cards.hole_card1, player_cards.hole_card2,
                     player_cards.position, player_cards.stack_size
                     FROM player, player_cards
                     WHERE player_cards.hand_id = {hand_id} AND player_cards.player_id = player.id''')
