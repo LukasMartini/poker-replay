@@ -88,7 +88,7 @@ export const BarChart: React.FC<BarChartProps> = ( { chartData, hyperlinks }: an
 
   return (
     <div className="chart-container">
-      <h2 style={{ textAlign: "center" }}>Bar Chart</h2>
+      <h2 className="text-center text-2xl">Bar Chart</h2>
       <Bar data={chartData} options={options} />
     </div>
   );
