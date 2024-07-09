@@ -34,9 +34,9 @@ const SearchBar = () => {
         response2 = await fetch(`http://146.190.240.220/api/player_actions/${searchTerm}`);
         response3 = await fetch(`http://146.190.240.220/api/player_cards/${searchTerm}`);
 
-        setResponse1(await response1.json());
-        setResponse2(await response2.json());
-        setResponse3(await response3.json());
+        setResponse1(await response1.clone().json());
+        setResponse2(await response2.clone().json());
+        setResponse3(await response3.clone().json());
 
         combinedData = [r1, r2, r3];
         console.log(combinedData);
