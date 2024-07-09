@@ -1,7 +1,9 @@
+import os
 import re
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 
+from load_data import create_upload, delete_upload, update_upload_status
 from db_commands import (
     create_action,
     create_board,
@@ -12,6 +14,18 @@ from db_commands import (
     link_player_to_user,
     update_player_cards
 )
+
+def process_file(user_id, file_path, file_name):
+    upload_id = create_upload(user_id, file_name)
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        parse_hand_history(content, user_id, upload_id)
+        update_upload_status(upload_id, 'completed')
+    except: # Bad practice
+        delete_upload(upload_id)
+    finally:
+        os.remove(file_path)
 
 def parse_hand_history(content, user_id, upload_id):
     '''Populates the database with the hand history from the given file path. (PokerStars)'''

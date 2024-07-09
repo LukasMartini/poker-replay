@@ -1,13 +1,13 @@
 import os
-from flask import Flask, request, Response, jsonify, request
+import threading
+from flask import Flask, Response, jsonify, request
 from flask_cors import CORS, cross_origin
 import uuid
 import bcrypt
 from datetime import datetime, timedelta
 
-from load_data import create_upload, delete_upload, update_upload_status
 from db_commands import get_db_connection, get_hand_count, get_cash_flow, one_time_hand_info, player_actions_in_hand, player_cards_in_hand
-from convert_history import parse_hand_history
+from convert_history import process_file
 
 
 conn = get_db_connection()
@@ -141,16 +141,7 @@ def file_upload():
         file_name = file.filename
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
         file.save(file_path)
-        
-        upload_id = create_upload(user_id, file_name)
-        try:
-            with open(file_path, 'r', encoding='utf-8') as file:
-                content = file.read()
-            parse_hand_history(content, user_id, upload_id)
-            update_upload_status(upload_id, 'completed')
-        except:  # Bad practice
-            delete_upload(upload_id)
-        os.remove(file_path)
+        threading.Thread(target=process_file, args=(user_id, file_path, file_name)).start()
 
     return {'status': 'success', 'message': f'{len(uploaded_files)} files uploaded successfully!'}
 
