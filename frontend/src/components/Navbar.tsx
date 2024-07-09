@@ -1,6 +1,11 @@
+'use client';
 import Link from "next/link"
+import { Button } from './ui/button'
+import { useAuth } from '@/components/auth/AuthContext';
 
 const Navbar = () => {
+    const {auth, logout} = useAuth();
+
     return (
         <div className="w-full bg-[#2C2C2C] text-white py-4 px-8 shadow-md flex items-center justify-between">
             <Link href={'/'}>
@@ -25,8 +30,23 @@ const Navbar = () => {
                         Add history
                     </p>
                 </Link>
+                {auth.token && (
+                    <Button onClick={()=>logout()} variant="secondary">Logout</Button>
+                )}
+
+                {!auth.token && (
+                    <div>
+                        <Link href={'/login'}>
+                            <Button variant="secondary">Login</Button>
+                        </Link>
+                        <Link href={'/signup'}>
+                            <Button className="ml-2" type='submit'>Sign Up</Button>
+                        </Link>
+                    </div>
+                )}
+
             </div>
-            
+
         </div>
     )
 }

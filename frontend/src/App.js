@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import 'dotenv/config'
+import { AuthProvider } from '@/components/auth/AuthContext';
 
 const API = process.env.API;
 
@@ -36,12 +37,13 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Hand test</h1>
-
-      </header>
-    </div>
+    <AuthProvider>
+      <div className="App">
+        <header className="App-header">
+          <h1>Hand test</h1>
+        </header>
+      </div>
+    </AuthProvider>
   );
 }
 
