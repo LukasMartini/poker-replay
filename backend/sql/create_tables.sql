@@ -116,29 +116,3 @@ CREATE TABLE authorized (
     FOREIGN KEY (hand_id) REFERENCES poker_hand(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, hand_id)
 );
-
--- Search board info, session info. 
-PREPARE one_time_hand_info AS (
-    SELECT poker_hand.id, poker_hand.session_id, poker_hand.total_pot, poker_hand.rake,
-            poker_hand.played_at, poker_session.table_name, poker_session.game_type, poker_hand.small_blind,
-            poker_hand.big_blind, board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
-            board_cards.turn_card, board_cards.river_card
-    FROM poker_hand, poker_session, board_cards
-    WHERE poker_hand.id = $1 AND poker_hand.session_id = poker_session.id AND board_cards.hand_id = $1
-);
-
--- Search players and player actions.
-PREPARE player_actions_in_hand AS (
-    SELECT player.id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 
-            player_action.amount, player_action.betting_round
-    FROM player, player_action
-    WHERE player_action.hand_id = $1 AND player_action.player_id = player.id
-);
-
--- Search players and player cards.
-PREPARE player_cards_in_hand AS (
-    SELECT player.id, player.name, player_cards.hand_id, player_cards.hole_card1, player_cards.hole_card2,
-            player_cards.position, player_cards.stack_size
-    FROM player, player_cards
-    WHERE player_cards.hand_id = $1 AND player_cards.player_id = player.id
-);
