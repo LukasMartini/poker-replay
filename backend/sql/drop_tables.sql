@@ -1,9 +1,4 @@
 
--- Drop prepared statements
-DEALLOCATE one_time_hand_info;
-DEALLOCATE player_actions_in_hand;
-DEALLOCATE player_cards_in_hand;
-
 -- Drop tables
 DROP TABLE IF EXISTS board_cards;
 DROP TABLE IF EXISTS player_cards;
