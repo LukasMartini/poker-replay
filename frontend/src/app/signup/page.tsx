@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const handleSubmit = async (event: any) => {
   event.preventDefault();
@@ -22,7 +23,7 @@ const handleSubmit = async (event: any) => {
   }
 
 
-  const response = await fetch(`http://localhost:5001/api/signup`, {
+  const response = await fetch(`${API_URL}signup`, {
     method: "POST",
     headers: {
       'Content-Type': 'application/json'

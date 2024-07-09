@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/authorize`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}authorize`, {
           method: "POST",
           headers: {
             'Content-Type': 'application/json',
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
     if (auth.token != null)
       fetchData();
-    
+
   }, []);
 
   return (

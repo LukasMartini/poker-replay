@@ -5,10 +5,8 @@ import Chart from 'chart.js/auto'
 import { CategoryScale } from "chart.js";
 import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
-import 'dotenv/config'
 import Image from "next/image";
-
-const API = process.env.API;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 Chart.register(CategoryScale);
 
@@ -40,9 +38,9 @@ const SearchBar = () => {
     }, [offset]);
 
     const handleSearch = async (searchTerm: string) => {
-        response1 = await fetch(`http://146.190.240.220/api/hand_summary/${searchTerm}`);
-        response2 = await fetch(`http://146.190.240.220/api/player_actions/${searchTerm}`);
-        response3 = await fetch(`http://146.190.240.220/api/player_cards/${searchTerm}`);
+        response1 = await fetch(`${API_URL}hand_summary/${searchTerm}`);
+        response2 = await fetch(`${API_URL}player_actions/${searchTerm}`);
+        response3 = await fetch(`${API_URL}player_cards/${searchTerm}`);
 
         setResponse1(await response1.clone().json());
         setResponse2(await response2.clone().json());
@@ -53,7 +51,7 @@ const SearchBar = () => {
     }
 
     const fetchQuantity = async () => {
-      const response = await fetch(`http://146.190.240.220/api/hand_count/1`);
+      const response = await fetch(`${API_URL}hand_count/1`);
       const data = await response.json();
   
       if (data === 'undefined') {
@@ -73,7 +71,7 @@ const SearchBar = () => {
         actualOffset = actualOffset < 0 ? 0 : actualOffset;
       }
   
-      const response = await fetch(`http://146.190.240.220/api/cash_flow/1+${amount}+${actualOffset}`);
+      const response = await fetch(`${API_URL}cash_flow/1+${amount}+${actualOffset}`);
       const data = await response.json();
   
       if (data === 'undefined') {
@@ -81,7 +79,7 @@ const SearchBar = () => {
         return;
       }
   
-      setLinks(data.map((hand: { hand_id: any; }) => `http://localhost:3000/${hand.hand_id}`));
+      setLinks(data.map((hand: { hand_id: any; }) => `${process.env.NEXT_PUBLIC_ROOT_URL}/${hand.hand_id}`));
       setChartData(generateChartData(data));
     };
 

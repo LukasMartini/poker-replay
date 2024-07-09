@@ -4,6 +4,7 @@ import MetaData from "./MetaData";
 import TableData from "./TableData";
 import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { usePathname } from "next/navigation";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default async function HandDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
 
@@ -15,19 +16,19 @@ export default async function HandDetails() { // Asynchronous server component f
 
     const apiCall = async (searchTerm: string) => {
         // Run SQL queries to fetch appropriate data. See server.py for further information.
-        await fetch(`http://146.190.240.220/api/hand_summary/${searchTerm}`)
+        await fetch(`${API_URL}hand_summary/${searchTerm}`)
                 .then(resp => resp.json())
                 .then(data => {
                     othiResult = data;
                 });
 
-        await fetch(`http://146.190.240.220/api/player_actions/${searchTerm}`)
+        await fetch(`${API_URL}player_actions/${searchTerm}`)
                 .then(resp => resp.json())
                 .then(data => {
                     paResult = data;
                 });
 
-        await fetch(`http://146.190.240.220/api/player_cards/${searchTerm}`)
+        await fetch(`${API_URL}player_cards/${searchTerm}`)
                 .then(resp => resp.json())
                 .then(data => {
                     pcResult = data;
