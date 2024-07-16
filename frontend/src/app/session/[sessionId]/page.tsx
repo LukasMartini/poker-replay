@@ -1,44 +1,43 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 // import MetaData from "./MetaData";
 // import TableData from "./TableData";
 // import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { usePathname } from "next/navigation";
+import { LineChart, generateSessionLineData } from "@/components/SessionLineChart";
+import { CategoryScale } from "chart.js/auto";
+import { Chart } from "chart.js";
+import { Hand } from "@/lib/utils";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export default function SessionDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
+Chart.register(CategoryScale);
 
-    var othiResult: Array<any> = [];
+export default function SessionDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
+    var [chartData, setChartData] = useState(generateSessionLineData([]));
+    var [links, setLinks] = useState([]);
+
+    // var sessionResp: Array<any> = [];
     var paResult: Array<any> = [];
     var pcResult: Array<any> = [];
 
     const pathname = usePathname();
+    const session = pathname.slice(9);
 
-    const apiCall = async (searchTerm: string) => {
+    const apiCall = async (userId: string) => {
         // Run SQL queries to fetch appropriate data. See server.py for further information.
-        // await fetch(`${API_URL}hand_summary/${searchTerm}`)
-        //         .then(resp => resp.json())
-        //         .then(data => {
-        //             othiResult = data;
-        //         });
-
-        // await fetch(`${API_URL}player_actions/${searchTerm}`)
-        //         .then(resp => resp.json())
-        //         .then(data => {
-        //             paResult = data;
-        //         });
-
-        // await fetch(`${API_URL}player_cards/${searchTerm}`)
-        //         .then(resp => resp.json())
-        //         .then(data => {
-        //             pcResult = data;
-        //         });
-        console.log(searchTerm);
+        await fetch(`${API_URL}cash_flow/${userId}?sessionid=${session}&limit=50`, {
+            method: "GET"
+        })
+            .then(resp => resp.json())
+            .then(data => {
+                setChartData(generateSessionLineData(data))
+                setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`))
+            });
     }
 
     
     useEffect(() => {
-        apiCall(pathname.slice(1));
+        apiCall("1"); // TODO: use cached user
     }, [])
 
     // var rows: Array<any> = [];
@@ -55,7 +54,7 @@ export default function SessionDetails() { // Asynchronous server component for 
     // }
     return (
         <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for both child components.*/}
-            <text>Session details for ${pathname}</text>
+            <LineChart chartData={chartData} hyperlinks={links} />
         </div>
     );
 }
