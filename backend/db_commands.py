@@ -150,9 +150,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
     {offsetText}
     """
 
-
     return execute_query(get_cash_flow_query, tuple(data), fetch=True, return_dict=True)
-
 
 def one_time_hand_info(user_id, hand_id):
     query = """
