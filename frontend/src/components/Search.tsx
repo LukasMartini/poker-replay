@@ -51,7 +51,7 @@ const SearchBar = () => {
     }
 
     const fetchQuantity = async () => {
-      const response = await fetch(`${API_URL}hand_count/1`);
+      const response = await fetch(`${API_URL}hand_count/`);
       const data = await response.json();
   
       if (data === 'undefined') {
@@ -71,7 +71,7 @@ const SearchBar = () => {
         actualOffset = actualOffset < 0 ? 0 : actualOffset;
       }
   
-      const response = await fetch(`${API_URL}cash_flow/1+${amount}+${actualOffset}`);
+      const response = await fetch(`${API_URL}cash_flow/${amount}+${actualOffset}`);
       const data = await response.json();
   
       if (data === 'undefined') {
