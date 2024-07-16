@@ -112,7 +112,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
         data.append(offset)
 
     # Don't love injecting user_id twice, but oh well sacrifices must be made
-    get_cash_flow_query="""
+    get_cash_flow_query=f"""
     WITH user_player AS (
         SELECT id FROM player WHERE player.user_id = %s
     ),
