@@ -75,22 +75,16 @@ def hand_quantity() -> Response:
         user_id = auth(request.headers.get("Authorization"))
         result = get_hand_count(user_id)
 
-        # -1 means no value, ignore the search param
-        limit = request.args.get("limit", default=30, type = int)
-        offset = request.args.get("offset", default=-1, type = int)
-        session_id = request.args.get("sessionid", default = -1, type = int)
-
-        result = get_cash_flow(user_id, str(limit), str(offset), str(session_id))
-        
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 403
-    
+
 @app.route("/api/cash_flow", methods=['GET'])
 @cross_origin()
-def cash_flow(limit: int, offset: int) -> Response:
+def cash_flow() -> Response:
     try:
         user_id = auth(request.headers.get("Authorization"))
+        result = get_cash_flow(user_id, str(limit), str(offset))
         # -1 means no value, ignore the search param
         limit = request.args.get("limit", default=30, type = int)
         offset = request.args.get("offset", default=-1, type = int)
@@ -101,7 +95,7 @@ def cash_flow(limit: int, offset: int) -> Response:
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 403 
-
+    
 @app.route("/api/authorize", methods=['POST'])
 @cross_origin()
 def authorize() -> Response: 
