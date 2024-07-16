@@ -107,7 +107,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
         data.append(count)
     
     offsetText = ""
-    if offset and count != '-1':
+    if offset and offset != '-1':
         offsetText = "OFFSET %s"
         data.append(offset)
 
