@@ -39,48 +39,63 @@ def auth(auth_header):
 @app.route('/api/hand_summary/<int:id>', methods=['GET'])
 @cross_origin()
 def hand_summary(id: int) -> Response:
-    data = one_time_hand_info(id)
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        data = one_time_hand_info(user_id, id)
 
-    return jsonify(data), 200
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 403
 
 @app.route("/api/player_actions/<int:id>", methods=['GET'])
 @cross_origin()
 def player_actions(id: int) -> Response:
-    data = player_actions_in_hand(id)
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        data = player_actions_in_hand(user_id, id)
 
-    return jsonify(data), 200
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 403
 
 @app.route("/api/player_cards/<int:id>", methods=['GET'])
 @cross_origin()
 def player_cards(id: int) -> Response:
-    data = player_cards_in_hand(id)
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        data = player_cards_in_hand(user_id, id)
 
-    return jsonify(data), 200
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 403
 
-@app.route("/api/hand_count/<int:id>", methods=['GET'])
+@app.route("/api/hand_count/", methods=['GET'])
 @cross_origin()
-def hand_quantity(id: int) -> Response:
-    result = get_hand_count(str(id))
-    data = [{"hands": result[0][0]}]
+def hand_quantity() -> Response:
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        result = get_hand_count(user_id)
 
-    return jsonify(data), 200
+        return jsonify(result), 200
+    except Exception as e:
 
-@app.route("/api/cash_flow/<int:id>", methods=['GET'])
+        return jsonify({"success": False, "error": str(e)}), 403
+
+@app.route("/api/cash_flow", methods=['GET'])
 @cross_origin()
-def cash_flow(id: int) -> Response:
-    # -1 means no value, ignore the search param
-    limit = request.args.get("limit", default=30, type = int)
-    offset = request.args.get("offset", default=-1, type = int)
-    session_id = request.args.get("sessionid", default = -1, type = int)
+def cash_flow() -> Response:
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        # -1 means no value, ignore the search param
+        limit = request.args.get("limit", default=30, type = int)
+        offset = request.args.get("offset", default=-1, type = int)
+        session_id = request.args.get("sessionid", default = -1, type = int)
 
-    result = get_cash_flow(str(id), str(limit), str(offset), str(session_id))
-    data = [{
-        "played_at": row[0],
-        "hand_id": row[1],
-        "amount": row[2]
-    } for row in result]
+        result = get_cash_flow(user_id, str(limit), str(offset), str(session_id))
 
-    return jsonify(data), 200
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 403
 
 @app.route("/api/authorize", methods=['POST'])
 @cross_origin()
