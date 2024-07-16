@@ -94,22 +94,22 @@ def get_hand_count(user_id):
 def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
     '''Returns the cash flow from a user_id for [count] hands starting from their [offset] most recent hand.'''
 
-    data = (user_id, user_id)
+    data = [user_id, user_id]
 
     sessionText = ""
     if session_id and session_id != '-1':
         sessionText = "AND session.id = %s"
-        data += (session_id, )
+        data.append(session_id)
     
     countText = ""
     if count and count != '-1':
         countText = "LIMIT %s"
-        data += (count, )
+        data.append(count)
     
     offsetText = ""
     if offset and count != '-1':
         offsetText = "OFFSET %s"
-        data += (offset, )
+        data.append(offset)
 
     # Don't love injecting user_id twice, but oh well sacrifices must be made
     get_cash_flow_query="""
@@ -120,7 +120,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
         SELECT hand.id id, played_at
         FROM poker_session session
         JOIN poker_hand hand ON session.id = hand.session_id
-        WHERE user_id = %s AND session.game_type = 'Cash' ${sessionText}
+        WHERE user_id = %s AND session.game_type = 'Cash' {sessionText}
     ),
     bet_amounts AS (
         SELECT hand_id, SUM(
@@ -139,11 +139,13 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
     JOIN bet_amounts on hand.id = bet_amounts.hand_id
     GROUP BY hand.id, played_at
     ORDER BY played_at DESC
-    ${countText}
-    ${offsetText}
+    {countText}
+    {offsetText}
     """
 
-    return execute_query(get_cash_flow_query, data, fetch=True)
+    print(data)
+    print(get_cash_flow_query)
+    return execute_query(get_cash_flow_query, tuple(data), fetch=True)
 
 def one_time_hand_info(hand_id):
     conn = get_db_connection()

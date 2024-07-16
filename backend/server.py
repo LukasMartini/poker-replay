@@ -64,7 +64,7 @@ def hand_quantity(id: int) -> Response:
 
     return jsonify(data), 200
 
-@app.route("/api/cash_flow/<int:id>?limit=<int:limit>&offset=<int:offset>", methods=['GET'])
+@app.route("/api/cash_flow/<int:id>", methods=['GET'])
 @cross_origin()
 def cash_flow(id: int) -> Response:
     # -1 means no value, ignore the search param
