@@ -12,6 +12,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function HandDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
     const pathname = usePathname();
+    var pn: string = "";
+    if (pathname.includes("+%7")) pn = pathname.slice(1, pathname.length-4);
+    else pn = pathname.slice(1);
 
     const [othiResult, setResponse1]: [any, any] = useState([]);
     const [paResult, setResponse2] : [any, any] = useState([]);
@@ -28,13 +31,11 @@ export default function HandDetails() { // Asynchronous server component for pul
         setResponse2(await paResponse2.json());
         setResponse3(await pcResponse2.json());
 
-
-
-        console.log(rows);
+        // console.log(rows);
     }
 
     useEffect(() => {
-        handleSearch(pathname.slice(1));
+        handleSearch(pn);
     }, [])
 
     var pc_index: number = 0;
@@ -53,15 +54,15 @@ export default function HandDetails() { // Asynchronous server component for pul
         }
     }
 
-    console.log(othiResult)
-    console.log(paResult);
-    console.log(pcResult);
+    // console.log(othiResult)
+    // console.log(paResult);
+    // console.log(pcResult);
 
 
     return (
        
         <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for both child components.*/}
-            <MetaData handID={pathname.slice(1)} tableName={othiResult[0] && othiResult[0].table_name} timestamp={othiResult[0] && othiResult[0].played_at}/>
+            <MetaData handID={pn} tableName={othiResult[0] && othiResult[0].table_name} timestamp={othiResult[0] && othiResult[0].played_at}/>
 
             <Table> 
                 <TableHeader className="text-[#31D2DD]">
