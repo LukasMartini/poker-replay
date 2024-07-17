@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import MetaData from "./MetaData";
 import TableData from "./TableData";
+import BodyWrapper from "./BodyWrapper";
 import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { usePathname } from "next/navigation";
 
@@ -62,23 +62,20 @@ export default function HandDetails() { // Asynchronous server component for pul
     return (
        
         <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for both child components.*/}
-            <MetaData handID={pn} tableName={othiResult[0] && othiResult[0].table_name} timestamp={othiResult[0] && othiResult[0].played_at}/>
-
-            <Table> 
+            <BodyWrapper handID={pn} tableName={othiResult[0] && othiResult[0].table_name} timestamp={othiResult[0] && othiResult[0].played_at}/>
+            {/* <Table> 
                 <TableHeader className="text-[#31D2DD]">
                     <TableRow>
-                    <TableHead>Betting Round</TableHead> {/* player_actions.betting_round */}
-                    <TableHead>Betting Amount</TableHead> {/* player_actions.amount */}
-                    <TableHead>Player</TableHead> {/* player.name (from player_actions) */}
-                    <TableHead className="w-[100px]">Card 1</TableHead>  {/* player_cards */}
+                    <TableHead>Betting Round</TableHead> 
+                    <TableHead>Betting Amount</TableHead>
+                    <TableHead>Player</TableHead> 
+                    <TableHead className="w-[100px]">Card 1</TableHead> 
                     <TableHead className="w-[100px]">Card 2</TableHead> 
                     </TableRow>
                 </TableHeader>
                 {rows}
 
-            </Table>
-
-            
+            </Table> */}
         </div>
     );
 }
