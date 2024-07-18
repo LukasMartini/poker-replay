@@ -5,6 +5,7 @@ import {useDropzone} from 'react-dropzone'
 import { Button } from './ui/button'
 import Image from 'next/image'
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const Dropzone = ({className}) => {
     const [files, setFiles] = useState([])
@@ -48,7 +49,7 @@ const Dropzone = ({className}) => {
         });
 
         try {
-            const res = await fetch('http://146.190.240.220/api/upload', {
+            const res = await fetch(`${API_URL}/upload`, {
                 method: 'POST',
                 body: formData,
                 headers: {
