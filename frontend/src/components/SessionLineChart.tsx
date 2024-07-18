@@ -10,9 +10,9 @@ interface BarChartProps {
 
 export const generateSessionLineData = (handData: Hand[], startTrend: number[] = [0, -1]) => {
   // startTrend is of the form [offset, index], where the index in this data range has the given absolute offset
-  handData.sort((a: Hand, b: Hand) => {
-    return DateTime.fromHTTP(a.played_at).toMillis() - DateTime.fromHTTP(b.played_at).toMillis()
-  })
+  // handData.sort((a: Hand, b: Hand) => {
+  //   return DateTime.fromHTTP(a.played_at).toMillis() - DateTime.fromHTTP(b.played_at).toMillis()
+  // })
   let trend: number[] = [];
   let net = 0;
 

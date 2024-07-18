@@ -76,7 +76,7 @@ def cash_flow(id: int) -> Response:
     if (ascendingDescending == 't'): ascendingDescending = "DESC"
     else: ascendingDescending = "ASC"
 
-    result = get_cash_flow(str(id), str(limit), str(offset), str(session_id))
+    result = get_cash_flow(str(id), str(limit), str(offset), str(session_id), ascendingDescending)
     data = [{
         "played_at": row[0],
         "hand_id": row[1],

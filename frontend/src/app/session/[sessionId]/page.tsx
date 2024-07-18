@@ -39,7 +39,7 @@ export default function SessionDetails() { // Asynchronous server component for 
     const fetchHandData = async () => { 
         // Run SQL queries to fetch appropriate data. See server.py for further information.
          // TODO: use cached user
-        await fetch(`${API_URL}cash_flow/1?sessionid=${session}&limit=${windowSize}&offset=${offset}&descending=f`, {
+        await fetch(`${API_URL}cash_flow/1?sessionid=${session}&limit=${windowSize}&offset=${offset}&descending=no`, {
             method: "GET"
         })
             .then(resp => resp.json())
