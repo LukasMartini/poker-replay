@@ -6,7 +6,7 @@ import uuid
 import bcrypt
 from datetime import datetime, timedelta
 
-from db_commands import get_db_connection, get_hand_count, get_cash_flow, one_time_hand_info, player_actions_in_hand, player_cards_in_hand
+from db_commands import get_db_connection, get_hand_count, get_cash_flow, get_matching_players, one_time_hand_info, player_actions_in_hand, player_cards_in_hand
 from convert_history import process_file
 
 
@@ -80,6 +80,20 @@ def cash_flow(id: int) -> Response:
     } for row in result]
 
     return jsonify(data), 200
+
+@app.route("/api/cash_flow/<int:id>", methods=['GET'])
+@cross_origin()
+def search_player() -> Response:
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        
+        name = request.args.get("name")
+        result = get_matching_players(user_id, name)
+        
+        return jsonify(result), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": str(e)}), 403 
 
 @app.route("/api/authorize", methods=['POST'])
 @cross_origin()
