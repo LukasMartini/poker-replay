@@ -4,6 +4,7 @@ import HandDetails from './HandDetails';
 import MetaData from "./MetaData";
 import Replay from './Replay';
 import { usePathname } from "next/navigation";
+import { useAuth } from '@/components/auth/AuthContext';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -11,6 +12,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function GetDetails() {
     const pathname = usePathname();
+    const user = useAuth();
+    
     var pn: string = "";
     if (pathname.includes("+%7")) pn = pathname.slice(1, pathname.length-4); // Hotfix for an issue where '}' is appended to the pathname.
     else pn = pathname.slice(1);
@@ -22,9 +25,9 @@ export default function GetDetails() {
     let rows: Array<any> = [];
 
     const handleSearch = async (searchTerm: string) => {
-        const othiResponse2 = await fetch(`${API_URL}hand_summary/${searchTerm}`);
-        const paResponse2 = await fetch(`${API_URL}player_actions/${searchTerm}`);
-        const pcResponse2 = await fetch(`${API_URL}player_cards/${searchTerm}`);
+        const othiResponse2 = await fetch(`${API_URL}hand_summary/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
+        const paResponse2 = await fetch(`${API_URL}player_actions/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
+        const pcResponse2 = await fetch(`${API_URL}player_cards/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
 
         setResponse1(await othiResponse2.json());
         setResponse2(await paResponse2.json());
@@ -32,8 +35,9 @@ export default function GetDetails() {
     }
 
     useEffect(() => {
-        handleSearch(pn);
-    }, [])
+        if (user.auth.token != null)
+            handleSearch(pn);
+    }, [user])
 
     // Note that there should never be a '-1' action number by virtue of the way they are assigned.
     // See the for loop below.
