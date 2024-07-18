@@ -6,7 +6,7 @@ import { CategoryScale } from "chart.js";
 import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
 import Image from "next/image";
-import { Hand } from "@/lib/utils";
+// import { Hand } from "@/lib/utils";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 Chart.register(CategoryScale);

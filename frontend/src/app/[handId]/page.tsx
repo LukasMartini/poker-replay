@@ -1,19 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
-import TableData from "./TableData";
 import HandDetails from './HandDetails';
 import MetaData from "./MetaData";
 import Replay from './Replay';
-import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { usePathname } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 
-export default function GetDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
+export default function GetDetails() {
     const pathname = usePathname();
     var pn: string = "";
-    if (pathname.includes("+%7")) pn = pathname.slice(1, pathname.length-4);
+    if (pathname.includes("+%7")) pn = pathname.slice(1, pathname.length-4); // Hotfix for an issue where '}' is appended to the pathname.
     else pn = pathname.slice(1);
 
     const [othiResult, setResponse1]: [any, any] = useState([]);
@@ -38,15 +36,21 @@ export default function GetDetails() { // Asynchronous server component for pull
 
     // Note that there should never be a '-1' action number by virtue of the way they are assigned.
     // See the for loop below.
-    let displayedAction: number = -1; 
+    const [displayedAction, setDA] = useState(-1); // Necessary for making the useEffect update.
     let replayDisplay: any = <Replay row={[]} test={displayedAction}/>;
 
-    const rowOnClick = (e: any) => { // Sets displayedAction's index to the name field of the HandDetails object clicked.
-        displayedAction = e;
+    // This useEffect hook re-renders with the updated Replay component whenever displayedAction is set.
+    useEffect(() => { 
         replayDisplay = <Replay row={paResult[displayedAction]} test={displayedAction}/>; // This should only change after displayedAction is no longer -1.
+    }, [displayedAction])
+
+
+    const rowOnClick = (e: any) => { // Sets displayedAction's index to the name field of the HandDetails object clicked.
+        setDA(e); // Updates displayedAction so that the above useEffect hook re-renders.
     }
 
-    if (othiResult[0] && paResult && pcResult && pcResult[0]) {
+    // Assigns the necessary details to each HandDetails summary and pushes them to rows for display in the JSX.
+    if (othiResult[0] && paResult && pcResult && pcResult[0]) { // Forces the code to wait for all the dependencies to exist.
         for (var action = 0; action < paResult.length; action++) {
             rows.push(<div className="py-2">
                             <HandDetails name={action} row={[paResult[action].name, paResult[action].betting_round, 
