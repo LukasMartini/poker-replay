@@ -86,7 +86,7 @@ def hand_quantity() -> Response:
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 403
     
-@app.route("/api/cash_flow/<int:limit>+<int:offset>", methods=['GET'])
+@app.route("/api/cash_flow", methods=['GET'])
 @cross_origin()
 def cash_flow(limit: int, offset: int) -> Response:
     try:
