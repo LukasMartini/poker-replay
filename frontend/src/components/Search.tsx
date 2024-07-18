@@ -6,6 +6,7 @@ import { CategoryScale } from "chart.js";
 import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
 import Image from "next/image";
+import { Hand } from "@/lib/utils";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 Chart.register(CategoryScale);
@@ -71,7 +72,7 @@ const SearchBar = () => {
         actualOffset = actualOffset < 0 ? 0 : actualOffset;
       }
   
-      const response = await fetch(`${API_URL}cash_flow/1+${amount}+${actualOffset}`);
+      const response = await fetch(`${API_URL}cash_flow/1?limit=${amount}&offset=${actualOffset}`);
       const data = await response.json();
   
       if (data === 'undefined') {
@@ -79,7 +80,7 @@ const SearchBar = () => {
         return;
       }
   
-      setLinks(data.map((hand: { hand_id: any; }) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`));
+      setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`));
       setChartData(generateChartData(data));
     };
 
