@@ -98,11 +98,28 @@ def get_hand_count(user_id):
     """
     return execute_query(get_hand_query, (user_id,), fetch=True, return_dict=True)
 
-def get_cash_flow(user_id, count='30', offset='0'):
+def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
     '''Returns the cash flow from a user_id for [count] hands starting from their [offset] most recent hand.'''
 
+    data = [user_id, user_id]
+
+    sessionText = ""
+    if session_id and session_id != '-1':
+        sessionText = "AND session.id = %s"
+        data.append(session_id)
+    
+    countText = ""
+    if count and count != '-1':
+        countText = "LIMIT %s"
+        data.append(count)
+    
+    offsetText = ""
+    if offset and offset != '-1':
+        offsetText = "OFFSET %s"
+        data.append(offset)
+
     # Don't love injecting user_id twice, but oh well sacrifices must be made
-    get_cash_flow_query="""
+    get_cash_flow_query=f"""
     WITH user_player AS (
         SELECT id FROM player WHERE player.user_id = %s
     ),
@@ -110,7 +127,7 @@ def get_cash_flow(user_id, count='30', offset='0'):
         SELECT hand.id id, played_at
         FROM poker_session session
         JOIN poker_hand hand ON session.id = hand.session_id
-        WHERE user_id = %s AND session.game_type = 'Cash'
+        WHERE user_id = %s AND session.game_type = 'Cash' {sessionText}
     ),
     bet_amounts AS (
         SELECT hand_id, SUM(
@@ -129,11 +146,13 @@ def get_cash_flow(user_id, count='30', offset='0'):
     JOIN bet_amounts on hand.id = bet_amounts.hand_id
     GROUP BY hand.id, played_at
     ORDER BY played_at DESC
-    LIMIT %s
-    OFFSET %s
+    {countText}
+    {offsetText}
     """
 
-    return execute_query(get_cash_flow_query, (user_id, user_id, count, offset), fetch=True, return_dict=True)
+
+    return execute_query(get_cash_flow_query, tuple(data), fetch=True, return_dict=True)
+
 
 def one_time_hand_info(user_id, hand_id):
     query = """
