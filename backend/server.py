@@ -59,7 +59,8 @@ def player_cards(id: int) -> Response:
 @app.route("/api/hand_count/<int:id>", methods=['GET'])
 @cross_origin()
 def hand_quantity(id: int) -> Response:
-    result = get_hand_count(str(id))
+    session_id = request.args.get("sessionid", default = -1, type = int)
+    result = get_hand_count(str(id), str(session_id))
     data = [{"hands": result[0][0]}]
 
     return jsonify(data), 200

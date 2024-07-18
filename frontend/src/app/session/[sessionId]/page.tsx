@@ -16,6 +16,8 @@ Chart.register(CategoryScale);
 export default function SessionDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
     var [chartData, setChartData] = useState(generateSessionLineData([]));
     var [links, setLinks] = useState([]);
+    const [offset, setOffset] = useState(0);
+    var [handCount, setHandCount] = useState(0);
 
     // var sessionResp: Array<any> = [];
     var paResult: Array<any> = [];
@@ -24,9 +26,22 @@ export default function SessionDetails() { // Asynchronous server component for 
     const pathname = usePathname();
     const session = pathname.slice(9);
 
-    const apiCall = async (userId: string) => {
+    const fetchQuantity = async () => {
+        await fetch(`${API_URL}hand_count/1`)
+            .then(resp => resp.json())
+            .then(data => {
+                setHandCount(data[0].hands);
+            })
+    };
+
+    useEffect(() => {
+        fetchQuantity();
+    }, [])
+  
+    const fetchHandData = async () => { 
         // Run SQL queries to fetch appropriate data. See server.py for further information.
-        await fetch(`${API_URL}cash_flow/${userId}?sessionid=${session}&limit=50`, {
+         // TODO: use cached user
+        await fetch(`${API_URL}cash_flow/1?sessionid=${session}&limit=50&offset=${offset}`, {
             method: "GET"
         })
             .then(resp => resp.json())
@@ -36,26 +51,37 @@ export default function SessionDetails() { // Asynchronous server component for 
             });
     }
 
-    
     useEffect(() => {
-        apiCall("1"); // TODO: use cached user
-    }, [])
+        fetchHandData();
+    }, [offset])
 
-    // var rows: Array<any> = [];
-    // var pc_index: number = 0;
-    // for (var i = 0; i < paResult.length; i++) { // Create a variable number of rows equal to the number of actions.
-    //     for (var card_index = 0; card_index < pcResult.length; card_index++) { // Find tuples from player_cards related to a given player id
-    //         if (paResult[i].player_id === pcResult[card_index].player_id) {
-    //             pc_index = card_index;
-    //             break;
-    //         }
-    //     }
-    //     rows.push(<TableData betting_round={paResult[i].betting_round} betting_amount={paResult[i].amount} 
-    //         player_name={paResult[i].name} card_1={pcResult[pc_index].hole_card1} card_2={pcResult[pc_index].hole_card2}/>);
-    // }
+    const handleClickLeft = () => {
+        setOffset((prevOffset) => Math.max(prevOffset - 30, 0));
+    }
+    const handleClickRight = () => {
+        setOffset((prevOffset) => {
+            const newOffset = prevOffset + 30;
+            return newOffset < handCount ? newOffset : prevOffset;
+        });
+    }  
+
+    const isLeftButtonDisabled = offset === 0 || handCount <= 30;
+    const isRightButtonDisabled = offset + 30 >= handCount || handCount <= 30;
+
     return (
-        <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for both child components.*/}
-            <LineChart chartData={chartData} hyperlinks={links} />
+        <div className="relative">
+            <div className="flex justify-between translate-y-10">
+                <button onClick={handleClickLeft} disabled={isLeftButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-100 hover:scale-105">
+                    <Image src={"/left-w.svg"} alt="left" width={24} height={24} />
+                </button>
+
+                <button onClick={handleClickRight} disabled={isRightButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-00 hover:scale-105">
+                    <Image src={"/right-w.svg"} alt="right" width={24} height={24} />
+                </button>
+            </div>
+            <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for both child components.*/}
+                <LineChart chartData={chartData} hyperlinks={links} />
+            </div>
         </div>
     );
 }
