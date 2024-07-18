@@ -39,7 +39,7 @@ function useAuthHook() {
         if (token && email && username) {
             setAuth({ token: token, email: email, username: username });
         }
-    });
+    }, []);
 
     return {
         auth,
