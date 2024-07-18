@@ -20,8 +20,6 @@ interface HandDetailsProps {
     onClick: Function;
 }
 
-// TODO: implement 
-
 export default function HandDetails(props: HandDetailsProps) {
     return (
         <div dir="ltr" className="bg-[#2C2C2C] flex flex-col border border-[#879195] text-white text-sm rounded-md shadow-md 

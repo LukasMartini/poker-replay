@@ -2,10 +2,16 @@
 // Display active player on the bottom. Other players listed in order decided on page load?
 'use client';
 
-export default function Replay() {
+interface ReplayProps {
+    row: Array<any>;
+    test: number;
+}
+
+export default function Replay(props: ReplayProps) {
     return (
         <div>
-            <h1></h1>
+            <h1>{props.test}</h1>
+            <h1>HELLO</h1>
         </div>
     )
 }
