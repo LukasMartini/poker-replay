@@ -72,7 +72,7 @@ const SearchBar = () => {
         actualOffset = actualOffset < 0 ? 0 : actualOffset;
       }
   
-      const response = await fetch(`${API_URL}cash_flow/${amount}+${actualOffset}`);
+      const response = await fetch(`${API_URL}cash_flow?limit=${amount}&offset=${actualOffset}`);
       const data = await response.json();
   
       if (data === 'undefined') {
