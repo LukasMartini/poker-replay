@@ -4,6 +4,7 @@ import MetaData from "./MetaData";
 import TableData from "./TableData";
 import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { usePathname } from "next/navigation";
+import { useAuth } from '@/components/auth/AuthContext';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -12,6 +13,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function HandDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
     const pathname = usePathname();
+    const user = useAuth();
 
     const [othiResult, setResponse1]: [any, any] = useState([]);
     const [paResult, setResponse2] : [any, any] = useState([]);
@@ -20,9 +22,9 @@ export default function HandDetails() { // Asynchronous server component for pul
     let rows: Array<any> = [];
 
     const handleSearch = async (searchTerm: string) => {
-        const othiResponse2 = await fetch(`${API_URL}hand_summary/${searchTerm}`);
-        const paResponse2 = await fetch(`${API_URL}player_actions/${searchTerm}`);
-        const pcResponse2 = await fetch(`${API_URL}player_cards/${searchTerm}`);
+        const othiResponse2 = await fetch(`${API_URL}hand_summary/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
+        const paResponse2 = await fetch(`${API_URL}player_actions/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
+        const pcResponse2 = await fetch(`${API_URL}player_cards/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
 
         setResponse1(await othiResponse2.json());
         setResponse2(await paResponse2.json());
@@ -34,8 +36,9 @@ export default function HandDetails() { // Asynchronous server component for pul
     }
 
     useEffect(() => {
-        handleSearch(pathname.slice(1));
-    }, [])
+        if (user.auth.token != null)
+            handleSearch(pathname.slice(1));
+    }, [user])
 
     var pc_index: number = 0;
     if (paResult && pcResult && pcResult[0]) {
