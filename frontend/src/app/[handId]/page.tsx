@@ -17,8 +17,8 @@ export default function HandDetails() { // Asynchronous server component for pul
     else pn = pathname.slice(1);
 
     const [othiResult, setResponse1]: [any, any] = useState([]);
-    const [paResult, setResponse2] : [any, any] = useState([]);
-    const [pcResult, setResponse3] : [any, any] = useState([]);
+    const [paResult, setResponse2]: [any, any] = useState([]);
+    const [pcResult, setResponse3]: [any, any] = useState([]);
 
     let rows: Array<any> = [];
 
@@ -62,7 +62,8 @@ export default function HandDetails() { // Asynchronous server component for pul
     return (
        
         <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for both child components.*/}
-            <BodyWrapper handID={pn} tableName={othiResult[0] && othiResult[0].table_name} timestamp={othiResult[0] && othiResult[0].played_at}/>
+            <BodyWrapper rows={rows} handID={pn} tableName={othiResult[0] && othiResult[0].table_name} 
+                timestamp={othiResult[0] && othiResult[0].played_at}/>
             {/* <Table> 
                 <TableHeader className="text-[#31D2DD]">
                     <TableRow>

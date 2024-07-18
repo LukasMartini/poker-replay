@@ -9,6 +9,7 @@ interface BodyWrapperProps {
     handID: string;
     tableName: string;
     timestamp: string;
+    rows: Array<any>;
 }
 
 export default function BodyWrapper(props: BodyWrapperProps) {
@@ -19,7 +20,7 @@ export default function BodyWrapper(props: BodyWrapperProps) {
                 <Replay/>
             </div>
             <div  className="flex"> {/* Contains HandDetails side bar. */}
-                <HandDetails/>
+                <HandDetails rows={props.rows}/>
             </div>
         </div>
     )

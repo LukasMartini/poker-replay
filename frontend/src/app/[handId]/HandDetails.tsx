@@ -11,7 +11,11 @@
 
 // Useful examples: 12, 594, 1354
 
-export default function HandDetails() {
+interface HandDetailsProps {
+    rows: Array<any>;
+}
+
+export default function HandDetails(props: HandDetailsProps) {
     return (
         <div>
             <h1>HANDDETAILS</h1>
