@@ -36,9 +36,7 @@ function useAuthHook() {
         const email = window.localStorage.getItem('email');
         const username = window.localStorage.getItem('username');
         // If auth details are found, save them to state
-        if (token && email && username) {
             setAuth({ token: token, email: email, username: username });
-        }
     }, []);
 
     return {

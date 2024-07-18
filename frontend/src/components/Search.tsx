@@ -7,6 +7,8 @@ import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
 import Image from "next/image";
 import { Hand } from "@/lib/utils";
+import { useAuth } from '@/components/auth/AuthContext';
+ 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 Chart.register(CategoryScale);
@@ -19,6 +21,7 @@ const SearchBar = () => {
     const [r2, setResponse2] = useState([]);
     const [r3, setResponse3] = useState([]);
     const [offset, setOffset] = useState(0);
+    const user = useAuth();
 
     var combinedData = [];
     
@@ -31,17 +34,19 @@ const SearchBar = () => {
     var [links, setLinks] = useState([]);
 
     useEffect(() => {
-      fetchQuantity()
-    }, []);
+      if (user.auth.token != null)
+        fetchQuantity()
+    }, [user]);
 
     useEffect(() => {
-      fetchCashData(offset, 30);
-    }, [offset]);
+      if (user.auth.token != null)
+        fetchCashData(offset, 30);
+    }, [user]);
 
     const handleSearch = async (searchTerm: string) => {
-        response1 = await fetch(`${API_URL}hand_summary/${searchTerm}`);
-        response2 = await fetch(`${API_URL}player_actions/${searchTerm}`);
-        response3 = await fetch(`${API_URL}player_cards/${searchTerm}`);
+        response1 = await fetch(`${API_URL}hand_summary/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
+        response2 = await fetch(`${API_URL}player_actions/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
+        response3 = await fetch(`${API_URL}player_cards/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
 
         setResponse1(await response1.clone().json());
         setResponse2(await response2.clone().json());
@@ -52,9 +57,9 @@ const SearchBar = () => {
     }
 
     const fetchQuantity = async () => {
-      const response = await fetch(`${API_URL}hand_count/`);
+      const response = await fetch(`${API_URL}hand_count/`,{ headers: {'Authorization': `Bearer ${user.auth.token}`} });
       const data = await response.json();
-  
+      
       if (data === 'undefined') {
         console.log("Hand count request returned undefined");
         return;
@@ -72,13 +77,15 @@ const SearchBar = () => {
         actualOffset = actualOffset < 0 ? 0 : actualOffset;
       }
   
-      const response = await fetch(`${API_URL}cash_flow?limit=${amount}&offset=${actualOffset}`);
+      const response = await fetch(`${API_URL}cash_flow?limit=${amount}&offset=${actualOffset}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
       const data = await response.json();
   
       if (data === 'undefined') {
-        console.log("Cash flow request returned undefined");
+        console.log("Cash flow request returned undefined");    
         return;
       }
+
+      console.log(data);
   
       setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`));
       setChartData(generateChartData(data));
