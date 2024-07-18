@@ -1,17 +1,18 @@
 import { Bar } from "react-chartjs-2"
-import { Chart as ChartJS, ChartData, ChartOptions } from 'chart.js/auto';
+import { ChartData, ChartOptions } from 'chart.js/auto';
+import { Hand } from '../lib/utils'
 
 interface BarChartProps {
   chartData: ChartData<'bar'>;
   hyperlinks: string[];
 }
 
-export const generateChartData = (handData: any) => {
-  let maxAmount = Math.max(...handData.map((d: any) => d.amount));
-  let minAmount = Math.min(...handData.map((d: any) => d.amount));
+export const generateChartData = (handData: Hand[]) => {
+  let maxAmount = Math.max(...handData.map((d) => d.amount));
+  let minAmount = Math.min(...handData.map((d) => d.amount));
 
   // now run through and calculate colours and hyperlinks for every bar
-  let colours = handData.map((data: any) => {
+  let colours = handData.map((data) => {
     const amount = data.amount;
     if (amount < 0) {
       const col = 255 - (amount / minAmount) * 128;
@@ -25,11 +26,11 @@ export const generateChartData = (handData: any) => {
   });
 
   return {
-    labels: handData.map((data: any) => data.played_at),
+    labels: handData.map((data) => data.played_at),
     datasets: [
       {
-        label: "Users Gained",
-        data: handData.map((data: any) => (data.amount == 0 ? 0.004 : data.amount)),
+        label: "Profit",
+        data: handData.map((data) => (data.amount == 0 ? 0.004 : data.amount)),
         backgroundColor: colours,
         borderWidth: 0,
       },

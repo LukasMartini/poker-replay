@@ -64,10 +64,15 @@ def hand_quantity(id: int) -> Response:
 
     return jsonify(data), 200
 
-@app.route("/api/cash_flow/<int:id>+<int:limit>+<int:offset>", methods=['GET'])
+@app.route("/api/cash_flow/<int:id>", methods=['GET'])
 @cross_origin()
-def cash_flow(id: int, limit: int, offset: int) -> Response:
-    result = get_cash_flow(str(id), str(limit), str(offset))
+def cash_flow(id: int) -> Response:
+    # -1 means no value, ignore the search param
+    limit = request.args.get("limit", default=30, type = int)
+    offset = request.args.get("offset", default=-1, type = int)
+    session_id = request.args.get("sessionid", default = -1, type = int)
+
+    result = get_cash_flow(str(id), str(limit), str(offset), str(session_id))
     data = [{
         "played_at": row[0],
         "hand_id": row[1],
