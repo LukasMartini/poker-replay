@@ -8,6 +8,7 @@ import { LineChart, generateSessionLineData } from "@/components/SessionLineChar
 import { CategoryScale } from "chart.js/auto";
 import { Chart } from "chart.js";
 import { Hand } from "@/lib/utils";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 Chart.register(CategoryScale);

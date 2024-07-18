@@ -1,6 +1,7 @@
 import { Bar, Line } from "react-chartjs-2"
 import { ChartData, ChartOptions, LineProps } from 'chart.js/auto';
 import { Hand } from "@/lib/utils";
+import { DateTime } from "luxon";
 
 interface BarChartProps {
   chartData: ChartData<'bar'>;
@@ -8,6 +9,9 @@ interface BarChartProps {
 }
 
 export const generateSessionLineData = (handData: Hand[]) => {
+  handData.sort((a: Hand, b: Hand) => {
+    return DateTime.fromHTTP(a.played_at).toMillis() - DateTime.fromHTTP(b.played_at).toMillis()
+  })
   let trend: number[] = [];
   let net = 0;
 
@@ -16,10 +20,25 @@ export const generateSessionLineData = (handData: Hand[]) => {
     trend.push(net);
   });
 
-  console.log(trend);
+  let timeLabels: string[] = [];
+  let day = -1;
+  for (let i = 0; i < handData.length; ++i) {
+    let date = DateTime.fromHTTP(handData[i].played_at);
+    // only show the day if it has changed
+    if (date.day != day) {
+      timeLabels.push(
+        date.toLocaleString(DateTime.DATETIME_MED)
+      );
+      day = date.day;
+    } else {
+      timeLabels.push(
+        date.toLocaleString(DateTime.TIME_SIMPLE)
+      );
+    }
+  }
 
   return {
-    labels: handData.map((data: any) => data.played_at),
+    labels: timeLabels,
     datasets: [
       {
         label: "Profit",
