@@ -76,6 +76,7 @@ def hand_quantity() -> Response:
         user_id = auth(request.headers.get("Authorization"))
         result = get_hand_count(user_id)
 
+# <<<<<<< HEAD
         return jsonify(result), 200
     except Exception as e:
 
