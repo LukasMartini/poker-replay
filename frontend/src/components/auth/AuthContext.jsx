@@ -24,8 +24,8 @@ export const AuthProvider = ({ children }) => {
         if (!data.success)
           logout();
       } catch (error) {
-          console.error('Error fetching data:', error);
-        
+        console.error('Error fetching data:', error);
+
       }
     };
 

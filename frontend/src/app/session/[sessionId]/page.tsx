@@ -8,6 +8,8 @@ import { LineChart, generateSessionLineData } from "@/components/SessionLineChar
 import { CategoryScale } from "chart.js/auto";
 import { Chart } from "chart.js";
 import { Hand } from "@/lib/utils";
+import { useAuth } from "@/components/auth/AuthContext";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 Chart.register(CategoryScale);
@@ -15,6 +17,7 @@ Chart.register(CategoryScale);
 export default function SessionDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
     var [chartData, setChartData] = useState(generateSessionLineData([]));
     var [links, setLinks] = useState([]);
+    const user = useAuth();
 
     // var sessionResp: Array<any> = [];
     var paResult: Array<any> = [];
@@ -26,7 +29,11 @@ export default function SessionDetails() { // Asynchronous server component for 
     const apiCall = async (userId: string) => {
         // Run SQL queries to fetch appropriate data. See server.py for further information.
         await fetch(`${API_URL}cash_flow/${userId}?sessionid=${session}&limit=50`, {
-            method: "GET"
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.auth.token}`
+              }
         })
             .then(resp => resp.json())
             .then(data => {
@@ -38,7 +45,7 @@ export default function SessionDetails() { // Asynchronous server component for 
     
     useEffect(() => {
         apiCall("1"); // TODO: use cached user
-    }, [])
+    }, [user])
 
     // var rows: Array<any> = [];
     // var pc_index: number = 0;
