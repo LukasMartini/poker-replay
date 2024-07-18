@@ -8,7 +8,8 @@ interface BarChartProps {
   hyperlinks: string[];
 }
 
-export const generateSessionLineData = (handData: Hand[]) => {
+export const generateSessionLineData = (handData: Hand[], startTrend: number[] = [0, -1]) => {
+  // startTrend is of the form [offset, index], where the index in this data range has the given absolute offset
   handData.sort((a: Hand, b: Hand) => {
     return DateTime.fromHTTP(a.played_at).toMillis() - DateTime.fromHTTP(b.played_at).toMillis()
   })
@@ -19,6 +20,15 @@ export const generateSessionLineData = (handData: Hand[]) => {
     net += Number(hand.amount);
     trend.push(net);
   });
+
+  // the amount every datapoint has to be offset by to satisfy startTrend
+  // if there is no given index, offset everything by the start, otherwise set that index to the given value
+  let diff = startTrend[0];
+  if (startTrend[1] != -1) diff -= trend[startTrend[1]];
+
+  for (let i = 0; i < trend.length; ++i) {
+    trend[i] += diff;
+  }
 
   let timeLabels: string[] = [];
   let day = -1;

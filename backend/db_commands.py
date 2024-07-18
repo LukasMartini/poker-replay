@@ -98,7 +98,7 @@ def get_hand_count(user_id, session_id):
     """
     return execute_query(get_hand_query, tuple(data), fetch=True)
 
-def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
+def get_cash_flow(user_id, count='30', offset='-1', session_id='-1', ascdes = "DESC"):
     '''Returns the cash flow from a user_id for [count] hands starting from their [offset] most recent hand.'''
 
     data = [user_id, user_id]
@@ -145,7 +145,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
     FROM hands hand
     JOIN bet_amounts on hand.id = bet_amounts.hand_id
     GROUP BY hand.id, played_at
-    ORDER BY played_at DESC
+    ORDER BY played_at {ascdes}
     {countText}
     {offsetText}
     """

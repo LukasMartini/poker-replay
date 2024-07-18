@@ -72,6 +72,9 @@ def cash_flow(id: int) -> Response:
     limit = request.args.get("limit", default=30, type = int)
     offset = request.args.get("offset", default=-1, type = int)
     session_id = request.args.get("sessionid", default = -1, type = int)
+    ascendingDescending = request.args.get("descending", default='t', type = string)
+    if (ascendingDescending == 't'): ascendingDescending = "DESC"
+    else: ascendingDescending = "ASC"
 
     result = get_cash_flow(str(id), str(limit), str(offset), str(session_id))
     data = [{
