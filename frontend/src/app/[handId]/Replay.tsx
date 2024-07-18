@@ -5,7 +5,7 @@
 export default function Replay() {
     return (
         <div>
-            <h1>REPLAY</h1>
+            <h1></h1>
         </div>
     )
 }

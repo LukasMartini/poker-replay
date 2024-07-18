@@ -109,7 +109,6 @@ const SearchBar = () => {
             />
             <div className="grid grid-cols-4 gap-12 pt-12">
                 {r1.map((info: any, index) => {
-                    // console.log(info);
                    return  <HandCard handId={info.id} played_at={info.played_at} tableName={info.table_name} key={index} />
                 })}
             </div>
