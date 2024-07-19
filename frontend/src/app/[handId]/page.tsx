@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+// Test with 2521 for all betting rounds.
 
 export default function GetDetails() {
     const pathname = usePathname();
@@ -53,25 +54,23 @@ export default function GetDetails() {
     if (othiResult[0] && paResult && pcResult && pcResult[0]) { // Forces the code to wait for all the dependencies to exist.
         for (var action = 0; action < paResult.length; action++) {
             rows.push(<div className="py-2">
-                            <HandDetails name={action} row={[paResult[action].name, paResult[action].betting_round, 
-                            paResult[action].action_type, paResult[action].amount, 
-                            othiResult[0].flop_card1, othiResult[0].flop_card2, othiResult[0].flop_card3,
-                            othiResult[0].turn_card, othiResult[0].river_card]} onClick={rowOnClick}/>
-                    </div>)
+                        <HandDetails name={action} row={[paResult[action].name, paResult[action].betting_round, 
+                        paResult[action].action_type, paResult[action].amount, 
+                        othiResult[0].flop_card1, othiResult[0].flop_card2, othiResult[0].flop_card3,
+                        othiResult[0].turn_card, othiResult[0].river_card]} onClick={rowOnClick}/></div>)
         }
-        
     }
-
+    
+    // The styling below allows the summaries to be scrolled separately.
     return (
         <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for all child components.*/}
             <div dir="ltr" className="flex flex-row justify-between py-8">
-                <div className="flex flex-col"> {/* Contains MetaData, Replay display, and pagination interface. */}
+                <div style={{height:"75vh", overflow:"scroll"}} className="flex flex-col"> {/* Contains MetaData, Replay display, and pagination interface. */}
                     <MetaData handID={pn} tableName={othiResult[0] && othiResult[0].table_name} 
                         timestamp={othiResult[0] && othiResult[0].played_at}/>
                     {replayDisplay}
                 </div>
-                <div className="flex flex-col"> {/* Contains HandDetails side bar. */}
-                    <h1>HANDDETAILS</h1>
+                <div style={{height:"80vh", overflow:"scroll"}} className="flex flex-col"> {/* Contains HandDetails side bar. */}
                     {rows}
                 </div>
             </div>
