@@ -69,21 +69,16 @@ def player_cards(id: int) -> Response:
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 403
 
-@app.route("/api/hand_count/", methods=['GET'])
+@app.route("/api/hand_count", methods=['GET'])
 @cross_origin()
 def hand_quantity() -> Response:
     try:
         user_id = auth(request.headers.get("Authorization"))
-        result = get_hand_count(user_id)
-
-        # -1 means no value, ignore the search param
-        limit = request.args.get("limit", default=30, type = int)
-        offset = request.args.get("offset", default=-1, type = int)
-        session_id = request.args.get("sessionid", default = -1, type = int)
-
-        result = get_cash_flow(user_id, str(limit), str(offset), str(session_id))
         
-        return jsonify(result), 200
+        result = get_hand_count(user_id)
+        data = [{"hands": result[0][0]}]
+
+        return jsonify(data), 200
     except Exception as e:
 
         return jsonify({"success": False, "error": str(e)}), 403
