@@ -6,7 +6,7 @@ import { CategoryScale } from "chart.js";
 import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
 import Image from "next/image";
-// import { Hand } from "@/lib/utils";
+import { Hand } from "@/lib/utils";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 Chart.register(CategoryScale);
@@ -110,6 +110,7 @@ const SearchBar = () => {
             />
             <div className="grid grid-cols-4 gap-12 pt-12">
                 {r1.map((info: any, index) => {
+                    // console.log(info);
                    return  <HandCard handId={info.id} played_at={info.played_at} tableName={info.table_name} key={index} />
                 })}
             </div>
