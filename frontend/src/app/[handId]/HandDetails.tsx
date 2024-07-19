@@ -22,7 +22,7 @@ interface HandDetailsProps {
 
 export default function HandDetails(props: HandDetailsProps) {
     return (
-        <div dir="ltr" className="bg-[#2C2C2C] flex flex-col border border-[#879195] text-white text-sm rounded-md shadow-md 
+        <div dir="ltr" style={{width:"7cm", margin:"auto"}} className="bg-[#2C2C2C] flex flex-col border border-[#879195] text-white text-sm rounded-md shadow-md 
                                 px-12 py-4 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300"
              onClick={(e) => {props.onClick(props.name)}}> {/* the onClick here passes this object's name upwards to change displayedAction. */}
             <div className="flex flex-row">

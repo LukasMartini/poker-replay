@@ -38,11 +38,12 @@ export default function GetDetails() {
     // Note that there should never be a '-1' action number by virtue of the way they are assigned.
     // See the for loop below.
     const [displayedAction, setDA] = useState(-1); // Necessary for making the useEffect update.
-    let replayDisplay: any = <Replay row={[]} test={displayedAction}/>;
+    let replayDisplay: any = <Replay othiResult={othiResult} paResult={paResult} pcResult={pcResult} action={displayedAction}/>;
 
     // This useEffect hook re-renders with the updated Replay component whenever displayedAction is set.
     useEffect(() => { 
-        replayDisplay = <Replay row={paResult[displayedAction]} test={displayedAction}/>; // This should only change after displayedAction is no longer -1.
+        replayDisplay = <Replay othiResult={othiResult} paResult={paResult} pcResult={pcResult} action={displayedAction}/>;
+        console.log(othiResult);
     }, [displayedAction])
 
 
@@ -60,17 +61,35 @@ export default function GetDetails() {
                         othiResult[0].turn_card, othiResult[0].river_card]} onClick={rowOnClick}/></div>)
         }
     }
+
+    const handlePrevClick = () => {
+        if (displayedAction > 0) {
+            setDA(displayedAction - 1);
+        }
+    }
+
+    const handleNextClick = () => {
+        if (displayedAction < paResult.length-1) {
+            setDA(displayedAction + 1);
+        }
+    }
     
     // The styling below allows the summaries to be scrolled separately.
     return (
         <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for all child components.*/}
             <div dir="ltr" className="flex flex-row justify-between py-8">
-                <div style={{height:"75vh", overflow:"scroll"}} className="flex flex-col"> {/* Contains MetaData, Replay display, and pagination interface. */}
+                <div style={{width:"20cm", height:"75vh", overflow:"scroll"}} className="flex flex-col"> {/* Contains MetaData, Replay display, and pagination interface. */}
                     <MetaData handID={pn} tableName={othiResult[0] && othiResult[0].table_name} 
                         timestamp={othiResult[0] && othiResult[0].played_at}/>
                     {replayDisplay}
+                    <div style={{margin:"auto"}}>
+                        <button onClick={() => handlePrevClick()} className="px-10 bg-[#2CBDC7] text-[#2C2C2C] hover:bg-[#31D2DD]">
+                            Previous</button>
+                        <button onClick={() => handleNextClick()} className="px-10 bg-[#2CBDC7] text-[#2C2C2C] hover:bg-[#31D2DD]">
+                            Next</button>
+                    </div>
                 </div>
-                <div style={{height:"80vh", overflow:"scroll"}} className="flex flex-col"> {/* Contains HandDetails side bar. */}
+                <div style={{width:"8cm", height:"80vh", overflow:"scroll"}} className="flex flex-col"> {/* Contains HandDetails side bar. */}
                     {rows}
                 </div>
             </div>
