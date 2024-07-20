@@ -9,8 +9,7 @@ import { CategoryScale } from "chart.js/auto";
 import { Chart } from "chart.js";
 import { Hand } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthContext";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { fetchCashFlow } from "@/lib/api-requests";
 
 Chart.register(CategoryScale);
 
@@ -28,13 +27,7 @@ export default function SessionDetails() { // Asynchronous server component for 
 
     const apiCall = async (userId: string) => {
         // Run SQL queries to fetch appropriate data. See server.py for further information.
-        await fetch(`${API_URL}cash_flow/${userId}?sessionid=${session}&limit=50`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user.auth.token}`
-              }
-        })
+        await fetchCashFlow(session, 50, 0, user.auth.token)
             .then(resp => resp.json())
             .then(data => {
                 setChartData(generateSessionLineData(data))
