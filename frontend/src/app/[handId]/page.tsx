@@ -3,9 +3,16 @@ import { useState, useEffect } from "react";
 import HandDetails from './HandDetails';
 import MetaData from "./MetaData";
 import Replay from './Replay';
+import TableData from "./TableData";
+import PokerTable from "./PokerTable";
+import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
 import { useAuth } from '@/components/auth/AuthContext';
+import './PokerTable.css';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function GetDetails() {
     const pathname = usePathname();
@@ -18,6 +25,7 @@ export default function GetDetails() {
     const [othiResult, setResponse1]: [any, any] = useState([]);
     const [paResult, setResponse2]: [any, any] = useState([]);
     const [pcResult, setResponse3]: [any, any] = useState([]);
+    const [endIndex, setEndIndex] = useState(0);
 
     let rows: Array<any> = [];
 
@@ -79,6 +87,19 @@ export default function GetDetails() {
     // The styling below allows the summaries to be scrolled separately.
     return (
         <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for all child components.*/}
+            <Button disabled={endIndex == 0} onClick={()=>{setEndIndex(endIndex-1)}} variant="secondary">Previous</Button>
+            <span style={{marginLeft: "15px", marginRight: "15px"}}>{endIndex + 1} of {paResult.length} actions</span>
+            <Button disabled={endIndex == Math.max(0, paResult.length-1)} onClick={()=>{setEndIndex(endIndex+1)}} variant="secondary">Next</Button>
+
+            {
+                othiResult.length > 0 && paResult.length > 0 && pcResult.length > 0 && (
+                    <div className="svg-container" style={{ width: '100%', height: '500px' }}>
+                        <PokerTable hand={othiResult} actions={paResult.slice(0, endIndex+1)} players={pcResult} />
+                    </div>
+                )
+            }            
+
+           
             <div dir="ltr" className="flex flex-row justify-between py-8">
                 <div style={{width:"20cm", height:"75vh", overflow:"scroll"}} className="flex flex-col"> {/* Contains MetaData, Replay display, and pagination interface. */}
                     <MetaData handID={pn} tableName={othiResult[0] && othiResult[0].table_name} 
