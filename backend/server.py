@@ -74,11 +74,9 @@ def player_cards(id: int) -> Response:
 def hand_quantity() -> Response:
     try:
         user_id = auth(request.headers.get("Authorization"))
-        
         result = get_hand_count(user_id)
-        data = [{"hands": result[0][0]}]
 
-        return jsonify(data), 200
+        return jsonify(result), 200
     except Exception as e:
 
         return jsonify({"success": False, "error": str(e)}), 403

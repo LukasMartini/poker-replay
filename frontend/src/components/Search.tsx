@@ -57,7 +57,7 @@ const SearchBar = () => {
     }
 
     const fetchQuantity = async () => {
-      const response = await fetch(`${API_URL}hand_count/`,{ headers: {'Authorization': `Bearer ${user.auth.token}`} });
+      const response = await fetch(`${API_URL}hand_count`,{ headers: {'Authorization': `Bearer ${user.auth.token}`} });
       const data = await response.json();
       
       if (data === 'undefined') {
