@@ -4,11 +4,8 @@ import MetaData from "./MetaData";
 import TableData from "./TableData";
 import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { usePathname } from "next/navigation";
+import { fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/lib/api-requests";
 import { useAuth } from '@/components/auth/AuthContext';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-
 
 
 export default function HandDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
@@ -22,15 +19,14 @@ export default function HandDetails() { // Asynchronous server component for pul
     let rows: Array<any> = [];
 
     const handleSearch = async (searchTerm: string) => {
-        const othiResponse2 = await fetch(`${API_URL}hand_summary/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
-        const paResponse2 = await fetch(`${API_URL}player_actions/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
-        const pcResponse2 = await fetch(`${API_URL}player_cards/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
+        const token = user.auth.token;
+        const othiResponse2 = await fetchHandSummary(searchTerm, token);
+        const paResponse2 = await fetchPlayerActions(searchTerm, token);
+        const pcResponse2 = await fetchPlayerCards(searchTerm, token);
 
         setResponse1(await othiResponse2.json());
         setResponse2(await paResponse2.json());
         setResponse3(await pcResponse2.json());
-
-
 
         console.log(rows);
     }

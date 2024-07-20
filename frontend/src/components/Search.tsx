@@ -8,8 +8,7 @@ import HandCard from "@/components/HandCard";
 import Image from "next/image";
 import { Hand } from "@/lib/utils";
 import { useAuth } from '@/components/auth/AuthContext';
- 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/lib/api-requests";
 
 Chart.register(CategoryScale);
 
@@ -44,9 +43,10 @@ const SearchBar = () => {
     }, [user]);
 
     const handleSearch = async (searchTerm: string) => {
-        response1 = await fetch(`${API_URL}hand_summary/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
-        response2 = await fetch(`${API_URL}player_actions/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
-        response3 = await fetch(`${API_URL}player_cards/${searchTerm}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
+        const token = user.auth.token;
+        response1 = await fetchHandSummary(searchTerm, token);
+        response2 = await fetchPlayerActions(searchTerm, token);
+        response3 = await fetchPlayerCards(searchTerm, token);
 
         setResponse1(await response1.clone().json());
         setResponse2(await response2.clone().json());
@@ -57,7 +57,7 @@ const SearchBar = () => {
     }
 
     const fetchQuantity = async () => {
-      const response = await fetch(`${API_URL}hand_count`,{ headers: {'Authorization': `Bearer ${user.auth.token}`} });
+      const response = await fetchHandCount(user.auth.token);
       const data = await response.json();
       
       if (data === 'undefined') {
@@ -77,7 +77,7 @@ const SearchBar = () => {
         actualOffset = actualOffset < 0 ? 0 : actualOffset;
       }
   
-      const response = await fetch(`${API_URL}cash_flow?limit=${amount}&offset=${actualOffset}`, { headers: {'Authorization': `Bearer ${user.auth.token}`} });
+      const response = await fetchCashFlowByUser(amount, actualOffset, user.auth.token);
       const data = await response.json();
   
       if (data === 'undefined') {

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect } from 'react';
 import useAuthHook from './useAuth';
+import { authorizeUser } from '../../lib/api-requests';
 // Define the context
 const AuthContext = createContext();
 
@@ -13,19 +14,13 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}authorize`, {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${auth.token}`
-          }
-        });
+        const response = await authorizeUser(auth.token);
         const data = await response.json();
         if (!data.success)
           logout();
       } catch (error) {
-        console.error('Error fetching data:', error);
-
+          console.error('Error fetching data:', error);
+        
       }
     };
 
