@@ -186,23 +186,18 @@ def player_cards_in_hand(hand_id):
     return data
 
 def profile_data(username: str):
-    conn = get_db_connection();
-    cur = conn.cursor()
-    user_data_query = """SELECT username, email, created_at, 
-                         FROM users
-                         WHERE %s = username"""
+    user_data_query = ("""SELECT username, email, created_at FROM users WHERE '%s' = username""" % username)
 
-    uploads_query = """SELECT up.id as upload_id, up.file_name, up.uploaded_at
-                       FROM uploads as up, (SELECT id FROM users WHERE %s = username) as user
-                       WHERE user.id = uploads.user_id"""
+    uploads_query = ("""SELECT uploads.id as upload_id, uploads.file_name, uploads.uploaded_at
+                       FROM (SELECT users.id FROM users WHERE '%s' = username) us, uploads
+                       WHERE us.id = uploads.user_id""" % username)
     
-    sessions_query = """SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time
-                        FROM poker_session as s, 
-                            (SELECT users.id as usid, uploads.id as upid FROM users, uploads WHERE users.username = %s AND users.id = uploads.user_id) as us
-                        WHERE s.user_id = us.usid AND s.upload_id = us.upid"""
-    data = [execute_query(user_data_query, (username), fetch=True),
-            execute_query(uploads_query, (username), fetch=True),
-            execute_query(sessions_query, (username), fetch=True),
-            cur.execute(user_data_query, (username)).fetchall()]
+    sessions_query = ("""SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time
+                        FROM poker_session as s, (SELECT users.id as usid, uploads.id as upid FROM users, uploads WHERE users.username = '%s' AND users.id = uploads.user_id) us
+                        WHERE s.user_id = us.usid AND s.upload_id = us.upid""" % username)
+
+    data = [execute_query(user_data_query, fetch=True),
+            execute_query(uploads_query, fetch=True),
+            execute_query(sessions_query, fetch=True)]
     
     return data
