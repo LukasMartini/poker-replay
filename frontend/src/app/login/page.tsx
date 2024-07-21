@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/auth/AuthContext';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const LoginPage = () => {
   const user = useAuth();
 
@@ -10,7 +12,7 @@ const LoginPage = () => {
     event.preventDefault();
     const formData = new FormData(event.target);
     console.log(formData);
-    const response = await fetch(`http://localhost:5001/api/login`, {
+    const response = await fetch(`${API_URL}/login`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'

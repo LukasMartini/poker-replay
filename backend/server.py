@@ -5,6 +5,7 @@ from db_commands import get_db_connection
 from flask_cors import CORS, cross_origin
 from db_commands import get_hand_count, get_cash_flow
 from db_commands import one_time_hand_info, player_actions_in_hand, player_cards_in_hand
+from db_commands import profile_data
 
 conn = get_db_connection()
 cur = conn.cursor()
@@ -67,6 +68,13 @@ def cash_flow(id: int) -> Response:
     } for row in result]
 
     return jsonify(data), 200
+
+@app.route("/api/profile/<string:username>", methods=['GET'])
+@cross_origin()
+def profile(username: str) -> Response:
+    result = profile_data(username)
+    
+    return jsonify(result), 200
 
 @app.route('/api/upload', methods=['POST'])
 @cross_origin()

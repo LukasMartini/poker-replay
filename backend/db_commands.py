@@ -266,7 +266,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
 
     return execute_query(get_cash_flow_query, tuple(data), fetch=True)
 
-def one_time_hand_info(hand_id):
+def one_time_hand_info(hand_id: int):
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute(f'''SELECT poker_hand.id, poker_hand.session_id, poker_hand.total_pot, poker_hand.rake,
@@ -281,7 +281,7 @@ def one_time_hand_info(hand_id):
     
     return data
 
-def player_actions_in_hand(hand_id):
+def player_actions_in_hand(hand_id: int):
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute(f'''SELECT player.id as player_id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 
@@ -294,7 +294,7 @@ def player_actions_in_hand(hand_id):
     
     return data
 
-def player_cards_in_hand(hand_id):
+def player_cards_in_hand(hand_id: int):
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute(f'''SELECT player.id as player_id, player.name, player_cards.hand_id, player_cards.hole_card1, player_cards.hole_card2,
@@ -304,5 +304,27 @@ def player_cards_in_hand(hand_id):
     result = cur.fetchall()
     column_names = [description[0] for description in cur.description]
     data = [dict(zip(column_names, row)) for row in result]
+    
+    return data
+
+def profile_data(username: str):
+    conn = get_db_connection();
+    cur = conn.cursor()
+    user_data_query = """SELECT username, email, created_at, 
+                         FROM users
+                         WHERE %s = username"""
+
+    uploads_query = """SELECT up.id as upload_id, up.file_name, up.uploaded_at
+                       FROM uploads as up, (SELECT id FROM users WHERE %s = username) as user
+                       WHERE user.id = uploads.user_id"""
+    
+    sessions_query = """SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time
+                        FROM sessions as s, 
+                            (SELECT users.id as usid, uploads.id as upid FROM users, uploads WHERE %s = users.username AND user.id = uploads.user_id) as us
+                        WHERE s.user_id = us.usid AND s.upload_id = us.upid"""
+    data = [execute_query(user_data_query, (username), fetch=True),
+            execute_query(uploads_query, (username), fetch=True),
+            execute_query(sessions_query, (username), fetch=True),
+            cur.execute(user_data_query, (username)).fetchall()]
     
     return data
