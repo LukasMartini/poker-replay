@@ -6,7 +6,8 @@ import uuid
 import bcrypt
 from datetime import datetime, timedelta
 
-from db_commands import get_db_connection, get_hand_count, get_cash_flow, one_time_hand_info, player_actions_in_hand, player_cards_in_hand
+from db_commands import get_db_connection, get_hand_count, get_cash_flow, profile_data
+from db_commands import one_time_hand_info, player_actions_in_hand, player_cards_in_hand
 from convert_history import process_file
 
 
@@ -136,6 +137,13 @@ def login():
     except Exception as e:
         print(e)
         return jsonify({"success": False, "error": "Bad Request"}), 400 
+    
+@app.route("/api/profile/<string:username>", methods=['GET'])
+@cross_origin()
+def profile(username: str) -> Response:
+    result = profile_data(username)
+
+    return jsonify(result), 200
 
 @app.route('/api/upload', methods=['POST'])
 @cross_origin()

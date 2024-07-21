@@ -184,3 +184,20 @@ def player_cards_in_hand(hand_id):
     data = [dict(zip(column_names, row)) for row in result]
     
     return data
+
+def profile_data(username: str):
+    user_data_query = ("""SELECT username, email, created_at FROM users WHERE '%s' = username""" % username)
+
+    uploads_query = ("""SELECT uploads.id as upload_id, uploads.file_name, uploads.uploaded_at
+                       FROM (SELECT users.id FROM users WHERE '%s' = username) us, uploads
+                       WHERE us.id = uploads.user_id""" % username)
+    
+    sessions_query = ("""SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time
+                        FROM poker_session as s, (SELECT users.id as usid, uploads.id as upid FROM users, uploads WHERE users.username = '%s' AND users.id = uploads.user_id) us
+                        WHERE s.user_id = us.usid AND s.upload_id = us.upid""" % username)
+
+    data = [execute_query(user_data_query, fetch=True),
+            execute_query(uploads_query, fetch=True),
+            execute_query(sessions_query, fetch=True)]
+    
+    return data
