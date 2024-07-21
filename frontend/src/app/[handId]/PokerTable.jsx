@@ -168,9 +168,15 @@ const PokerTable = (props) => {
   }
 
   function calculateStackSize(name, stack_size) {
-    const playerActions = props.actions.filter(action => action.name === name && action.betting_round !== round && action.amount != null);
-    const bets = playerActions.reduce((total, action) => total + parseFloat(action.amount), 0).toFixed(2);
+    const playerActions = props.actions.filter(action => action.name === name && (action.betting_round !== round) && action.amount != null);
+    const didWin = props.actions.filter(action => action.name === name && (action.betting_round == 'Showdown'));
 
+    const bets = playerActions.reduce((total, action) => total + parseFloat(action.amount), 0).toFixed(2);
+    if (didWin.length >0) {
+      if (didWin[0] && didWin[0].action_type == 'collect') {
+        stack_size = parseFloat(stack_size) + parseFloat(calculatePot());
+      }  
+    }
     return (stack_size - bets).toFixed(2);
   }
 
@@ -201,7 +207,7 @@ const PokerTable = (props) => {
           }
         </g>
       ))}
-      {round != "Preflop" && (
+      {round != "Preflop" && round != "Showdown" && (
         <g transform="translate(87, 27)">
           <circle cx="4" cy="3.5" r="3" fill="grey" />
           <rect x="4" y="0.5" width="16" height="6" fill="grey" />
