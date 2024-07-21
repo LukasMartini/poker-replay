@@ -197,8 +197,8 @@ def profile_data(username: str):
                        WHERE user.id = uploads.user_id"""
     
     sessions_query = """SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time
-                        FROM sessions as s, 
-                            (SELECT users.id as usid, uploads.id as upid FROM users, uploads WHERE %s = users.username AND user.id = uploads.user_id) as us
+                        FROM poker_session as s, 
+                            (SELECT users.id as usid, uploads.id as upid FROM users, uploads WHERE users.username = %s AND users.id = uploads.user_id) as us
                         WHERE s.user_id = us.usid AND s.upload_id = us.upid"""
     data = [execute_query(user_data_query, (username), fetch=True),
             execute_query(uploads_query, (username), fetch=True),
