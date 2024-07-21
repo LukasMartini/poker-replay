@@ -16,8 +16,8 @@ export default function Uploads(props: UploadsProps) {
 
         uploads.push(<TableBody key={uppies}>
                         <TableRow>
-                        <TableCell>{filename.split(".")[0]}</TableCell> {/* Removes the file extension. */}
-                        <TableCell>{props.list_of_uploads[uppies][2]}</TableCell>
+                        <TableCell className="w-[495px]">{filename.split(".")[0]}</TableCell> {/* Removes the file extension. */}
+                        <TableCell className="w-[580px]">{props.list_of_uploads[uppies][2]}</TableCell> {/* Width adjustment is manual. Forces highlight to end of row. */}
                         </TableRow>
                     </TableBody>);
     }
