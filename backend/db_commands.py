@@ -192,7 +192,7 @@ def profile_data(username: str):
                        FROM (SELECT users.id FROM users WHERE '%s' = username) us, uploads
                        WHERE us.id = uploads.user_id""" % username)
     
-    sessions_query = ("""SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time
+    sessions_query = ("""SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time, s.id
                         FROM poker_session as s, (SELECT users.id as usid, uploads.id as upid FROM users, uploads WHERE users.username = '%s' AND users.id = uploads.user_id) us
                         WHERE s.user_id = us.usid AND s.upload_id = us.upid""" % username)
 
