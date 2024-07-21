@@ -168,7 +168,7 @@ const PokerTable = (props) => {
   }
 
   function calculateStackSize(name, stack_size) {
-    const playerActions = props.actions.filter(action => action.name === name && (action.betting_round !== round) && action.amount != null);
+    const playerActions = props.actions.filter(action => action.name === name && action.amount != null);
     const didWin = props.actions.filter(action => action.name === name && (action.betting_round == 'Showdown'));
 
     const bets = playerActions.reduce((total, action) => total + parseFloat(action.amount), 0).toFixed(2);
