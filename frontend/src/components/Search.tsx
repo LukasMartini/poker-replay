@@ -7,7 +7,8 @@ import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
 import Image from "next/image";
 import { Hand } from "@/lib/utils";
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { useAuth } from '@/components/auth/AuthContext';
+import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
 
 Chart.register(CategoryScale);
 
@@ -19,6 +20,7 @@ const SearchBar = () => {
     const [r2, setResponse2] = useState([]);
     const [r3, setResponse3] = useState([]);
     const [offset, setOffset] = useState(0);
+    const user = useAuth();
 
     var combinedData = [];
     
@@ -31,17 +33,20 @@ const SearchBar = () => {
     var [links, setLinks] = useState([]);
 
     useEffect(() => {
-      fetchQuantity()
-    }, []);
+      if (user.auth.token != null)
+        fetchQuantity()
+    }, [user]);
 
     useEffect(() => {
-      fetchCashData(offset, 30);
-    }, [offset]);
+      if (user.auth.token != null)
+        fetchCashData(offset, 30);
+    }, [user]);
 
     const handleSearch = async (searchTerm: string) => {
-        response1 = await fetch(`${API_URL}hand_summary/${searchTerm}`);
-        response2 = await fetch(`${API_URL}player_actions/${searchTerm}`);
-        response3 = await fetch(`${API_URL}player_cards/${searchTerm}`);
+        const token = user.auth.token;
+        response1 = await fetchHandSummary(searchTerm, token);
+        response2 = await fetchPlayerActions(searchTerm, token);
+        response3 = await fetchPlayerCards(searchTerm, token);
 
         setResponse1(await response1.clone().json());
         setResponse2(await response2.clone().json());
@@ -52,9 +57,9 @@ const SearchBar = () => {
     }
 
     const fetchQuantity = async () => {
-      const response = await fetch(`${API_URL}hand_count/1`);
+      const response = await fetchHandCount(user.auth.token);
       const data = await response.json();
-  
+      
       if (data === 'undefined') {
         console.log("Hand count request returned undefined");
         return;
@@ -72,13 +77,15 @@ const SearchBar = () => {
         actualOffset = actualOffset < 0 ? 0 : actualOffset;
       }
   
-      const response = await fetch(`${API_URL}cash_flow/1?limit=${amount}&offset=${actualOffset}`);
+      const response = await fetchCashFlowByUser(amount, actualOffset, user.auth.token);
       const data = await response.json();
   
       if (data === 'undefined') {
-        console.log("Cash flow request returned undefined");
+        console.log("Cash flow request returned undefined");    
         return;
       }
+
+      console.log(data);
   
       setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`));
       setChartData(generateChartData(data));

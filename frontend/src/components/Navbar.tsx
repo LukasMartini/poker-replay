@@ -5,7 +5,7 @@ import { useAuth } from '@/components/auth/AuthContext';
 
 const Navbar = () => {
     const {auth, logout} = useAuth();
-
+    
     return (
         <div className="w-full bg-[#2C2C2C] text-white py-4 px-8 shadow-md flex items-center justify-between">
             <Link href={'/'}>

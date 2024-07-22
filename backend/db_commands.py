@@ -20,23 +20,29 @@ def get_db_connection(pool=False):
 def release_db_connection(conn):
     connection_pool.putconn(conn)
 
-def execute_query(query, data=None, fetch=False, pool=False):
+def execute_query(query, data=None, fetch=False, return_dict=False, pool=False):
     conn = get_db_connection(pool=pool)
-    if conn is not None:
-        try:
-            with conn.cursor() as cur:
-                if data is not None:
-                    cur.execute(query, data)
-                else:
-                    cur.execute(query)
-                conn.commit()
-                if fetch:
-                    return cur.fetchall()
-        finally:
-            if pool:
-                release_db_connection(conn)
+    if conn is None:
+        return None
+    
+    try:
+        with conn.cursor() as cur:
+            if data is not None:
+                cur.execute(query, data)
             else:
-                conn.close()
+                cur.execute(query)
+            conn.commit()
+            if fetch:
+                results = cur.fetchall()
+                if return_dict:
+                    column_names = [description[0] for description in cur.description]
+                    return [dict(zip(column_names, row)) for row in results]
+                return results
+    finally:
+        if pool:
+            release_db_connection(conn)
+        else:
+            conn.close()
 
 def create_user(username: str, email: str, password: str, token: str):
     query = """
@@ -72,7 +78,7 @@ def delete_upload(upload_id: int):
     query = """
     DELETE FROM uploads WHERE id = %s
     """
-    execute_query(query, (upload_id))
+    execute_query(query, (upload_id,))
 
 def update_upload_status(upload_id: int, status: str):
     query = """
@@ -89,7 +95,7 @@ def get_hand_count(user_id):
     JOIN poker_hand hand ON session.id = hand.session_id
     WHERE user_id = %s AND session.game_type = 'Cash'
     """
-    return execute_query(get_hand_query, (user_id), fetch=True)
+    return execute_query(get_hand_query, (user_id,), fetch=True, return_dict=True)
 
 def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
     '''Returns the cash flow from a user_id for [count] hands starting from their [offset] most recent hand.'''
@@ -134,7 +140,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
         WHERE player_id = user_player.id
         GROUP BY hand_id, player_id
     )
-    SELECT played_at, hand.id, COALESCE(SUM(amount), 0) amount
+    SELECT played_at, hand.id AS hand_id, COALESCE(SUM(amount), 0) amount
     FROM hands hand
     JOIN bet_amounts on hand.id = bet_amounts.hand_id
     GROUP BY hand.id, played_at
@@ -143,44 +149,47 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
     {offsetText}
     """
 
-    return execute_query(get_cash_flow_query, tuple(data), fetch=True)
+    return execute_query(get_cash_flow_query, tuple(data), fetch=True, return_dict=True)
 
-def one_time_hand_info(hand_id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(f'''SELECT poker_hand.id, poker_hand.session_id, poker_hand.total_pot, poker_hand.rake,
-                    poker_hand.played_at, poker_session.table_name, poker_session.game_type, poker_hand.small_blind,
-                    poker_hand.big_blind, board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
-                    board_cards.turn_card, board_cards.river_card
-                    FROM poker_hand, poker_session, board_cards
-                    WHERE poker_hand.id = {hand_id} AND poker_hand.session_id = poker_session.id AND board_cards.hand_id = {hand_id}''')
-    result = cur.fetchall()
-    column_names = [description[0] for description in cur.description]
-    data = [dict(zip(column_names, row)) for row in result]
+def one_time_hand_info(user_id, hand_id):
+    query = """
+    SELECT poker_hand.id, poker_hand.session_id, poker_hand.total_pot, poker_hand.rake,
+           poker_hand.played_at, poker_session.table_name, poker_session.game_type, poker_hand.small_blind,
+           poker_hand.big_blind, board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
+           board_cards.turn_card, board_cards.river_card
+    FROM poker_hand
+    JOIN poker_session ON poker_hand.session_id = poker_session.id
+    JOIN board_cards ON board_cards.hand_id = poker_hand.id
+    LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = %s
+    WHERE poker_hand.id = %s AND (poker_session.user_id = %s OR authorized.user_id IS NOT NULL)
+    """
     
-    return data
+    return execute_query(query, (user_id, hand_id, user_id), fetch=True, return_dict=True)
 
-def player_actions_in_hand(hand_id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(f'''SELECT player.id as player_id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 
-                    player_action.amount, player_action.betting_round
-                    FROM player, player_action
-                    WHERE player_action.hand_id = {hand_id} AND player_action.player_id = player.id''')
-    result = cur.fetchall()
-    column_names = [description[0] for description in cur.description]
-    data = [dict(zip(column_names, row)) for row in result]
-    return data
-
-def player_cards_in_hand(hand_id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(f'''SELECT player.id as player_id, player.name, player_cards.hand_id, player_cards.hole_card1, player_cards.hole_card2,
-                    player_cards.position, player_cards.stack_size
-                    FROM player, player_cards
-                    WHERE player_cards.hand_id = {hand_id} AND player_cards.player_id = player.id''')
-    result = cur.fetchall()
-    column_names = [description[0] for description in cur.description]
-    data = [dict(zip(column_names, row)) for row in result]
+def player_actions_in_hand(user_id, hand_id):
+    query = """
+    SELECT player.id as player_id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 
+           player_action.amount, player_action.betting_round
+    FROM player
+    JOIN player_action ON player_action.player_id = player.id
+    JOIN poker_hand ON player_action.hand_id = poker_hand.id
+    JOIN poker_session ON poker_hand.session_id = poker_session.id
+    LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = %s
+    WHERE player_action.hand_id = %s AND (poker_session.user_id = %s OR authorized.user_id IS NOT NULL)
+    """
     
-    return data
+    return execute_query(query, (user_id, hand_id, user_id), fetch=True, return_dict=True)
+
+def player_cards_in_hand(user_id, hand_id):
+    query = """
+    SELECT player.id as player_id, player.name, player_cards.hand_id, player_cards.hole_card1, player_cards.hole_card2,
+           player_cards.position, player_cards.stack_size
+    FROM player
+    JOIN player_cards ON player_cards.player_id = player.id
+    JOIN poker_hand ON player_cards.hand_id = poker_hand.id
+    JOIN poker_session ON poker_hand.session_id = poker_session.id
+    LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = %s
+    WHERE player_cards.hand_id = %s AND (poker_session.user_id = %s OR authorized.user_id IS NOT NULL)
+    """
+    
+    return execute_query(query, (user_id, hand_id, user_id), fetch=True, return_dict=True)
