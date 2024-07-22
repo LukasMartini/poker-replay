@@ -6,7 +6,7 @@ import { CategoryScale } from "chart.js";
 import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
 import Image from "next/image";
-import { Hand } from "@/util/utils";
+import { Hand } from "@/lib/utils";
 import { useAuth } from '@/components/auth/AuthContext';
 import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
 
@@ -130,7 +130,7 @@ const SearchBar = () => {
                 <Image src={"/right-w.svg"} alt="right" width={24} height={24} />
               </button>
             </div>
-            <BarChart chartData={chartData} hyperlinks={links} title="Profit/Loss" subtitle="All past hands" />
+            <BarChart chartData={chartData} hyperlinks={links} />
         </div>
         
     )

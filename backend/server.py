@@ -5,16 +5,8 @@ from flask_cors import CORS, cross_origin
 import uuid
 import bcrypt
 from datetime import datetime, timedelta
-from db_commands import (
-    get_db_connection,
-    get_hand_count,
-    get_cash_flow,
-    profile_data,
-    one_time_hand_info,
-    player_actions_in_hand,
-    player_cards_in_hand,
-    cash_flow_to_player
-)
+
+from db_commands import get_db_connection, get_hand_count, get_cash_flow, profile_data, one_time_hand_info, player_actions_in_hand, player_cards_in_hand
 from convert_history import process_file
 
 
@@ -81,12 +73,11 @@ def player_cards(id: int) -> Response:
 def hand_quantity() -> Response:
     try:
         user_id = auth(request.headers.get("Authorization"))
-        session_id = request.args.get("sessionid", default = -1, type = int)
-        playername = request.args.get("playername", default='-1', type = str)
-        result = get_hand_count(str(id), str(session_id), playername)
+        result = get_hand_count(user_id)
 
         return jsonify(result), 200
     except Exception as e:
+
         return jsonify({"success": False, "error": str(e)}), 403
 
 @app.route("/api/cash_flow", methods=['GET'])
@@ -98,16 +89,8 @@ def cash_flow() -> Response:
         limit = request.args.get("limit", default=30, type = int)
         offset = request.args.get("offset", default=-1, type = int)
         session_id = request.args.get("sessionid", default = -1, type = int)
-        playername = request.args.get("playername", default="-1", type = str) # don't ask why a strings default is "-1"
-        ascendingDescending = request.args.get("descending", default='t', type = str)
-        if (ascendingDescending == 't'): ascendingDescending = "DESC"
-        else: ascendingDescending = "ASC"
-        
 
-        if (playername == "-1"):
-            result = get_cash_flow(str(id), str(limit), str(offset), str(session_id), ascendingDescending)
-        else:
-            result = cash_flow_to_player(str(id), playername, str(limit), str(offset))
+        result = get_cash_flow(user_id, str(limit), str(offset), str(session_id))
 
         return jsonify(result), 200
     except Exception as e:
