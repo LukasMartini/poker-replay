@@ -1,7 +1,6 @@
 import psycopg2
 from psycopg2 import pool
 import bcrypt
-from sqlalchemy import false
 
 DB_PARAMS = {
     "host": "localhost",
