@@ -9,8 +9,13 @@ import Image from "next/image";
 import { Hand } from "@/util/utils";
 import { useAuth } from '@/components/auth/AuthContext';
 import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "./ui/table";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 Chart.register(CategoryScale);
+
+type DisplayMode = "chart" | "table";
 
 const SearchBar = () => {
     const searchParams = useSearchParams();
@@ -19,8 +24,11 @@ const SearchBar = () => {
     const [r1, setResponse1] = useState([]);
     const [r2, setResponse2] = useState([]);
     const [r3, setResponse3] = useState([]);
+    const [r4, setResponse4] = useState([]);
     const [offset, setOffset] = useState(0);
     const user = useAuth();
+    const [displayMode, setDisplayMode] = useState<DisplayMode>("chart");
+    const [inputValue, setInputValue] = useState("");
 
     var combinedData = [];
     
@@ -54,6 +62,8 @@ const SearchBar = () => {
         setResponse1(await response1.clone().json());
         setResponse2(await response2.clone().json());
         setResponse3(await response3.clone().json());
+
+        setResponse4(await response1.clone().json()); //copy data to put into table
 
         combinedData = [r1, r2, r3];
         console.log("returned data: ", combinedData);
@@ -92,6 +102,7 @@ const SearchBar = () => {
   
       setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`));
       setChartData(generateChartData(data));
+      setResponse4(data); //use the same data for table for now and change later
     };
 
 
@@ -108,32 +119,96 @@ const SearchBar = () => {
     const isLeftButtonDisabled = offset === 0 || handCount <= 30;
     const isRightButtonDisabled = offset + 30 >= handCount || handCount <= 30;
 
+    const handleDisplayModeChange = (mode: DisplayMode) => {
+      setDisplayMode(mode);
+    };
+
     return (
         <div className="relative">
+          <div className="relative w-1/2">
             <input 
-                className="peer block w-1/2 bg-[#2C2C2C] rounded-md border border-[#879195] py-[9px] pl-4 text-sm outline-2 placeholder:text-[#879195]"
+                className={`peer block w-full bg-[#2C2C2C] rounded-md border border-[#879195] py-[9px] text-sm outline-2 placeholder:text-[#879195] ${
+                    inputValue ? 'pl-4' : 'pl-8'
+                }`}
                 placeholder="Search hands"
-                defaultValue={searchParams.get('query')?.toString()}
+                value={inputValue}
                 onChange={(e) => {
+                    setInputValue(e.target.value)
                     handleSearch(e.target.value)
                 }}
             />
+            {!inputValue && (
+                <Image
+                    src="/Search.svg"
+                    alt="Magnify Glass"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#879195]"
+                    width={20}
+                    height={20}
+                />
+            )}
+          </div>
             <div className="grid grid-cols-4 gap-12 pt-12">
                 {r1.map((info: any, index) => {
                    return  <HandCard handId={info.id} played_at={info.played_at} tableName={info.table_name} key={index} />
                 })}
             </div>
-            <div className="flex justify-between translate-y-10">
-              <button onClick={handleClickLeft} disabled={isLeftButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-100 hover:scale-105">
-                <Image src={"/left-w.svg"} alt="left" width={24} height={24} />
+            <div className="flex relative pt-8">
+              <button 
+                onClick={() => handleDisplayModeChange("chart")}
+                className={`py-2 w-24 relative z-10 ${displayMode === "chart" ? "text-white" : "text-gray-400"} transition-colors duration-300`}
+              >
+                  Chart
               </button>
-
-              <button onClick={handleClickRight} disabled={isRightButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-00 hover:scale-105">
-                <Image src={"/right-w.svg"} alt="right" width={24} height={24} />
+              <button 
+                onClick={() => handleDisplayModeChange("table")}
+                className={`py-2 w-24 relative z-10 ${displayMode === "table" ? "text-white" : "text-gray-400"} transition-colors duration-300`}
+              >
+                Table
               </button>
+              <div 
+                className={`absolute bottom-0 h-0.5 w-24 bg-white transition-transform duration-300 ${displayMode === "chart" 
+                ? "transform translate-x-0" 
+                : "transform translate-x-full"}`} 
+              />
             </div>
-            <BarChart chartData={chartData} hyperlinks={links} title="Profit/Loss" subtitle="All past hands" />
-        </div>
+            {displayMode === "chart" && (
+              <div className="flex justify-between translate-y-10">
+                <button onClick={handleClickLeft} disabled={isLeftButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-100 hover:scale-105">
+                  <Image src={"/left-w.svg"} alt="left" width={24} height={24} />
+                </button>
+
+                <button onClick={handleClickRight} disabled={isRightButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-00 hover:scale-105">
+                  <Image src={"/right-w.svg"} alt="right" width={24} height={24} />
+                </button>
+              </div>
+            )}
+            {displayMode === "chart" ? (
+              <BarChart chartData={chartData} hyperlinks={links} />
+            ) : (
+              <div className="pt-8">
+              <Table>
+                <TableHeader className="text-[#31D2DD]">
+                  <TableRow>
+                    <TableCell>Hand ID</TableCell>
+                    <TableCell>Played At</TableCell>
+                    <TableCell>Table Name</TableCell>
+                    <TableCell>Amount</TableCell>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {r4.map((info: any, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{info.hand_id}</TableCell>
+                      <TableCell>{info.played_at}</TableCell>
+                      <TableCell>{info.table_name}</TableCell>
+                      <TableCell>{info.amount}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              </div>
+            )}
+      </div>
         
     )
 }
