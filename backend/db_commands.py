@@ -89,7 +89,7 @@ def get_hand_count(user_id, player_name = '-1'):
     if player_name and player_name != '-1':
         playerText=""" AND EXISTS 
             (SELECT * FROM player_cards WHERE hand_id = hand.id AND player_id = 
-                (SELECT id FROM player WHERE name = '%s')
+                (SELECT id FROM player WHERE name = %s)
             )
         """
         data.append(player_name)
