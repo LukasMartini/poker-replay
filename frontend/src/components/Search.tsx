@@ -130,7 +130,7 @@ const SearchBar = () => {
                 <Image src={"/right-w.svg"} alt="right" width={24} height={24} />
               </button>
             </div>
-            <BarChart chartData={chartData} hyperlinks={links} />
+            <BarChart chartData={chartData} hyperlinks={links} title="Profit/Loss" subtitle="All past hands" />
         </div>
         
     )
