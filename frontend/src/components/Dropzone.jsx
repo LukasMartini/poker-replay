@@ -5,7 +5,7 @@ import {useDropzone} from 'react-dropzone'
 import { Button } from './ui/button'
 import Image from 'next/image'
 import { useAuth } from "@/components/auth/AuthContext";
-import { uploadFiles } from '../lib/api-requests'
+import { uploadFiles } from '../util/api-requests'
 
 const Dropzone = ({className}) => {
     const [files, setFiles] = useState([])

@@ -4,7 +4,7 @@ import HandDetails from './HandDetails';
 import MetaData from "./MetaData";
 import Replay from './Replay';
 import { usePathname } from "next/navigation";
-import { fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/lib/api-requests";
+import { fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
 import { useAuth } from '@/components/auth/AuthContext';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;

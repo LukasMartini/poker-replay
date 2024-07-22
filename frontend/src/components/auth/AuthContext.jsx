@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect } from 'react';
 import useAuthHook from './useAuth';
-import { authorizeUser } from '../../lib/api-requests';
+import { authorizeUser } from '../../util/api-requests';
 // Define the context
 const AuthContext = createContext();
 
