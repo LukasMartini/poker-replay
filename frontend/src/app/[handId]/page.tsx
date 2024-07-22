@@ -7,10 +7,6 @@ import { usePathname } from "next/navigation";
 import { fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
 import { useAuth } from '@/components/auth/AuthContext';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-// Test with 2521 for all betting rounds.
-
 export default function GetDetails() {
     const pathname = usePathname();
     const user = useAuth();
@@ -18,7 +14,7 @@ export default function GetDetails() {
     var pn: string = "";
     if (pathname.includes("+%7")) pn = pathname.slice(1, pathname.length-4); // Hotfix for an issue where '}' is appended to the pathname.
     else pn = pathname.slice(1);
-
+    
     const [othiResult, setResponse1]: [any, any] = useState([]);
     const [paResult, setResponse2]: [any, any] = useState([]);
     const [pcResult, setResponse3]: [any, any] = useState([]);
@@ -52,7 +48,6 @@ export default function GetDetails() {
         replayDisplay = <Replay othiResult={othiResult} paResult={paResult} pcResult={pcResult} action={displayedAction}/>;
         console.log(othiResult);
     }, [displayedAction])
-
 
     const rowOnClick = (e: any) => { // Sets displayedAction's index to the name field of the HandDetails object clicked.
         setDA(e); // Updates displayedAction so that the above useEffect hook re-renders.

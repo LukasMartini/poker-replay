@@ -94,8 +94,8 @@ def cash_flow() -> Response:
 
         return jsonify(result), 200
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 403
-
+        return jsonify({"success": False, "error": str(e)}), 403 
+    
 @app.route("/api/authorize", methods=['POST'])
 @cross_origin()
 def authorize() -> Response: 

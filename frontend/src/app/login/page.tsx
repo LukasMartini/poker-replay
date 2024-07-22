@@ -4,8 +4,6 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/auth/AuthContext';
 import { loginUser } from '@/util/api-requests';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 const LoginPage = () => {
   const user = useAuth();
 
