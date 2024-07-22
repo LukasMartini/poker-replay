@@ -204,7 +204,7 @@ const PokerTable = (props) => {
   }
 
   return (
-    <svg viewBox="0 0 200 100">
+    <svg viewBox="0 0 230 100">
       <defs>
         <radialGradient id="greenGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
           <stop offset="0%" style={{ stopColor: "rgb(34,139,34)", stopOpacity: 1 }} />
