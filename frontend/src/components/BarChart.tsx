@@ -1,10 +1,12 @@
 import { Bar } from "react-chartjs-2"
 import { ChartData, ChartOptions } from 'chart.js/auto';
-import { Hand } from '../lib/utils'
+import { Hand } from "@/util/utils";
 
 interface BarChartProps {
   chartData: ChartData<'bar'>;
   hyperlinks: string[];
+  title: string;
+  subtitle: string;
 }
 
 export const generateChartData = (handData: Hand[]) => {
@@ -38,13 +40,13 @@ export const generateChartData = (handData: Hand[]) => {
   }
 }
 
-export const BarChart: React.FC<BarChartProps> = ( { chartData, hyperlinks }: any ) => {
+export const BarChart: React.FC<BarChartProps> = ( { chartData, hyperlinks, title, subtitle }: any ) => {
   
   const options: ChartOptions<'bar'> = {
     plugins: {
       title: {
         display: true,
-        text: "Profit-Loss Over Time",
+        text: subtitle,
       },
       legend: {
         display: false,
@@ -89,7 +91,7 @@ export const BarChart: React.FC<BarChartProps> = ( { chartData, hyperlinks }: an
 
   return (
     <div className="chart-container">
-      <h2 className="text-center text-2xl">Bar Chart</h2>
+      <h2 className="text-center text-2xl">{title}</h2>
       <Bar data={chartData} options={options} />
     </div>
   );

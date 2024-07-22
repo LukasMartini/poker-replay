@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { LineChart, generateSessionLineData } from "@/components/SessionLineChart";
 import { CategoryScale } from "chart.js/auto";
 import { Chart } from "chart.js";
-import { Hand } from "@/lib/utils";
+import { Hand } from "@/util/utils";
 import { BarChart, generateChartData } from "@/components/BarChart";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -65,7 +65,10 @@ export default function PlayerDetails() { // Asynchronous server component for p
     }  
 
     const isLeftButtonDisabled = offset === 0 || handCount <= windowSize;
-    const isRightButtonDisabled = offset + windowSize >= handCount || handCount <= windowSize;
+    const isRightButtonDisabled = (offset + windowSize >= handCount || handCount <= windowSize);
+    console.log(offset, windowSize, handCount, isRightButtonDisabled)
+
+    const subtitle = `Hands with ${playerName}`
 
     return (
         <div className="relative">
@@ -79,7 +82,7 @@ export default function PlayerDetails() { // Asynchronous server component for p
                 </button>
             </div>
             <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for both child components.*/}
-                <BarChart chartData={chartData} hyperlinks={links} />
+                <BarChart chartData={chartData} hyperlinks={links} title="Profit/Loss" subtitle={subtitle} />
             </div>
         </div>
     );
