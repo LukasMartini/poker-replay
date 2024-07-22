@@ -72,12 +72,35 @@ const Chip = (props) => {
 }
 
 const Stack = (props) => {
+  function calculateAverageChips(betAmount, bigBlind) {
+    const a = 1;  
+    const c = 1;  
+
+    const ratio = betAmount/bigBlind;
+    
+    if (ratio <= 0) {
+        return c;
+    }
+
+    return Math.ceil(a * (Math.log(ratio)) + c);
+  }
+
+  function chipColor(chipNum, total) {
+    const colors = ["#ffb03a", "#1e1e1e", "#3a89FF", "#ff3a3a", "#9d3aff", "#3feb00"];
+    // const ratio = chipNum/total;
+    // const index = Math.floor(Math.log(ratio + 1) / Math.log(2) * (colors.length - 1));
+    return colors[chipNum % colors.length];
+
+  }
+ 
+  const number = calculateAverageChips(props.bet || 0, props.bb || 0);
+
+
   return (
     <>
-      <Chip color="red" />
-      <Chip transform="translate(0, -40)" color="yellow" />
-      <Chip transform="translate(0, -80)" color="black" />
-      <Chip transform="translate(0, -120)" color="blue" />
+    {Array.from({ length: parseInt(number) }, (_, index) => (
+      <Chip transform={`translate(0, ${index * -40})`} color={chipColor(index, number)} />
+    ))}
     </>
   )
 }
@@ -195,10 +218,11 @@ const PokerTable = (props) => {
         <g key={index} transform={`translate(${playerOffsets[index].x}, ${playerOffsets[index].y})`}>
           <PlayerInfo username={player.name} stack={calculateStackSize(player.name, player.stack_size)} />
           {isPlayerDealer(index) && <DealerChip transform={`translate(${playerDealerChipOffsets[index].x}, ${playerDealerChipOffsets[index].y})`} />}
-          {!checkFolded(player.name) && <PokerCards cards={player.cards} />}
+          {!checkFolded(player.name) && !player.hole_card1 && <PokerCards/>}
+          {!checkFolded(player.name) && player.hole_card1 && <PokerCards cards={[parseCard(player.hole_card1), parseCard(player.hole_card2)]}/>}
           {playersLastAction(player.name) && (
             <g transform={`translate(${playerStackOffsets[index].x}, ${playerStackOffsets[index].y})`}>
-              {(playersLastAction(player.name).action_type != 'fold' && playersLastAction(player.name).action_type != 'check') && (<Stack />) }
+              {(playersLastAction(player.name).action_type != 'fold' && playersLastAction(player.name).action_type != 'check') && (<Stack bb={props.hand[0] && props.hand[0].big_blind} bet={parseFloat(playersLastAction(player.name).amount)}/>) }
               <text x="0" y="5" font-size="3.2" fill="white" text-anchor="middle" dominant-baseline="middle">
                 {playersLastAction(player.name).action_type} {playersLastAction(player.name).amount || ''}
               </text>

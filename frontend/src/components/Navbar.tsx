@@ -36,7 +36,12 @@ const Navbar = () => {
                     </p>
                 </Link>
                 {auth.token && (
-                    <Button onClick={()=>logout()} variant="secondary">Logout</Button>
+                    <>
+                        <p className="text-sm">
+                            Logged in as {auth.username}
+                        </p>
+                        <Button onClick={()=>logout()} variant="secondary">Logout</Button>
+                    </>
                 )}
 
                 {!auth.token && (
