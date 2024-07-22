@@ -240,7 +240,7 @@ cash_flow as (
 	FROM user_player, collected_hands hand
 	JOIN bet_amounts ON hand.hand_id = bet_amounts.hand_id
 )
-SELECT id, amount, hand_id
+SELECT played_at, hand_id, amount
 FROM target_player, cash_flow
 WHERE cash_flow.player_id = target_player.id
 ORDER BY played_at DESC
