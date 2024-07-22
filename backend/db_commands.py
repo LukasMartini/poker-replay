@@ -156,7 +156,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
 
     return execute_query(get_cash_flow_query, tuple(data), fetch=True)
 
-def cash_flow_to_player(user_id, player, limit="-1", offset="-1"):
+def cash_flow_to_player(user_id, player, count="-1", offset="-1"):
     data = [user_id, player, user_id]
 
     countText = ""
