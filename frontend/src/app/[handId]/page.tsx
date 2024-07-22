@@ -41,6 +41,11 @@ export default function GetDetails() {
         setResponse3(await pcResponse2.json());
     }
 
+    useEffect(() => {   
+        document.title = `Hand #${pathname.slice(1)} - PokerReplay`;
+
+    }, [])
+
     useEffect(() => {
         if (user.auth.token != null)
             handleSearch(pn);
@@ -92,7 +97,7 @@ export default function GetDetails() {
             <Button disabled={endIndex == Math.max(0, paResult.length-1)} onClick={()=>{setEndIndex(endIndex+1)}} variant="secondary">Next</Button>
 
             {
-                othiResult.length > 0 && paResult.length > 0 && pcResult.length > 0 && (
+                pcResult.length > 0 && paResult.length > 0 && ( // othiResult.length > 0 
                     <div className="svg-container" style={{ width: '100%', height: '500px' }}>
                         <PokerTable hand={othiResult} actions={paResult.slice(0, endIndex+1)} players={pcResult} />
                     </div>
