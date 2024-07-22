@@ -302,6 +302,7 @@ def player_actions_in_hand(user_id, hand_id):
     JOIN poker_session ON poker_hand.session_id = poker_session.id
     LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = %s
     WHERE player_action.hand_id = %s AND (poker_session.user_id = %s OR authorized.user_id IS NOT NULL)
+    ORDER BY player_action.id
     """
     
     return execute_query(query, (user_id, hand_id, user_id), fetch=True, return_dict=True)
