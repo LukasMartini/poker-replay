@@ -242,7 +242,7 @@ const PokerTable = (props) => {
         </g> 
       )}
       {
-        (round == "Flop" || round == "Turn" || round == "River") && (
+        (round == "Flop" || round == "Turn" || round == "River" || round == "Showdown") && (
           <>
             <g>
               <rect x="50" y="35" width="18" height="30" fill="white" stroke-width="0.5" rx="2" stroke="black" />
@@ -264,7 +264,7 @@ const PokerTable = (props) => {
         )
       }
       {
-        (round == "Turn" || round == "River") && (
+        (round == "Turn" || round == "River" || round == "Showdown") && (
           <>
             <g>
               <rect x="110" y="35" width="18" height="30" fill="white" stroke-width="0.5" rx="2" stroke="black" />
@@ -276,7 +276,7 @@ const PokerTable = (props) => {
         )
       }
       {
-        (round == "River") && (
+        (round == "River" || round == "Showdown") && (
           <>
             <g>
               <rect x="130" y="35" width="18" height="30" fill="white" stroke-width="0.5" rx="2" stroke="black" />
