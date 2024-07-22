@@ -183,7 +183,7 @@ const SearchBar = () => {
               </div>
             )}
             {displayMode === "chart" ? (
-              <BarChart chartData={chartData} hyperlinks={links} />
+              <BarChart chartData={chartData} hyperlinks={links} title="Profit/Loss" subtitle="All past hands" />
             ) : (
               <div className="pt-8">
               <Table>
