@@ -3,14 +3,16 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 
 // Helper function to get headers
-function getHeaders(token?: string): HeadersInit {
-    if (token) {
-        return {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        };
+function getHeaders(token?: string, isFormData: boolean = false): HeadersInit {
+    const headers: HeadersInit = {
+        'Authorization': `Bearer ${token || ''}`
+    };
+
+    if (!isFormData) {
+        headers['Content-Type'] = 'application/json';
     }
-    return {'Content-Type': 'application/json'};
+    
+    return headers;
 }
 
 // Function to perform GET request
@@ -23,11 +25,12 @@ async function get(endpoint: string, token?: string) {
 }
 
 // Function to perform POST request
-async function post(endpoint: string, data: object, token?: string) {
+async function post(endpoint: string, data: object | FormData, token?: string) {
+    const isFormData = data instanceof FormData;
     const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
-        headers: getHeaders(token),
-        body: JSON.stringify(data)
+        headers: getHeaders(token, isFormData),
+        body: isFormData ? data : JSON.stringify(data)
     });
     return response;
 }
