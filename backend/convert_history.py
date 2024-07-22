@@ -236,3 +236,5 @@ def parse_hand(hand, user_id, upload_id):
         if collect_match:
             player_name, amount = collect_match.groups()
             create_action(hand_id, player_name, "Showdown", "collect", amount)
+            
+    create_board(hand_id, flop_cards, turn_card, river_card)

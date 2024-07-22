@@ -4,9 +4,6 @@ function colorFromSuit(suit) {
   if (suit === '♠' || suit === '♣') {
     return 'black';
   }
-  // else if (suit === '♦' || suit === '♥') {
-  //   return 'red';
-  // }
   return 'red';
 }
 
@@ -176,6 +173,10 @@ const PokerTable = (props) => {
     return playerActions[playerActions.length - 1];
   }
 
+  function lastActionCollect() {
+    return props.actions[props.actions.length - 1] && props.actions[props.actions.length - 1].action_type == 'collect';
+  }
+
   function checkFolded(name) {
     const playerActions = props.actions.filter(action => action.name === name);
     if (playerActions.length > 0 && playerActions[playerActions.length - 1].action_type == 'fold') {
@@ -197,7 +198,7 @@ const PokerTable = (props) => {
     const bets = playerActions.reduce((total, action) => total + parseFloat(action.amount), 0).toFixed(2);
     if (didWin.length >0) {
       if (didWin[0] && didWin[0].action_type == 'collect') {
-        stack_size = parseFloat(stack_size) + parseFloat(calculatePot());
+        return parseFloat(stack_size) + parseFloat(didWin[0].amount);
       }  
     }
     return (stack_size - bets).toFixed(2);
@@ -231,7 +232,8 @@ const PokerTable = (props) => {
           }
         </g>
       ))}
-      {round != "Preflop" && round != "Showdown" && (
+      {console.log(lastActionCollect()  )}
+      {round != "Preflop" && round != "Showdown" && !lastActionCollect() && (
         <g transform="translate(87, 27)">
           <circle cx="4" cy="3.5" r="3" fill="grey" />
           <rect x="4" y="0.5" width="16" height="6" fill="grey" />
@@ -242,7 +244,7 @@ const PokerTable = (props) => {
         </g> 
       )}
       {
-        (round == "Flop" || round == "Turn" || round == "River") && (
+        (round == "Flop" || round == "Turn" || round == "River" || round == "Showdown") && (
           <>
             <g>
               <rect x="50" y="35" width="18" height="30" fill="white" stroke-width="0.5" rx="2" stroke="black" />
@@ -264,7 +266,7 @@ const PokerTable = (props) => {
         )
       }
       {
-        (round == "Turn" || round == "River") && (
+        (round == "Turn" || round == "River" || round == "Showdown") && (
           <>
             <g>
               <rect x="110" y="35" width="18" height="30" fill="white" stroke-width="0.5" rx="2" stroke="black" />
@@ -276,7 +278,7 @@ const PokerTable = (props) => {
         )
       }
       {
-        (round == "River") && (
+        (round == "River" || round == "Showdown") && (
           <>
             <g>
               <rect x="130" y="35" width="18" height="30" fill="white" stroke-width="0.5" rx="2" stroke="black" />
