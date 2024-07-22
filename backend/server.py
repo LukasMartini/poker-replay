@@ -52,7 +52,9 @@ def player_actions(id: int) -> Response:
 @app.route("/api/player_cards/<int:id>", methods=['GET'])
 @cross_origin()
 def player_cards(id: int) -> Response:
-    data = player_cards_in_hand(id)
+    playerName = request.args.get("playername", default=-1, type = str)
+    
+    data = player_cards_in_hand(id, playerName)
 
     return jsonify(data), 200
 
@@ -71,8 +73,12 @@ def cash_flow(id: int) -> Response:
     limit = request.args.get("limit", default=30, type = int)
     offset = request.args.get("offset", default=-1, type = int)
     session_id = request.args.get("sessionid", default = -1, type = int)
+    playername = request.args.get("playername", default="-1", type = str) # don't ask why a strings default is "-1"
 
-    result = get_cash_flow(str(id), str(limit), str(offset), str(session_id))
+    if (playername == "-1"):
+        result = get_cash_flow(str(id), str(limit), str(offset), str(session_id))
+    else:
+        result = cash_flow_to_player(str(id), playername, str(limit), str(offset))
     data = [{
         "played_at": row[0],
         "hand_id": row[1],
