@@ -51,17 +51,17 @@ def player_actions(id: int) -> Response:
 
 @app.route("/api/player_cards/<int:id>", methods=['GET'])
 @cross_origin()
-def player_cards(id: int) -> Response:
-    playerName = request.args.get("playername", default=-1, type = str)
-    
-    data = player_cards_in_hand(id, playerName)
+def player_cards(id: int) -> Response:    
+    data = player_cards_in_hand(id)
 
     return jsonify(data), 200
 
 @app.route("/api/hand_count/<int:id>", methods=['GET'])
 @cross_origin()
 def hand_quantity(id: int) -> Response:
-    result = get_hand_count(str(id))
+    playername = request.args.get("playername", default=-1, type = str)
+
+    result = get_hand_count(str(id), playername)
     data = [{"hands": result[0][0]}]
 
     return jsonify(data), 200

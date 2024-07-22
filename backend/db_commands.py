@@ -80,7 +80,7 @@ def update_upload_status(upload_id: int, status: str):
     """
     execute_query(query, (status, upload_id))
 
-def get_hand_count(user_id, player_name: str):
+def get_hand_count(user_id, player_name = '-1'):
     '''Gets the number of hands registered for a user_id.'''
 
     data = [user_id]
