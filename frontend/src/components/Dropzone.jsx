@@ -4,10 +4,12 @@ import React, {useCallback, useState} from 'react'
 import {useDropzone} from 'react-dropzone'
 import { Button } from './ui/button'
 import Image from 'next/image'
-
+import { useAuth } from "@/components/auth/AuthContext";
+import { uploadFiles } from '../util/api-requests'
 
 const Dropzone = ({className}) => {
     const [files, setFiles] = useState([])
+    const user = useAuth();
 
     const onDrop = useCallback(acceptedFiles => {
         if (acceptedFiles?.length) {
@@ -48,13 +50,7 @@ const Dropzone = ({className}) => {
         });
 
         try {
-            const res = await fetch('http://146.190.240.220/api/upload', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            })
+            const res = await uploadFiles(formData, user.auth.token);
 
             if (res.ok) {
                 const result = await res.json();
