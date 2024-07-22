@@ -88,6 +88,7 @@ def update_upload_status(upload_id: int, status: str):
 
 def get_hand_count(user_id, session_id = '-1', player_name = '-1'):
     '''Gets the number of hands registered for a user_id.'''
+    print("Fetching hand count for", user_id)
 
     data = [user_id]
 
