@@ -9,7 +9,7 @@ import { CategoryScale } from "chart.js/auto";
 import { Chart } from "chart.js";
 import { Hand } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthContext";
-import { fetchCashFlow } from "@/lib/api-requests";
+import { fetchCashFlow } from "@/util/api-requests";
 
 Chart.register(CategoryScale);
 

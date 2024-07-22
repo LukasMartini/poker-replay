@@ -8,7 +8,7 @@ import HandCard from "@/components/HandCard";
 import Image from "next/image";
 import { Hand } from "@/lib/utils";
 import { useAuth } from '@/components/auth/AuthContext';
-import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/lib/api-requests";
+import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
 
 Chart.register(CategoryScale);
 

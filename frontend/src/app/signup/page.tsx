@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { signupUser } from '@/lib/api-requests';
+import { signupUser } from '@/util/api-requests';
 
 const handleSubmit = async (event: any) => {
   event.preventDefault();

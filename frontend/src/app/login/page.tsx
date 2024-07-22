@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/auth/AuthContext';
-import { loginUser } from '@/lib/api-requests';
+import { loginUser } from '@/util/api-requests';
 
 const LoginPage = () => {
   const user = useAuth();

@@ -4,7 +4,7 @@ import MetaData from "./MetaData";
 import TableData from "./TableData";
 import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { usePathname } from "next/navigation";
-import { fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/lib/api-requests";
+import { fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
 import { useAuth } from '@/components/auth/AuthContext';
 
 
