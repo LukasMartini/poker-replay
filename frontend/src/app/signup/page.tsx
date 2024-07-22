@@ -37,32 +37,37 @@ const SignupPage = () => {
           Sign up for PokerReplay
       </h1>
       <br/><br/>
-      <form encType='multipart/form-data' onSubmit={handleSubmit} className="mx-auto max-w-xs p-8 space-y-4 bg-[#232323] rounded-lg shadow-md">
+      <form encType='multipart/form-data' onSubmit={handleSubmit} className="mx-auto w-full max-w-xs space-y-4 bg-[#2C2C2C]">
         <input
-          className="w-full bg-gray-800 rounded-md border border-gray-400 py-2 px-4 text-sm text-white placeholder-gray-400"
+          className="w-full bg-[#2C2C2C] rounded-md border border-white py-2 px-4 text-sm text-white"
           type="email"
           name="email"
           placeholder="Email address"
         />
         <input
-          className="w-full bg-gray-800 rounded-md border border-gray-400 py-2 px-4 text-sm text-white placeholder-gray-400"
+          className="w-full bg-[#2C2C2C] rounded-md border border-white py-2 px-4 text-sm text-white"
           type="text"
           name="username"
           placeholder="Username"
         />
         <input
-          className="w-full bg-gray-800 rounded-md border border-gray-400 py-2 px-4 text-sm text-white placeholder-gray-400"
+          className="w-full bg-[#2C2C2C] rounded-md border border-white py-2 px-4 text-sm text-white"
           type="password"
           name="password"
           placeholder="Password"
         />
         <input
-          className="w-full bg-gray-800 rounded-md border border-gray-400 py-2 px-4 text-sm text-white placeholder-gray-400"
+          className="w-full bg-[#2C2C2C] rounded-md border border-white py-2 px-4 text-sm text-white"
           type="password"
           name="confirm_password"
           placeholder="Confirm Password"
         />
-        <Button className="w-full" type='submit'>Sign Up</Button>
+        <Button className="w-full bg-gradient-to-r from-[#2CBDC7] to-[#C074E4]" type='submit'>Sign Up</Button>
+        <div className="flex flex-cols px-12 text-xs">
+              <h1>Already have an account?</h1>
+              <h1>&nbsp;</h1>
+              <u className="hover:text-[#2CBDC7]" onClick={() => window.location.href = "http://localhost:3000/login"}>Log in</u>
+            </div>
       </form>
     </div>
   )
