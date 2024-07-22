@@ -86,18 +86,25 @@ def update_upload_status(upload_id: int, status: str):
     """
     execute_query(query, (status, upload_id))
 
-def get_hand_count(user_id):
+def get_hand_count(user_id, session_id):
     '''Gets the number of hands registered for a user_id.'''
 
-    get_hand_query="""
+    data = [user_id]
+
+    sessionText = ""
+    if session_id and session_id != '-1':
+        sessionText = "AND session.id = %s"
+        data.append(session_id)
+
+    get_hand_query=f"""
     SELECT COUNT(*) hands
     FROM poker_session session
     JOIN poker_hand hand ON session.id = hand.session_id
-    WHERE user_id = %s AND session.game_type = 'Cash'
+    WHERE user_id = %s {sessionText} AND session.game_type = 'Cash'
     """
-    return execute_query(get_hand_query, (user_id,), fetch=True, return_dict=True)
+    return execute_query(get_hand_query, tuple(data), fetch=True, return_dict=True)
 
-def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
+def get_cash_flow(user_id, count='30', offset='-1', session_id='-1', ascdes = "DESC"):
     '''Returns the cash flow from a user_id for [count] hands starting from their [offset] most recent hand.'''
 
     data = [user_id, user_id]
@@ -144,7 +151,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
     FROM hands hand
     JOIN bet_amounts on hand.id = bet_amounts.hand_id
     GROUP BY hand.id, played_at
-    ORDER BY played_at DESC
+    ORDER BY played_at {ascdes}
     {countText}
     {offsetText}
     """

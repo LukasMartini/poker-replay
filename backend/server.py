@@ -73,11 +73,11 @@ def player_cards(id: int) -> Response:
 def hand_quantity() -> Response:
     try:
         user_id = auth(request.headers.get("Authorization"))
-        result = get_hand_count(user_id)
+        session_id = request.args.get("sessionid", default = -1, type = int)
+        result = get_hand_count(str(id), str(session_id))
 
         return jsonify(result), 200
     except Exception as e:
-
         return jsonify({"success": False, "error": str(e)}), 403
 
 @app.route("/api/cash_flow", methods=['GET'])
@@ -89,8 +89,11 @@ def cash_flow() -> Response:
         limit = request.args.get("limit", default=30, type = int)
         offset = request.args.get("offset", default=-1, type = int)
         session_id = request.args.get("sessionid", default = -1, type = int)
+        ascendingDescending = request.args.get("descending", default='t', type = str)
+        if (ascendingDescending == 't'): ascendingDescending = "DESC"
+        else: ascendingDescending = "ASC"
 
-        result = get_cash_flow(user_id, str(limit), str(offset), str(session_id))
+        result = get_cash_flow(str(id), str(limit), str(offset), str(session_id), ascendingDescending)
 
         return jsonify(result), 200
     except Exception as e:

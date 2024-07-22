@@ -6,7 +6,7 @@ import { CategoryScale } from "chart.js";
 import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
 import Image from "next/image";
-import { Hand } from "@/lib/utils";
+import { Hand } from "@/util/utils";
 import { useAuth } from '@/components/auth/AuthContext';
 import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
 

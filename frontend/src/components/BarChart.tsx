@@ -1,6 +1,6 @@
 import { Bar } from "react-chartjs-2"
 import { ChartData, ChartOptions } from 'chart.js/auto';
-import { Hand } from '../lib/utils'
+import { Hand } from "@/util/utils";
 
 interface BarChartProps {
   chartData: ChartData<'bar'>;
