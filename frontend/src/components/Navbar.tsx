@@ -30,6 +30,11 @@ const Navbar = () => {
                         Add history
                     </p>
                 </Link>
+                <Link href={`/profile/${auth.username}`}>
+                    <p className="text-sm">
+                        Profile
+                    </p>
+                </Link>
                 {auth.token && (
                     <Button onClick={()=>logout()} variant="secondary">Logout</Button>
                 )}

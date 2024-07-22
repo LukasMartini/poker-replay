@@ -19,16 +19,15 @@ export default function HandDetails() { // Asynchronous server component for pul
     let rows: Array<any> = [];
 
     const handleSearch = async (searchTerm: string) => {
+        
         const token = user.auth.token;
         const othiResponse2 = await fetchHandSummary(searchTerm, token);
         const paResponse2 = await fetchPlayerActions(searchTerm, token);
         const pcResponse2 = await fetchPlayerCards(searchTerm, token);
-
+        
         setResponse1(await othiResponse2.json());
         setResponse2(await paResponse2.json());
         setResponse3(await pcResponse2.json());
-
-        console.log(rows);
     }
 
     useEffect(() => {
@@ -51,10 +50,6 @@ export default function HandDetails() { // Asynchronous server component for pul
                 player_name={paResult[i].name} card_1={pcResult[pc_index].hole_card1} card_2={pcResult[pc_index].hole_card2}/>);
         }
     }
-
-    console.log(othiResult)
-    console.log(paResult);
-    console.log(pcResult);
 
 
     return (
