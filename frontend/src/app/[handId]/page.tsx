@@ -1,20 +1,23 @@
 "use client";
 import { useState, useEffect } from "react";
+import HandDetails from './HandDetails';
 import MetaData from "./MetaData";
-import TableData from "./TableData";
-import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
+import Replay from './Replay';
 import { usePathname } from "next/navigation";
 import { fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
 import { useAuth } from '@/components/auth/AuthContext';
 
-
-export default function HandDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
+export default function GetDetails() {
     const pathname = usePathname();
     const user = useAuth();
-
+    
+    var pn: string = "";
+    if (pathname.includes("+%7")) pn = pathname.slice(1, pathname.length-4); // Hotfix for an issue where '}' is appended to the pathname.
+    else pn = pathname.slice(1);
+    
     const [othiResult, setResponse1]: [any, any] = useState([]);
-    const [paResult, setResponse2] : [any, any] = useState([]);
-    const [pcResult, setResponse3] : [any, any] = useState([]);
+    const [paResult, setResponse2]: [any, any] = useState([]);
+    const [pcResult, setResponse3]: [any, any] = useState([]);
 
     let rows: Array<any> = [];
 
@@ -32,46 +35,66 @@ export default function HandDetails() { // Asynchronous server component for pul
 
     useEffect(() => {
         if (user.auth.token != null)
-            handleSearch(pathname.slice(1));
+            handleSearch(pn);
     }, [user])
 
-    var pc_index: number = 0;
-    if (paResult && pcResult && pcResult[0]) {
-        for (var i = 0; i < paResult.length; i++) { // Create a variable number of rows equal to the number of actions.
-            for (var card_index = 0; card_index < pcResult.length; card_index++) { // Find tuples from player_cards related to a given player id
-            
-                if (paResult[i].player_id === pcResult[card_index].player_id) {
-                    pc_index = card_index;
-                    break;
-                }
-            }
+    // Note that there should never be a '-1' action number by virtue of the way they are assigned.
+    // See the for loop below.
+    const [displayedAction, setDA] = useState(-1); // Necessary for making the useEffect update.
+    let replayDisplay: any = <Replay othiResult={othiResult} paResult={paResult} pcResult={pcResult} action={displayedAction}/>;
 
-            rows.push(<TableData betting_round={paResult[i].betting_round} betting_amount={paResult[i].amount} 
-                player_name={paResult[i].name} card_1={pcResult[pc_index].hole_card1} card_2={pcResult[pc_index].hole_card2}/>);
+    // This useEffect hook re-renders with the updated Replay component whenever displayedAction is set.
+    useEffect(() => { 
+        replayDisplay = <Replay othiResult={othiResult} paResult={paResult} pcResult={pcResult} action={displayedAction}/>;
+        console.log(othiResult);
+    }, [displayedAction])
+
+    const rowOnClick = (e: any) => { // Sets displayedAction's index to the name field of the HandDetails object clicked.
+        setDA(e); // Updates displayedAction so that the above useEffect hook re-renders.
+    }
+
+    // Assigns the necessary details to each HandDetails summary and pushes them to rows for display in the JSX.
+    if (othiResult[0] && paResult && pcResult && pcResult[0]) { // Forces the code to wait for all the dependencies to exist.
+        for (var action = 0; action < paResult.length; action++) {
+            rows.push(<div className="py-2">
+                        <HandDetails name={action} row={[paResult[action].name, paResult[action].betting_round, 
+                        paResult[action].action_type, paResult[action].amount, 
+                        othiResult[0].flop_card1, othiResult[0].flop_card2, othiResult[0].flop_card3,
+                        othiResult[0].turn_card, othiResult[0].river_card]} onClick={rowOnClick}/></div>)
         }
     }
 
+    const handlePrevClick = () => {
+        if (displayedAction > 0) {
+            setDA(displayedAction - 1);
+        }
+    }
 
+    const handleNextClick = () => {
+        if (displayedAction < paResult.length-1) {
+            setDA(displayedAction + 1);
+        }
+    }
+    
+    // The styling below allows the summaries to be scrolled separately.
     return (
-       
-        <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for both child components.*/}
-            <MetaData handID={pathname.slice(1)} tableName={othiResult[0] && othiResult[0].table_name} timestamp={othiResult[0] && othiResult[0].played_at}/>
-
-            <Table> 
-                <TableHeader className="text-[#31D2DD]">
-                    <TableRow>
-                    <TableHead>Betting Round</TableHead> {/* player_actions.betting_round */}
-                    <TableHead>Betting Amount</TableHead> {/* player_actions.amount */}
-                    <TableHead>Player</TableHead> {/* player.name (from player_actions) */}
-                    <TableHead className="w-[100px]">Card 1</TableHead>  {/* player_cards */}
-                    <TableHead className="w-[100px]">Card 2</TableHead> 
-                    </TableRow>
-                </TableHeader>
-                {rows}
-
-            </Table>
-
-            
+        <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for all child components.*/}
+            <div dir="ltr" className="flex flex-row justify-between py-8">
+                <div style={{width:"20cm", height:"75vh", overflow:"scroll"}} className="flex flex-col"> {/* Contains MetaData, Replay display, and pagination interface. */}
+                    <MetaData handID={pn} tableName={othiResult[0] && othiResult[0].table_name} 
+                        timestamp={othiResult[0] && othiResult[0].played_at}/>
+                    {replayDisplay}
+                    <div style={{margin:"auto"}}>
+                        <button onClick={() => handlePrevClick()} className="px-10 bg-[#2CBDC7] text-[#2C2C2C] hover:bg-[#31D2DD]">
+                            Previous</button>
+                        <button onClick={() => handleNextClick()} className="px-10 bg-[#2CBDC7] text-[#2C2C2C] hover:bg-[#31D2DD]">
+                            Next</button>
+                    </div>
+                </div>
+                <div style={{width:"8cm", height:"80vh", overflow:"scroll"}} className="flex flex-col"> {/* Contains HandDetails side bar. */}
+                    {rows}
+                </div>
+            </div>
         </div>
     );
 }
