@@ -150,15 +150,28 @@ def one_time_hand_info(hand_id):
     cur = conn.cursor()
     cur.execute(f'''SELECT poker_hand.id, poker_hand.session_id, poker_hand.total_pot, poker_hand.rake,
                     poker_hand.played_at, poker_session.table_name, poker_session.game_type, poker_hand.small_blind,
-                    poker_hand.big_blind, board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
-                    board_cards.turn_card, board_cards.river_card
-                    FROM poker_hand, poker_session, board_cards
-                    WHERE poker_hand.id = {hand_id} AND poker_hand.session_id = poker_session.id AND board_cards.hand_id = {hand_id}''')
+                    poker_hand.big_blind
+                    FROM poker_hand, poker_session
+                    WHERE poker_hand.id = {hand_id} AND poker_hand.session_id = poker_session.id''')
     result = cur.fetchall()
     column_names = [description[0] for description in cur.description]
     data = [dict(zip(column_names, row)) for row in result]
     
     return data
+
+def board_cards(hand_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(f'''SELECT board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
+                            board_cards.turn_card, board_cards.river_card
+                    FROM board_cards
+                    WHERE board_cards.hand_id = {hand_id}''')
+    result = cur.fetchall()
+    column_names = [description[0] for description in cur.description]
+    data = [dict(zip(column_names, row)) for row in result]
+
+    return data
+
 
 def player_actions_in_hand(hand_id):
     conn = get_db_connection()

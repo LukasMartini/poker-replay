@@ -7,7 +7,7 @@ import bcrypt
 from datetime import datetime, timedelta
 
 from db_commands import get_db_connection, get_hand_count, get_cash_flow, profile_data
-from db_commands import one_time_hand_info, player_actions_in_hand, player_cards_in_hand
+from db_commands import one_time_hand_info, player_actions_in_hand, player_cards_in_hand, board_cards
 from convert_history import process_file
 
 
@@ -40,6 +40,13 @@ def auth(auth_header):
 @cross_origin()
 def hand_summary(id: int) -> Response:
     data = one_time_hand_info(id)
+
+    return jsonify(data), 200
+
+@app.route('/api/board_cards/<int:id>', methods=['GET'])
+@cross_origin()
+def b_cs(id: int) -> Response:
+    data = board_cards(id)
 
     return jsonify(data), 200
 

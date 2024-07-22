@@ -14,6 +14,7 @@ export default function HandDetails() { // Asynchronous server component for pul
     const pathname = usePathname();
 
     const [othiResult, setResponse1]: [any, any] = useState([]);
+    const [bcResult, setResponseBC]: [any, any] = useState([]);
     const [paResult, setResponse2] : [any, any] = useState([]);
     const [pcResult, setResponse3] : [any, any] = useState([]);
 
@@ -21,16 +22,14 @@ export default function HandDetails() { // Asynchronous server component for pul
 
     const handleSearch = async (searchTerm: string) => {
         const othiResponse2 = await fetch(`${API_URL}hand_summary/${searchTerm}`);
+        const bcResponse2 = await fetch(`${API_URL}board_cards/${searchTerm}`);
         const paResponse2 = await fetch(`${API_URL}player_actions/${searchTerm}`);
         const pcResponse2 = await fetch(`${API_URL}player_cards/${searchTerm}`);
 
         setResponse1(await othiResponse2.json());
+        setResponseBC(await bcResponse2.json());
         setResponse2(await paResponse2.json());
         setResponse3(await pcResponse2.json());
-
-
-
-        console.log(rows);
     }
 
     useEffect(() => {
