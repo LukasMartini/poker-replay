@@ -17,8 +17,8 @@ export default function SessionDetails() { // Asynchronous server component for 
     var [chartData, setChartData] = useState(generateSessionLineData([]));
     var [links, setLinks] = useState([]);
     var [offset, setOffset] = useState(0);
-    var oldOffset = 0; // stores the offset before an update
-    var trendStack = [0]; // store a stack of the profit trends for the first item in each data range, for moving the window left and re-setting the trend
+    var [oldOffset, setOldOffset] = useState(-1); // stores the offset before an update
+    var [trendStack, setTrendStack] = useState([0]); // store a stack of the profit trends for the first item in each data range, for moving the window left and re-setting the trend
     var [handCount, setHandCount] = useState(0);
 
     const pathname = usePathname();
@@ -37,6 +37,11 @@ export default function SessionDetails() { // Asynchronous server component for 
     }, [])
   
     const fetchHandData = async () => { 
+        // if we aren't rendering the start, and nothing has moved, don't do anything
+        if (offset == oldOffset) return;
+        console.log(`Fetching hand data from offset ${offset}`);
+        console.log(`Current trend stack is `, trendStack);
+
         // Run SQL queries to fetch appropriate data. See server.py for further information.
          // TODO: use cached user
         await fetch(`${API_URL}cash_flow/1?sessionid=${session}&limit=${windowSize}&offset=${offset}&descending=no`, {
@@ -44,11 +49,12 @@ export default function SessionDetails() { // Asynchronous server component for 
         })
             .then(resp => resp.json())
             .then(data => {
+
                 // if the offset is 0, the starting trend must be zero
                 if (offset == 0) {
-                    trendStack = [0];
+                    setTrendStack([0]);
                     setChartData(generateSessionLineData(data));
-                }
+                    }
                 // if the window has moved right
                 else if (oldOffset < offset) {
                     // update the new data to be offset by the last item in this data
@@ -58,21 +64,24 @@ export default function SessionDetails() { // Asynchronous server component for 
                         ]);
 
                     // now push the starting offset to the stack
-                    trendStack.push(newData.datasets[0].data[0]);
+                    trendStack.push(newData.datasets[0].data[0])
+                    setTrendStack(trendStack);
 
                     setChartData(newData);
                 }
                 // if the window has moved left (or not at all)
                 else {
+                    trendStack.pop();
+                    setTrendStack(trendStack);
                     // if it hasn't moved, it must be at offset 0, with the value we have saved (perfectly retraces steps)
                     setChartData(generateSessionLineData(data, [
-                        trendStack.pop() ?? 0,
+                        trendStack.at(-1) ?? 0,
                         0
                     ]));
                 }
 
                 // new data has been processed, so update oldOffset
-                oldOffset = offset;
+                setOldOffset(offset);
 
                 setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`))
             });
