@@ -166,7 +166,8 @@ def player_actions_in_hand(hand_id):
     cur.execute(f'''SELECT player.id as player_id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 
                     player_action.amount, player_action.betting_round
                     FROM player, player_action
-                    WHERE player_action.hand_id = {hand_id} AND player_action.player_id = player.id''')
+                    WHERE player_action.hand_id = {hand_id} AND player_action.player_id = player.id
+                    ORDER BY player_action.id''')
     result = cur.fetchall()
     column_names = [description[0] for description in cur.description]
     data = [dict(zip(column_names, row)) for row in result]
