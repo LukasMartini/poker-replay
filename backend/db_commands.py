@@ -155,17 +155,34 @@ def one_time_hand_info(user_id, hand_id):
     query = """
     SELECT poker_hand.id, poker_hand.session_id, poker_hand.total_pot, poker_hand.rake,
            poker_hand.played_at, poker_session.table_name, poker_session.game_type, poker_hand.small_blind,
-           poker_hand.big_blind, board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
+           poker_hand.big_blind, 
+           board_cards.flop_card1, board_cards.flop_card2, board_cards.flop_card3,
            board_cards.turn_card, board_cards.river_card
     FROM poker_hand
     JOIN poker_session ON poker_hand.session_id = poker_session.id
-    JOIN board_cards ON board_cards.hand_id = poker_hand.id
+    LEFT JOIN board_cards ON board_cards.hand_id = poker_hand.id
     LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = %s
     WHERE poker_hand.id = %s AND (poker_session.user_id = %s OR authorized.user_id IS NOT NULL)
     """
     
     return execute_query(query, (user_id, hand_id, user_id), fetch=True, return_dict=True)
 
+def profile_data(username: str):
+    user_data_query = ("""SELECT username, email, created_at FROM users WHERE '%s' = username""" % username)
+
+    uploads_query = ("""SELECT uploads.id as upload_id, uploads.file_name, uploads.uploaded_at
+                       FROM (SELECT users.id FROM users WHERE '%s' = username) us, uploads
+                       WHERE us.id = uploads.user_id""" % username)
+    
+    sessions_query = ("""SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time, s.id
+                        FROM poker_session as s, (SELECT users.id as usid, uploads.id as upid FROM users, uploads WHERE users.username = '%s' AND users.id = uploads.user_id) us
+                        WHERE s.user_id = us.usid AND s.upload_id = us.upid""" % username)
+
+    data = [execute_query(user_data_query, fetch=True),
+            execute_query(uploads_query, fetch=True),
+            execute_query(sessions_query, fetch=True)]
+    
+    return data
 def player_actions_in_hand(user_id, hand_id):
     query = """
     SELECT player.id as player_id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 

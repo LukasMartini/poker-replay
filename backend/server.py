@@ -157,8 +157,6 @@ def login():
 @cross_origin()
 def profile(username: str) -> Response:
     result = profile_data(username)
-    
-    print(result)
 
     return jsonify(result), 200
 

@@ -7,11 +7,12 @@ interface StaticDataProps {
 }
 
 export default function StaticData(props: StaticDataProps) {
+
     return (
         <div>
-            <h1>{props.username}</h1>
-            <h1>{props.email}</h1>
-            <h1>{props.created_at}</h1>
+            <p className="text-7xl">{props.username}</p>
+            <p className="text-2xl">{props.email}</p>
+            <p>Created On: {props.created_at}</p>
         </div>
     )
 }

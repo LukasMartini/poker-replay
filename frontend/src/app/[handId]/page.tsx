@@ -26,11 +26,12 @@ export default function GetDetails() {
     let rows: Array<any> = [];
 
     const handleSearch = async (searchTerm: string) => {
+        
         const token = user.auth.token;
         const othiResponse2 = await fetchHandSummary(searchTerm, token);
         const paResponse2 = await fetchPlayerActions(searchTerm, token);
         const pcResponse2 = await fetchPlayerCards(searchTerm, token);
-
+        
         setResponse1(await othiResponse2.json());
         setResponse2(await paResponse2.json());
         setResponse3(await pcResponse2.json());
