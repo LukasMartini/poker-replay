@@ -8,7 +8,7 @@ import HandCard from "@/components/HandCard";
 import Image from "next/image";
 import { Hand } from "@/util/utils";
 import { useAuth } from '@/components/auth/AuthContext';
-import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards, fetchSessions, fetchPlayerSearch } from "@/util/api-requests";
+import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchSessions, fetchPlayerSearch } from "@/util/api-requests";
 import SessionTable from "./SessionTable";
 
 import Link from 'next/link';
@@ -161,7 +161,7 @@ const SearchBar = () => {
         <div className="relative">
           <div className="relative w-1/2">
             <input 
-                className="peer block w-1/2 bg-[#2C2C2C] rounded-md border border-[#879195] py-[9px] pl-4 text-sm placeholder:text-[#879195] focus:outline-none"
+                className="peer block w-1/2 bg-[#2C2C2C] rounded-md border border-[#879195] py-[9px] pl-8 text-sm placeholder:text-[#879195] focus:outline-none"
                 placeholder="Search player / hand ID"
                 defaultValue={searchParams.get('query')?.toString()}
                 onChange={(e) => {
@@ -172,7 +172,7 @@ const SearchBar = () => {
                 onBlur={() => setIsInputFocused(false)}
                 onKeyDown={handleKeyDown}
             />
-            {!inputValue && (
+            {(
                 <Image
                     src="/Search.svg"
                     alt="Magnify Glass"

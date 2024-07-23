@@ -88,7 +88,6 @@ def update_upload_status(upload_id: int, status: str):
 
 def get_hand_count(user_id, session_id = '-1', player_name = '-1'):
     '''Gets the number of hands registered for a user_id.'''
-    print("Fetching hand count for", user_id)
 
     data = [user_id]
 
@@ -171,7 +170,6 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1', ascdes = "D
     """
 
     returnData = execute_query(get_cash_flow_query, tuple(data), fetch=True, return_dict=True)
-    print(returnData)
     return returnData
 
 def one_time_hand_info(user_id, hand_id):
