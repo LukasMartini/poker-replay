@@ -172,9 +172,14 @@ def login():
 @app.route("/api/profile/<string:username>", methods=['GET'])
 @cross_origin()
 def profile(username: str) -> Response:
-    result = profile_data(username)
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        result = profile_data(username)
 
-    return jsonify(result), 200
+        return jsonify(result), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": "bad"}), 403 
 
 @app.route('/api/upload', methods=['POST'])
 @cross_origin()
