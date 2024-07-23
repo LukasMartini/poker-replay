@@ -27,8 +27,10 @@ export default function ProfileView() {
         if (pathname === "null") { // If the user is not logged in, redirect to the login page.
             window.location.href = `${ROOT_URL}login`;
         }
-        handleQuery(pathname);
-    }, [])
+
+        if (user.auth.token != null)
+         handleQuery(pathname);
+    }, [user])
 
     return (
         <div className="bg-[#2C2C2C] text-white px-16">
