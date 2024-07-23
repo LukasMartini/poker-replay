@@ -1,6 +1,6 @@
 "use client"
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Chart from 'chart.js/auto';
 import { CategoryScale } from "chart.js";
 import { BarChart, generateChartData } from "./BarChart";
@@ -8,6 +8,7 @@ import HandCard from "@/components/HandCard";
 import Image from "next/image";
 import { Hand } from "@/util/utils";
 import { useAuth } from '@/components/auth/AuthContext';
+import Link from 'next/link';
 import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards, fetchPlayerSearch } from "@/util/api-requests";
 
 Chart.register(CategoryScale);
@@ -17,21 +18,17 @@ const SearchBar = () => {
     const pathname = usePathname();
     const { replace } = useRouter();
     const [r1, setResponse1] = useState([]);
-    const [r2, setResponse2] = useState([]);
-    const [r3, setResponse3] = useState([]);
     const [offset, setOffset] = useState(0);
     const [playerMatches, setPlayerMatches] = useState([]);
+    const [isInputFocused, setIsInputFocused] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(-1);
     const user = useAuth();
 
-    var combinedData = [];
-    
-    var response1 = new Response();
-    var response2 = new Response();
-    var response3 = new Response();
-
-    var [handCount, setHandCount] = useState(0); // this *should* be useState, not required until pagination
+    var [handCount, setHandCount] = useState(0);
     var [chartData, setChartData] = useState(generateChartData([]));
     var [links, setLinks] = useState([]);
+    
+    var response1 = new Response();
 
     useEffect(() => {
       if (user.auth.token != null) {
@@ -52,21 +49,15 @@ const SearchBar = () => {
         if (searchTerm) {
           if (!isNaN(parseInt(searchTerm))) {
             response1 = await fetchHandSummary(searchTerm, token);
-            response2 = await fetchPlayerActions(searchTerm, token);
-            response3 = await fetchPlayerCards(searchTerm, token);
-
             setResponse1(await response1.clone().json());
-            setResponse2(await response2.clone().json());
-            setResponse3(await response3.clone().json());
-
           } else {
-            console.log("Searching for: ", searchTerm);
             const playerMatchesResponse = await fetchPlayerSearch(searchTerm, token);
             setPlayerMatches(await playerMatchesResponse.clone().json());
-            console.log(playerMatches);
+            setSelectedIndex(-1); // Reset selection index when search results change
           }
         } else {
           setPlayerMatches([]);
+          setSelectedIndex(-1); // Reset selection index when search term is cleared
         }
     }
 
@@ -97,12 +88,29 @@ const SearchBar = () => {
         console.log("Cash flow request returned undefined");    
         return;
       }
-
-      console.log(data);
   
       setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`));
       setChartData(generateChartData(data));
     };
+
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "ArrowDown") {
+            setSelectedIndex((prevIndex) => {
+                const newIndex = prevIndex + 1;
+                return newIndex < playerMatches.length ? newIndex : playerMatches.length - 1;
+            });
+        } else if (e.key === "ArrowUp") {
+            setSelectedIndex((prevIndex) => {
+                const newIndex = prevIndex - 1;
+                return newIndex >= -1 ? newIndex : -1;
+            });
+        } else if (e.key === "Enter" && selectedIndex >= 0) {
+            if (playerMatches.length === 1) {
+                replace(`/player/${playerMatches[0][1]}`);
+            }
+            replace(`/player/${playerMatches[selectedIndex][1]}`);
+        }
+    }, [playerMatches, selectedIndex, replace]);
 
     const handleClickLeft = () => {
       setOffset((prevOffset) => Math.max(prevOffset - 30, 0));
@@ -120,17 +128,24 @@ const SearchBar = () => {
     return (
         <div className="relative">
             <input 
-                className="peer block w-1/2 bg-[#2C2C2C] rounded-md border border-[#879195] py-[9px] pl-4 text-sm outline-2 placeholder:text-[#879195]"
+                className="peer block w-1/2 bg-[#2C2C2C] rounded-md border border-[#879195] py-[9px] pl-4 text-sm placeholder:text-[#879195] focus:outline-none"
                 placeholder="Search player / hand ID"
                 defaultValue={searchParams.get('query')?.toString()}
                 onChange={(e) => {
                     handleSearch(e.target.value)
                 }}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
+                onKeyDown={handleKeyDown}
             />
-            {playerMatches.length > 0 && (
-              <div className="absolute bg-gray-600 z-10 w-1/2 mt-2 shadow-lg rounded-md max-h-60 overflow-y-auto">
+            {isInputFocused && playerMatches.length > 0 && (
+              <div className="absolute bg-[#2C2C2C] z-10 w-1/2 mt-2 shadow-xl rounded-md max-h-60 overflow-y-auto">
                 {playerMatches.map((match, index) => (
-                  <div key={index} className="p-2 cursor-pointer hover:bg-gray-200" onClick={() => handleSearch(match[1])}>
+                  <div 
+                    key={index} 
+                    className={`p-2 cursor-pointer hover:bg-gray-400 ${index === selectedIndex ? 'bg-gray-200' : ''}`}
+                    onMouseDown={() => replace(`/player/${match[1]}`)}
+                  >
                     {match[1]}
                   </div>
                 ))}
@@ -152,8 +167,7 @@ const SearchBar = () => {
             </div>
             <BarChart chartData={chartData} hyperlinks={links} title="Profit/Loss" subtitle="All past hands" />
         </div>
-
     )
 }
 
-export default SearchBar
+export default SearchBar;
