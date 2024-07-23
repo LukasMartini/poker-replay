@@ -343,3 +343,16 @@ def player_cards_in_hand(user_id, hand_id):
     """
     
     return execute_query(query, (user_id, hand_id, user_id), fetch=True, return_dict=True)
+
+def get_matching_players(user_id, serched_name):
+    query = """
+    SELECT DISTINCT p.id AS player_id, p.name AS player_name
+    FROM poker_hand ph
+    JOIN poker_session ps ON ph.session_id = ps.id
+    JOIN player_cards pc ON ph.id = pc.hand_id
+    JOIN player p ON pc.player_id = p.id
+    WHERE ps.user_id = %s
+      AND p.name ILIKE %s;
+    """
+
+    return execute_query(query, (user_id, '%' + serched_name + '%'), fetch=True)

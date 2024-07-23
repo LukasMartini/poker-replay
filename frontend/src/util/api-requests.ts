@@ -39,6 +39,7 @@ export const fetchProfile = (profile: string, token: string) => get(`profile/${p
 export const fetchHandSummary = (searchTerm: string, token: string) => get(`hand_summary/${searchTerm}`, token);
 export const fetchPlayerActions = (searchTerm: string, token: string) => get(`player_actions/${searchTerm}`, token);
 export const fetchPlayerCards = (searchTerm: string, token: string) => get(`player_cards/${searchTerm}`, token);
+export const fetchPlayerSearch = (searchTerm: string, token: string) => get(`search_player/${searchTerm}`, token);
 export const fetchHandCount = (token: string) => get(`hand_count`, token);
 export const fetchHandCountInSession = (sessionId: number, token: string) => get(`hand_count?sessionid=${sessionId}`, token);
 export const fetchHandCountWithPlayer = (playername: string, token: string) => get(`hand_count?playername=${playername}`, token);

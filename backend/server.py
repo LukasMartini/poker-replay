@@ -9,6 +9,7 @@ from db_commands import (
     get_db_connection,
     get_hand_count,
     get_cash_flow,
+    get_matching_players,
     profile_data,
     one_time_hand_info,
     player_actions_in_hand,
@@ -75,6 +76,18 @@ def player_cards(id: int) -> Response:
         return jsonify(data), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 403
+
+@app.route("/api/search_player/<string:name>", methods=['GET'])
+@cross_origin()
+def search_player(name: str) -> Response:
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        result = get_matching_players(user_id, name)
+
+        return jsonify(result), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": str(e)}), 403 
 
 @app.route("/api/hand_count", methods=['GET'])
 @cross_origin()
