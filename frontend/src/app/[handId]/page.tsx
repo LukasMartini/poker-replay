@@ -93,9 +93,10 @@ export default function GetDetails() {
     return (
         <div className="bg-[#2C2C2C] text-white px-32"> {/* Global tailwind formatting for all child components.*/}
             <div dir="ltr" className="flex flex-row justify-between py-8">
-                <div style={{ width: "70vw", height: "75vh", overflow: "scroll" }} className="flex flex-col"> {/* Contains MetaData, Replay display, and pagination interface. */}
+                <div style={{ width: "70vw", height: "80vh", overflowY: "scroll" }} className="flex flex-col"> {/* Contains MetaData, Replay display, and pagination interface. */}
                     <MetaData handID={pn} tableName={othiResult[0] && othiResult[0].table_name}
                         timestamp={othiResult[0] && othiResult[0].played_at} />
+
                     {
                         pcResult.length > 0 && paResult.length > 0 && ( // othiResult.length > 0 
                             <div className="svg-container" style={{ width: '100%', height: '500px' }}>
@@ -110,7 +111,7 @@ export default function GetDetails() {
                         <Button disabled={endIndex == Math.max(0, paResult.length - 1)} onClick={() => { setEndIndex(endIndex + 1) }} variant="secondary">Next</Button>
                     </div>
                 </div>
-                <div style={{ width: "25vw", height: "80vh", overflow: "scroll" }} className="flex flex-col"> {/* Contains HandDetails side bar. */}
+                <div style={{ width: "25vw", height: "80vh", overflowY: "scroll" }} className="flex flex-col"> {/* Contains HandDetails side bar. */}
                     {rows}
                 </div>
             </div>

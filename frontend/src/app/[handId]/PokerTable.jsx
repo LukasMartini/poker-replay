@@ -176,6 +176,10 @@ const PokerTable = (props) => {
     return playerActions[playerActions.length - 1];
   }
 
+  function lastActionCollect() {
+    return props.actions[props.actions.length - 1] && props.actions[props.actions.length - 1].action_type == 'collect';
+  }
+
   function checkFolded(name) {
     const playerActions = props.actions.filter(action => action.name === name);
     if (playerActions.length > 0 && playerActions[playerActions.length - 1].action_type == 'fold') {
@@ -231,7 +235,8 @@ const PokerTable = (props) => {
           }
         </g>
       ))}
-      {round != "Preflop" && round != "Showdown" && (
+      {console.log(lastActionCollect()  )}
+      {round != "Preflop" && round != "Showdown" && !lastActionCollect() && (
         <g transform="translate(87, 27)">
           <circle cx="4" cy="3.5" r="3" fill="grey" />
           <rect x="4" y="0.5" width="16" height="6" fill="grey" />
