@@ -74,11 +74,15 @@ def create_upload(user_id: int, file_name: str) -> int:
     upload_id = result[0][0]
     return upload_id
 
-def delete_upload(upload_id: int):
+def delete_upload(user_id: int, upload_id: int):
     query = """
-    DELETE FROM uploads WHERE id = %s
+    WITH check_ownership AS (
+        SELECT 1 FROM uploads WHERE id = %s AND user_id = %s
+    )
+    DELETE FROM uploads
+    WHERE id = %s AND EXISTS (SELECT 1 FROM check_ownership)
     """
-    execute_query(query, (upload_id,))
+    execute_query(query, (upload_id, user_id, upload_id))
 
 def update_upload_status(upload_id: int, status: str):
     query = """
@@ -88,7 +92,6 @@ def update_upload_status(upload_id: int, status: str):
 
 def get_hand_count(user_id, session_id = '-1', player_name = '-1'):
     '''Gets the number of hands registered for a user_id.'''
-    print("Fetching hand count for", user_id)
 
     data = [user_id]
 
@@ -96,6 +99,8 @@ def get_hand_count(user_id, session_id = '-1', player_name = '-1'):
     if session_id and session_id != '-1':
         sessionText = "AND session.id = %s"
         data.append(session_id)
+    else:
+        sessionText = "AND session.game_type = 'Cash'"
 
     playerText=""
     if player_name and player_name != '-1':
@@ -110,7 +115,7 @@ def get_hand_count(user_id, session_id = '-1', player_name = '-1'):
     SELECT COUNT(*) hands
     FROM poker_session session
     JOIN poker_hand hand ON session.id = hand.session_id
-    WHERE user_id = %s {sessionText} AND session.game_type = 'Cash' {playerText}
+    WHERE user_id = %s {sessionText} {playerText}
     """
     return execute_query(get_hand_query, tuple(data), fetch=True, return_dict=True)
 
@@ -123,7 +128,9 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1', ascdes = "D
     if session_id and session_id != '-1':
         sessionText = "AND session.id = %s"
         data.append(session_id)
-    
+    else:
+        sessionText = "AND session.game_type = 'Cash'"
+
     countText = ""
     if count and count != '-1':
         countText = "LIMIT %s"
@@ -143,7 +150,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1', ascdes = "D
         SELECT hand.id id, played_at
         FROM poker_session session
         JOIN poker_hand hand ON session.id = hand.session_id
-        WHERE user_id = %s AND session.game_type = 'Cash' {sessionText}
+        WHERE user_id = %s {sessionText}
     ),
     bet_amounts AS (
         SELECT hand_id, SUM(
@@ -166,7 +173,8 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1', ascdes = "D
     {offsetText}
     """
 
-    return execute_query(get_cash_flow_query, tuple(data), fetch=True, return_dict=True)
+    returnData = execute_query(get_cash_flow_query, tuple(data), fetch=True, return_dict=True)
+    return returnData
 
 def one_time_hand_info(user_id, hand_id):
     query = """
@@ -184,40 +192,37 @@ def one_time_hand_info(user_id, hand_id):
     
     return execute_query(query, (user_id, hand_id, user_id), fetch=True, return_dict=True)
 
-def profile_data(username: str):
-    user_data_query = ("""SELECT username, email, created_at FROM users WHERE '%s' = username""" % username)
+def profile_data(user_id: int):
+    user_data_query = """SELECT username, email, created_at FROM users WHERE id = %d""" % user_id
 
-    uploads_query = ("""SELECT uploads.id as upload_id, uploads.file_name, uploads.uploaded_at
-                       FROM (SELECT users.id FROM users WHERE '%s' = username) us, uploads
-                       WHERE us.id = uploads.user_id""" % username)
-    
-    sessions_query = ("""SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time, s.id
-                        FROM poker_session as s, (SELECT users.id as usid, uploads.id as upid FROM users, uploads WHERE users.username = '%s' AND users.id = uploads.user_id) us
-                        WHERE s.user_id = us.usid AND s.upload_id = us.upid""" % username)
-    shared_query = ("""
-                      SELECT poker_hand.id,
-                        poker_hand.session_id,
-                                poker_hand.site_hand_id,
-                                poker_hand.small_blind,
-                                poker_hand.big_blind,
-                                poker_hand.total_pot,
-                                poker_hand.rake,
-                                poker_hand.played_at,
-                                users.username
-                                FROM poker_session
-                                JOIN poker_hand ON poker_session.id = poker_hand.session_id
-                                FULL OUTER JOIN authorized ON poker_hand.id = authorized.hand_id
-                                JOIN users ON poker_session.user_id = users.id
+    uploads_query = """SELECT uploads.id as upload_id, uploads.file_name, uploads.uploaded_at
+                       FROM uploads
+                       WHERE uploads.user_id = %d AND uploads.status = 'completed'""" % user_id
 
-                                WHERE poker_hand.id IN 
-                                (SELECT hand_id FROM authorized JOIN users ON authorized.user_id = users.id WHERE users.username = '%s');"""
+    sessions_query = """SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time, s.id
+                        FROM poker_session as s
+                        WHERE s.user_id = %d""" % user_id
 
-                    % username)
+    shared_query = """SELECT poker_hand.id,
+                             poker_hand.session_id,
+                             poker_hand.site_hand_id,
+                             poker_hand.small_blind,
+                             poker_hand.big_blind,
+                             poker_hand.total_pot,
+                             poker_hand.rake,
+                             poker_hand.played_at,
+                             users.username
+                      FROM poker_session
+                      JOIN poker_hand ON poker_session.id = poker_hand.session_id
+                      FULL OUTER JOIN authorized ON poker_hand.id = authorized.hand_id
+                      JOIN users ON poker_session.user_id = users.id
+                      WHERE poker_hand.id IN (SELECT hand_id FROM authorized WHERE user_id = %d)""" % user_id
+
     data = [execute_query(user_data_query, fetch=True),
             execute_query(uploads_query, fetch=True),
             execute_query(sessions_query, fetch=True),
             execute_query(shared_query, fetch=True, return_dict=True)]
-    
+
     return data
 
 def cash_flow_to_player(user_id, player, count="-1", offset="-1"):
@@ -308,6 +313,29 @@ SELECT played_at, hand_id, amount
 FROM target_player, cash_flow
 WHERE cash_flow.player_id = target_player.id
 ORDER BY played_at DESC
+{countText}
+{offsetText}
+    """
+
+    return execute_query(query, tuple(data), fetch=True, return_dict=True)
+
+def get_sessions(user_id, count, offset):
+    data = [user_id]
+
+    countText = ""
+    if count and count != '-1':
+        countText = "LIMIT %s"
+        data.append(count)
+    
+    offsetText = ""
+    if offset and offset != '-1':
+        offsetText = "OFFSET %s"
+        data.append(offset)
+
+    query = f"""
+SELECT *
+FROM poker_session
+WHERE user_id = %s
 {countText}
 {offsetText}
     """

@@ -6,6 +6,7 @@ import uuid
 import bcrypt
 from datetime import datetime, timedelta
 from db_commands import (
+    delete_upload,
     get_db_connection,
     get_hand_count,
     get_cash_flow,
@@ -14,7 +15,8 @@ from db_commands import (
     one_time_hand_info,
     player_actions_in_hand,
     player_cards_in_hand,
-    cash_flow_to_player
+    cash_flow_to_player,
+    get_sessions
 )
 from convert_history import process_file
 
@@ -125,7 +127,20 @@ def cash_flow() -> Response:
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 403 
-    
+
+@app.route("/api/sessions", methods=['GET'])
+@cross_origin()
+def session_list() -> Response:
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        limit = request.args.get("limit", default=30, type = int)
+        offset = request.args.get("offset", default=-1, type = int)
+
+        result = get_sessions(str(user_id), str(limit), str(offset))
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 403     
+
 @app.route("/api/authorize", methods=['POST'])
 @cross_origin()
 def authorize() -> Response: 
@@ -187,12 +202,7 @@ def login():
 def profile(username: str) -> Response:
     try:
         user_id = auth(request.headers.get("Authorization"))
-        cur.execute("SELECT username FROM users WHERE id =%s", (user_id,))
-        conn.commit()   
-        result1 = cur.fetchall()
-        newUser = result1[0][0]
-
-        result = profile_data(newUser)
+        result = profile_data(user_id)
 
         return jsonify(result), 200
     except Exception as e:
@@ -215,6 +225,18 @@ def file_upload():
     except Exception as e:
         print(e)
         return jsonify({"success": False, "error": str(e)}), 403 
+
+@app.route('/api/delete/<int:file_id>', methods=['GET'])
+@cross_origin()
+def delete_file(file_id: int):
+    try: 
+        user_id = auth(request.headers.get("Authorization"))
+        threading.Thread(target=delete_upload, args=(user_id, file_id)).start()
+        return {"success": True, 'message': f'File {file_id} deleted successfully!'}, 200
+    
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": str(e)}), 403
     
 @app.route('/api/share', methods=['GET', 'POST', 'DELETE'])
 @cross_origin()

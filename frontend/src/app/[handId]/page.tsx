@@ -3,16 +3,12 @@ import { useState, useEffect } from "react";
 import HandDetails from './HandDetails';
 import MetaData from "./MetaData";
 import Replay from './Replay';
-import TableData from "./TableData";
 import PokerTable from "./PokerTable";
-import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
 import { useAuth } from '@/components/auth/AuthContext';
 import './PokerTable.css';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function GetDetails() {
     const pathname = usePathname();

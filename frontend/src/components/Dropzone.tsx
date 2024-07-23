@@ -7,7 +7,6 @@ import Image from "next/image";
 import { useAuth } from "@/components/auth/AuthContext";
 import { uploadFiles } from "../util/api-requests";
 import { useToast } from "./ui/use-toast";
-import { ToastAction } from "./ui/toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
 
 interface DropzoneProps {

@@ -35,6 +35,7 @@ async function post(endpoint: string, data: object | FormData, token?: string) {
     return response;
 }
 
+export const fetchSessions = (limit: number, offset: number, token: string) => get(`sessions?limit=${limit}&offset=${offset}`, token);
 export const fetchProfile = (profile: string, token: string) => get(`profile/${profile}`, token);
 export const fetchHandSummary = (searchTerm: string, token: string) => get(`hand_summary/${searchTerm}`, token);
 export const fetchPlayerActions = (searchTerm: string, token: string) => get(`player_actions/${searchTerm}`, token);
@@ -49,4 +50,5 @@ export const fetchCashFlowWithUser = (playername: string, limit: number, offset:
 export const loginUser = (credentials: FormData) => post(`login`, Object.fromEntries(credentials));
 export const signupUser = (formData: FormData) => post(`signup`, Object.fromEntries(formData));
 export const uploadFiles = (files: FormData, token: string) => post(`upload`, files, token);
+export const deleteFile = (fileId: string, token: string) => get(`delete/${fileId}`, token);
 export const authorizeUser = (token: string) => post(`authorize`, {}, token);
