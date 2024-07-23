@@ -35,7 +35,7 @@ async function post(endpoint: string, data: object | FormData, token?: string) {
     return response;
 }
 
-export const fetchSessions = (token: string) => get(`/api/sessions`)
+export const fetchSessions = (token: string) => get(`sessions`, token);
 export const fetchHandSummary = (searchTerm: string, token: string) => get(`hand_summary/${searchTerm}`, token);
 export const fetchPlayerActions = (searchTerm: string, token: string) => get(`player_actions/${searchTerm}`, token);
 export const fetchPlayerCards = (searchTerm: string, token: string) => get(`player_cards/${searchTerm}`, token);
