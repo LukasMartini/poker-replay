@@ -3,6 +3,9 @@
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/auth/AuthContext';
 import { loginUser } from '@/util/api-requests';
+import Link from 'next/link';
+
+
 
 const LoginPage = () => {
   const user = useAuth();
@@ -22,10 +25,10 @@ const LoginPage = () => {
   console.log(user.auth);
 
   return (
-    <div className="bg-[#2C2C2C] text-white px-64">
+    <div className="bg-[#2C2C2C] text-white">
       {user.auth.token && ( 
         <div>
-          <h1 className="text-xl text-center  font-bold pt-8">
+          <h1 className="text-xl text-center font-bold pt-8">
             Logged in!
           </h1>
 
@@ -33,25 +36,30 @@ const LoginPage = () => {
           </div>
       )}
       {!user.auth.token && (
-        <div>
-          <h1 className="text-xl text-center  font-bold pt-8">
+        <div className="w-full">
+          <h1 className="text-xl text-center font-bold pt-8">
               Login to PokerReplay
           </h1>
           <br/><br/>
-          <form encType='multipart/form-data' onSubmit={handleSubmit} className="mx-auto max-w-xs p-8 space-y-4 bg-[#232323] rounded-lg shadow-md">
+          <form encType='multipart/form-data' onSubmit={handleSubmit} className="mx-auto w-full max-w-xs space-y-4 bg-[#2C2C2C]">
             <input
-              className="w-full bg-gray-800 rounded-md border border-gray-400 py-2 px-4 text-sm text-white placeholder-gray-400"
+              className="w-full bg-[#2C2C2C] rounded-md border border-[#879195] py-2 px-4 text-sm text-white"
               type="text"
               name="username"
               placeholder="Email or username"
             />
             <input
-              className="w-full bg-gray-800 rounded-md border border-gray-400 py-2 px-4 text-sm text-white placeholder-gray-400"
+              className="w-full bg-[#2C2C2C] rounded-md border border-[#879195] py-2 px-4 text-sm text-white"
               type="password"
               name="password"
               placeholder="Password"
             />
-            <Button className="w-full" type='submit'>Login</Button>
+            <Button className="w-full" variant="gradient" type='submit'>Login</Button>
+            <div className="flex flex-cols px-16 text-xs">
+              <h1>Don't have an account?</h1>
+              <h1> &nbsp; </h1>
+              <Link className="font-semibold cursor-pointer hover:underline" href='signup'>Sign up</Link>
+            </div>
           </form>
         </div>
       )}
