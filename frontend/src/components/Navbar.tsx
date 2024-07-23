@@ -7,7 +7,7 @@ const Navbar = () => {
     const {auth, logout} = useAuth();
     
     return (
-        <div className="w-full bg-[#2C2C2C] text-white py-4 px-8 shadow-md flex items-center justify-between">
+        <div className="w-full bg-[#2C2C2C] text-white py-4 px-8 shadow-md flex items-center justify-between top-0 sticky z-50">
             <Link href={'/'}>
                 <h2 className="text-2xl font-bold">
                     PokerReplay
@@ -35,6 +35,8 @@ const Navbar = () => {
                         Profile
                     </p>
                 </Link>
+
+            </div>
                 {auth.token && (
                     <Button onClick={()=>logout()} variant="secondary">Logout</Button>
                 )}
@@ -45,13 +47,10 @@ const Navbar = () => {
                             <Button variant="secondary">Login</Button>
                         </Link>
                         <Link href={'/signup'}>
-                            <Button className="ml-2" type='submit'>Sign Up</Button>
+                            <Button variant="outline" className="ml-2" type='submit'>Sign Up</Button>
                         </Link>
                     </div>
                 )}
-
-            </div>
-
         </div>
     )
 }

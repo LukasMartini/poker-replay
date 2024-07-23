@@ -3,7 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/auth/AuthContext';
 import { loginUser } from '@/util/api-requests';
-import { Link } from 'lucide-react';
+import Link from 'next/link';
+
 
 
 const LoginPage = () => {
@@ -42,22 +43,22 @@ const LoginPage = () => {
           <br/><br/>
           <form encType='multipart/form-data' onSubmit={handleSubmit} className="mx-auto w-full max-w-xs space-y-4 bg-[#2C2C2C]">
             <input
-              className="w-full bg-[#2C2C2C] rounded-md border border-white py-2 px-4 text-sm text-white"
+              className="w-full bg-[#2C2C2C] rounded-md border border-[#879195] py-2 px-4 text-sm text-white"
               type="text"
               name="username"
               placeholder="Email or username"
             />
             <input
-              className="w-full bg-[#2C2C2C] rounded-md border border-white py-2 px-4 text-sm text-white"
+              className="w-full bg-[#2C2C2C] rounded-md border border-[#879195] py-2 px-4 text-sm text-white"
               type="password"
               name="password"
               placeholder="Password"
             />
-            <Button className="w-full bg-gradient-to-r from-[#2CBDC7] to-[#C074E4]" type='submit'>Login</Button>
+            <Button className="w-full" variant="gradient" type='submit'>Login</Button>
             <div className="flex flex-cols px-16 text-xs">
               <h1>Don't have an account?</h1>
               <h1> &nbsp; </h1>
-              <u className="hover:text-[#2CBDC7]" onClick={() => window.location.href = "http://localhost:3000/signup"}>Sign up</u>
+              <Link className="font-semibold cursor-pointer hover:underline" href='signup'>Sign up</Link>
             </div>
           </form>
         </div>
