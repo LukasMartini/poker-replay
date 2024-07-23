@@ -174,7 +174,12 @@ def login():
 def profile(username: str) -> Response:
     try:
         user_id = auth(request.headers.get("Authorization"))
-        result = profile_data(username)
+        cur.execute("SELECT username FROM users WHERE id =%s", (user_id,))
+        conn.commit()   
+        result1 = cur.fetchall()
+        newUser = result1[0][0]
+
+        result = profile_data(newUser)
 
         return jsonify(result), 200
     except Exception as e:
