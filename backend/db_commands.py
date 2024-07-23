@@ -86,18 +86,35 @@ def update_upload_status(upload_id: int, status: str):
     """
     execute_query(query, (status, upload_id))
 
-def get_hand_count(user_id):
+def get_hand_count(user_id, session_id = '-1', player_name = '-1'):
     '''Gets the number of hands registered for a user_id.'''
+    print("Fetching hand count for", user_id)
 
-    get_hand_query="""
+    data = [user_id]
+
+    sessionText = ""
+    if session_id and session_id != '-1':
+        sessionText = "AND session.id = %s"
+        data.append(session_id)
+
+    playerText=""
+    if player_name and player_name != '-1':
+        playerText=""" AND EXISTS 
+            (SELECT * FROM player_cards WHERE hand_id = hand.id AND player_id = 
+                (SELECT id FROM player WHERE name = %s)
+            )
+        """
+        data.append(player_name)
+
+    get_hand_query=f"""
     SELECT COUNT(*) hands
     FROM poker_session session
     JOIN poker_hand hand ON session.id = hand.session_id
-    WHERE user_id = %s AND session.game_type = 'Cash'
+    WHERE user_id = %s {sessionText} AND session.game_type = 'Cash' {playerText}
     """
-    return execute_query(get_hand_query, (user_id,), fetch=True, return_dict=True)
+    return execute_query(get_hand_query, tuple(data), fetch=True, return_dict=True)
 
-def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
+def get_cash_flow(user_id, count='30', offset='-1', session_id='-1', ascdes = "DESC"):
     '''Returns the cash flow from a user_id for [count] hands starting from their [offset] most recent hand.'''
 
     data = [user_id, user_id]
@@ -144,7 +161,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1'):
     FROM hands hand
     JOIN bet_amounts on hand.id = bet_amounts.hand_id
     GROUP BY hand.id, played_at
-    ORDER BY played_at DESC
+    ORDER BY played_at {ascdes}
     {countText}
     {offsetText}
     """
@@ -177,12 +194,126 @@ def profile_data(username: str):
     sessions_query = ("""SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time, s.id
                         FROM poker_session as s, (SELECT users.id as usid, uploads.id as upid FROM users, uploads WHERE users.username = '%s' AND users.id = uploads.user_id) us
                         WHERE s.user_id = us.usid AND s.upload_id = us.upid""" % username)
+    shared_query = ("""
+                      SELECT poker_hand.id,
+                        poker_hand.session_id,
+                                poker_hand.site_hand_id,
+                                poker_hand.small_blind,
+                                poker_hand.big_blind,
+                                poker_hand.total_pot,
+                                poker_hand.rake,
+                                poker_hand.played_at,
+                                users.username
+                                FROM poker_session
+                                JOIN poker_hand ON poker_session.id = poker_hand.session_id
+                                FULL OUTER JOIN authorized ON poker_hand.id = authorized.hand_id
+                                JOIN users ON poker_session.user_id = users.id
 
+                                WHERE poker_hand.id IN 
+                                (SELECT hand_id FROM authorized JOIN users ON authorized.user_id = users.id WHERE users.username = '%s');"""
+
+                    % username)
     data = [execute_query(user_data_query, fetch=True),
             execute_query(uploads_query, fetch=True),
-            execute_query(sessions_query, fetch=True)]
+            execute_query(sessions_query, fetch=True),
+            execute_query(shared_query, fetch=True, return_dict=True)]
     
     return data
+
+def cash_flow_to_player(user_id, player, count="-1", offset="-1"):
+    data = [user_id, player, user_id]
+
+    countText = ""
+    if count and count != '-1':
+        countText = "LIMIT %s"
+        data.append(count)
+    
+    offsetText = ""
+    if offset and offset != '-1':
+        offsetText = "OFFSET %s"
+        data.append(offset)
+
+    query = f"""
+-- find the hands where the player_id plays
+WITH user_player AS (
+	SELECT id FROM player WHERE player.user_id = %s
+),
+target_player AS (
+	SELECT id FROM player WHERE player.name = %s
+),
+-- all hands from cash sessions you own    
+hands AS (
+	SELECT id, played_at
+	FROM poker_hand hand
+	WHERE EXISTS (
+    	SELECT 1 FROM poker_session
+    	WHERE poker_session.id = hand.session_id
+        	AND poker_session.user_id = %s
+        	AND poker_session.tournament_id IS NULL
+			AND EXISTS ( SELECT * FROM player_cards, target_player WHERE hand_id = hand.id AND player_id = target_player.id )
+	)
+),
+-- map each hand to the player that collected it
+collected_hands AS (
+	SELECT hand.id AS hand_id, (
+        	SELECT act.player_id
+        	FROM player_action act
+        	WHERE act.hand_id = hand.id
+            	AND act.action_type = 'collect' -- should never have multiple collects per hand
+        	LIMIT 1
+    	) AS collector_id, played_at
+	FROM hands hand
+),
+-- the total amount that each person contributed to each hand
+bet_amounts AS (
+	SELECT hand_id, player_id, SUM(amount) as amount
+	FROM player_action, user_player, target_player
+	WHERE hand_id IN (SELECT id FROM hands)
+		AND (player_id = user_player.id OR player_id = target_player.id)
+		AND action_type in ('call', 'bet', 'raise', 'all-in')
+	GROUP BY hand_id, player_id
+),
+-- cash flow by hand and player to/from
+cash_flow as (
+	SELECT
+    	-- relevant player, the non-user player involved
+    	(CASE
+        	WHEN hand.collector_id = user_player.id
+        	THEN bet_amounts.player_id
+    
+        	WHEN bet_amounts.player_id = user_player.id
+        	THEN hand.collector_id
+    
+        	ELSE NULL
+    	END) as player_id,
+    	-- raw cash flow
+    	CASE
+        	-- when we win, add the amount we won from this player
+        	WHEN hand.collector_id = user_player.id
+        	THEN bet_amounts.amount
+    
+        	-- when someone else wins, if we bet, subtract the amount we lost to this player
+        	WHEN bet_amounts.player_id = user_player.id
+        	THEN -bet_amounts.amount
+    
+        	-- if we didn't win or place this bet, disregard the value
+        	ELSE 0
+    	END as amount,
+		hand.hand_id,
+		hand.played_at
+	FROM user_player, collected_hands hand
+	JOIN bet_amounts ON hand.hand_id = bet_amounts.hand_id
+)
+SELECT played_at, hand_id, amount
+FROM target_player, cash_flow
+WHERE cash_flow.player_id = target_player.id
+ORDER BY played_at DESC
+{countText}
+{offsetText}
+    """
+
+    return execute_query(query, tuple(data), fetch=True, return_dict=True)
+
 def player_actions_in_hand(user_id, hand_id):
     query = """
     SELECT player.id as player_id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 
@@ -193,6 +324,7 @@ def player_actions_in_hand(user_id, hand_id):
     JOIN poker_session ON poker_hand.session_id = poker_session.id
     LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = %s
     WHERE player_action.hand_id = %s AND (poker_session.user_id = %s OR authorized.user_id IS NOT NULL)
+    ORDER BY player_action.id
     """
     
     return execute_query(query, (user_id, hand_id, user_id), fetch=True, return_dict=True)
@@ -207,6 +339,20 @@ def player_cards_in_hand(user_id, hand_id):
     JOIN poker_session ON poker_hand.session_id = poker_session.id
     LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = %s
     WHERE player_cards.hand_id = %s AND (poker_session.user_id = %s OR authorized.user_id IS NOT NULL)
+    ORDER BY player_cards.position
     """
     
     return execute_query(query, (user_id, hand_id, user_id), fetch=True, return_dict=True)
+
+def get_matching_players(user_id, serched_name):
+    query = """
+    SELECT DISTINCT p.id AS player_id, p.name AS player_name
+    FROM poker_hand ph
+    JOIN poker_session ps ON ph.session_id = ps.id
+    JOIN player_cards pc ON ph.id = pc.hand_id
+    JOIN player p ON pc.player_id = p.id
+    WHERE ps.user_id = %s
+      AND p.name ILIKE %s;
+    """
+
+    return execute_query(query, (user_id, '%' + serched_name + '%'), fetch=True)

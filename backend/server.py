@@ -5,8 +5,17 @@ from flask_cors import CORS, cross_origin
 import uuid
 import bcrypt
 from datetime import datetime, timedelta
-
-from db_commands import get_db_connection, get_hand_count, get_cash_flow, profile_data, one_time_hand_info, player_actions_in_hand, player_cards_in_hand
+from db_commands import (
+    get_db_connection,
+    get_hand_count,
+    get_cash_flow,
+    get_matching_players,
+    profile_data,
+    one_time_hand_info,
+    player_actions_in_hand,
+    player_cards_in_hand,
+    cash_flow_to_player
+)
 from convert_history import process_file
 
 
@@ -68,16 +77,29 @@ def player_cards(id: int) -> Response:
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 403
 
+@app.route("/api/search_player/<string:name>", methods=['GET'])
+@cross_origin()
+def search_player(name: str) -> Response:
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        result = get_matching_players(user_id, name)
+
+        return jsonify(result), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": str(e)}), 403 
+
 @app.route("/api/hand_count", methods=['GET'])
 @cross_origin()
 def hand_quantity() -> Response:
     try:
         user_id = auth(request.headers.get("Authorization"))
-        result = get_hand_count(user_id)
+        session_id = request.args.get("sessionid", default = -1, type = int)
+        playername = request.args.get("playername", default='-1', type = str)
+        result = get_hand_count(str(user_id), str(session_id), playername)
 
         return jsonify(result), 200
     except Exception as e:
-
         return jsonify({"success": False, "error": str(e)}), 403
 
 @app.route("/api/cash_flow", methods=['GET'])
@@ -89,8 +111,16 @@ def cash_flow() -> Response:
         limit = request.args.get("limit", default=30, type = int)
         offset = request.args.get("offset", default=-1, type = int)
         session_id = request.args.get("sessionid", default = -1, type = int)
+        playername = request.args.get("playername", default="-1", type = str) # don't ask why a strings default is "-1"
+        ascendingDescending = request.args.get("descending", default='t', type = str)
+        if (ascendingDescending == 't'): ascendingDescending = "DESC"
+        else: ascendingDescending = "ASC"
+        
 
-        result = get_cash_flow(user_id, str(limit), str(offset), str(session_id))
+        if (playername == "-1"):
+            result = get_cash_flow(str(user_id), str(limit), str(offset), str(session_id), ascendingDescending)
+        else:
+            result = cash_flow_to_player(str(user_id), playername, str(limit), str(offset))
 
         return jsonify(result), 200
     except Exception as e:
@@ -155,9 +185,19 @@ def login():
 @app.route("/api/profile/<string:username>", methods=['GET'])
 @cross_origin()
 def profile(username: str) -> Response:
-    result = profile_data(username)
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        cur.execute("SELECT username FROM users WHERE id =%s", (user_id,))
+        conn.commit()   
+        result1 = cur.fetchall()
+        newUser = result1[0][0]
 
-    return jsonify(result), 200
+        result = profile_data(newUser)
+
+        return jsonify(result), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": "bad"}), 403 
 
 @app.route('/api/upload', methods=['POST'])
 @cross_origin()
@@ -175,10 +215,52 @@ def file_upload():
     except Exception as e:
         print(e)
         return jsonify({"success": False, "error": str(e)}), 403 
+    
+@app.route('/api/share', methods=['GET', 'POST', 'DELETE'])
+@cross_origin()
+def hand_share():
+    try: 
+        user_id = auth(request.headers.get("Authorization"))
+        if request.method == 'GET':
+            hand_id = request.args.get('hand_id', type = int)
+            cur.execute("EXECUTE sharedWith(%s)", (hand_id,))
+            conn.commit()
+            result = cur.fetchall()
+            column_names = [description[0] for description in cur.description]
+                     
+            return jsonify([dict(zip(column_names, row)) for row in result]), 200
+        elif request.method == 'POST':
+            data = request.get_json()  # Accessing JSON data from the request body
+
+            shared_user = data.get('shared_user')
+            hand_id = data.get('hand_id')
+            cur.execute("EXECUTE getUserID(%s)", (shared_user,))
+            conn.commit()
+            result = cur.fetchall()
+            cur.execute("EXECUTE share(%s, %s, %s)", (user_id, result[0][0], hand_id))
+            conn.commit()
+            
+            return jsonify({"success": True}), 200 
+        elif request.method == 'DELETE':
+            data = request.get_json()  # Accessing JSON data from the request body
+            # Handle PUT request
+            shared_user = data.get('shared_id')
+            hand_id = data.get('hand_id')
+            cur.execute("EXECUTE unshare(%s, %s, %s)", (user_id, hand_id, shared_user))
+            conn.commit()
+            
+            return jsonify({"success": True}), 200 
+
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": "Bad Request"}), 400 
+
 
 if __name__ == '__main__':
     cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())
     cur.execute(open('./sql/R10/authorization.sql').read())
+    cur.execute(open('./sql/R7/authorized_hands_template.sql').read())
     app.run(host="localhost", port=5001, debug=True)
+
     cur.close()
     conn.close()
