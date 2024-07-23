@@ -51,7 +51,7 @@ const SearchBar = () => {
 
     useEffect(() => {
       if (user.auth.token != null) {
-        console.log('Checking for cash data with user', user)
+        console.log('Checking for cash data with user', user.auth.token)
         fetchCashData(offset, 30);
       }
     }, [user, offset]);
@@ -77,7 +77,7 @@ const SearchBar = () => {
     }
 
     const loadSessionTable = async () => {
-        sessionResponse = await fetchSessions(user.auth.token); 
+        sessionResponse = await fetchSessions(50, 0, user.auth.token); 
         setSessionData(await sessionResponse.clone().json());
     }
 
