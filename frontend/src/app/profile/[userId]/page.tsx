@@ -32,7 +32,7 @@ export default function ProfileView() {
 
     return (
         <div className="bg-[#2C2C2C] text-white px-16">
-            <StaticData username={result[0] && result[0][0][0]} email={result[0] && result[0][0][1]} created_at={result[0] && result[0][0][2]}/>
+            <StaticData username={result && result[0] && result[0][0][0]} email={result && result[0] && result[0][0][1]} created_at={result && result[0] && result[0][0][2]}/>
             <Uploads list_of_uploads={result && result[1]} number_of_uploads={result && result[1] && result[1].length}/>
             <Sessions list_of_sessions={result && result[2]} number_of_sessions={result && result[2] && result[2].length}/>
         </div>

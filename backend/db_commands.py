@@ -198,6 +198,8 @@ def profile_data(username: str):
     data = [execute_query(user_data_query, fetch=True),
             execute_query(uploads_query, fetch=True),
             execute_query(sessions_query, fetch=True)]
+    
+    return data
 
 def cash_flow_to_player(user_id, player, count="-1", offset="-1"):
     data = [user_id, player, user_id]
