@@ -293,7 +293,7 @@ ORDER BY played_at DESC
 
     return execute_query(query, tuple(data), fetch=True, return_dict=True)
 
-def get_sessions(user_id, limit, offset):
+def get_sessions(user_id, count, offset):
     data = [user_id]
 
     countText = ""
