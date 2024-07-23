@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import StaticData from "./StaticData";
 import Uploads from "./Uploads";
 import Sessions from "./Sessions";
+import SharedWith from "./SharedWith";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL;
@@ -31,6 +32,7 @@ export default function ProfileView() {
             <StaticData username={result[0] && result[0][0][0]} email={result[0] && result[0][0][1]} created_at={result[0] && result[0][0][2]}/>
             <Uploads list_of_uploads={result && result[1]} number_of_uploads={result && result[1] && result[1].length}/>
             <Sessions list_of_sessions={result && result[2]} number_of_sessions={result && result[2] && result[2].length}/>
+            {result && result[3] && result[3].length > 0 && <SharedWith list_of_sessions={result && result[3]}/>}
         </div>
     );
 }
