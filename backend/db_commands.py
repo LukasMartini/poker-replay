@@ -96,6 +96,8 @@ def get_hand_count(user_id, session_id = '-1', player_name = '-1'):
     if session_id and session_id != '-1':
         sessionText = "AND session.id = %s"
         data.append(session_id)
+    else:
+        sessionText = "AND session.game_type = 'Cash'"
 
     playerText=""
     if player_name and player_name != '-1':
@@ -110,7 +112,7 @@ def get_hand_count(user_id, session_id = '-1', player_name = '-1'):
     SELECT COUNT(*) hands
     FROM poker_session session
     JOIN poker_hand hand ON session.id = hand.session_id
-    WHERE user_id = %s {sessionText} AND session.game_type = 'Cash' {playerText}
+    WHERE user_id = %s {sessionText} {playerText}
     """
     return execute_query(get_hand_query, tuple(data), fetch=True, return_dict=True)
 
@@ -123,6 +125,8 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1', ascdes = "D
     if session_id and session_id != '-1':
         sessionText = "AND session.id = %s"
         data.append(session_id)
+    else:
+        sessionText = "AND session.game_type = 'Cash'"
     
     countText = ""
     if count and count != '-1':
@@ -143,7 +147,7 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1', ascdes = "D
         SELECT hand.id id, played_at
         FROM poker_session session
         JOIN poker_hand hand ON session.id = hand.session_id
-        WHERE user_id = %s AND session.game_type = 'Cash' {sessionText}
+        WHERE user_id = %s {sessionText}
     ),
     bet_amounts AS (
         SELECT hand_id, SUM(
