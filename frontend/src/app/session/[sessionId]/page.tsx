@@ -112,7 +112,7 @@ export default function SessionDetails() { // Asynchronous server component for 
     const isRightButtonDisabled = offset + windowSize >= handCount || handCount <= windowSize;
 
     return (
-        <div className="relative">
+        <div className="relative bg-[#2C2C2C]">
             <div className="flex justify-between translate-y-10">
                 <button onClick={handleClickLeft} disabled={isLeftButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-100 hover:scale-105">
                     <Image src={"/left-w.svg"} alt="left" width={24} height={24} />
