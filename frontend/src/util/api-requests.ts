@@ -50,4 +50,5 @@ export const fetchCashFlowWithUser = (playername: string, limit: number, offset:
 export const loginUser = (credentials: FormData) => post(`login`, Object.fromEntries(credentials));
 export const signupUser = (formData: FormData) => post(`signup`, Object.fromEntries(formData));
 export const uploadFiles = (files: FormData, token: string) => post(`upload`, files, token);
+export const deleteFile = (fileId: string, token: string) => get(`delete/${fileId}`, token);
 export const authorizeUser = (token: string) => post(`authorize`, {}, token);

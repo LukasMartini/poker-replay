@@ -22,7 +22,7 @@ const Logo = () => {
               <text x="2" y="7" fontSize="6" fill="black">2</text>
               <text x="5" y="20" fontSize="15" fill="black">♣</text>
         </g>
-        <text x="40" y="25" font-weight="bold" fontSize="20" fill="white">PokerReplay</text>
+        <text x="40" y="25" fontWeight="bold" fontSize="20" fill="white">PokerReplay</text>
 
       </g>
       </svg>

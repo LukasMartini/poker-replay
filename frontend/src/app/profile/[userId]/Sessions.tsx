@@ -33,26 +33,24 @@ export default function Sessions(props: SessionsProps) {
     }
 
     return (
-        <div>
-            <div>
-                <p className="text-xl">Sessions:</p>
-                <Table>
-                    <TableHeader className="text-[#31D2DD]">
-                        <TableRow>
-                            <TableHead>Table Name</TableHead>
-                            <TableHead>Game Type</TableHead>
-                            <TableHead>Currency</TableHead>
-                            <TableHead>Total Hands</TableHead>
-                            <TableHead>Max Players</TableHead>
-                            <TableHead>Start Time</TableHead>
-                            <TableHead>End Time</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody >
-                        {sessions}
-                    </TableBody>
-                </Table>
-            </div>
+        <div className="pb-8">
+            <p className="text-xl">Sessions:</p>
+            <Table>
+                <TableHeader className="text-[#31D2DD]">
+                    <TableRow>
+                        <TableHead>Table Name</TableHead>
+                        <TableHead>Game Type</TableHead>
+                        <TableHead>Currency</TableHead>
+                        <TableHead>Total Hands</TableHead>
+                        <TableHead>Max Players</TableHead>
+                        <TableHead>Start Time</TableHead>
+                        <TableHead>End Time</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody >
+                    {sessions}
+                </TableBody>
+            </Table>
         </div>
     )
 }
