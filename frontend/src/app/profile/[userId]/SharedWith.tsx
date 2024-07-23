@@ -9,7 +9,7 @@ export default function SharedWith(props: any) {
     var sessions: Array<any> = [];
 
     const redirectToSesh = (e: any) => { // Will link to the associated session view page.
-        window.location.href = `${ROOT_URL}/${e}`;
+        window.location.href = `${ROOT_URL}${e}`;
     }
 
     console.log(props.list_of_sessions);
