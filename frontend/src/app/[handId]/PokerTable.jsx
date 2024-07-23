@@ -106,8 +106,8 @@ const PlayerInfo = (props) => {
   return (
     <>
       <rect x="0" y="0" width="30" height="12" fill="grey" stroke-width="0.5" rx="4" stroke="white" />
-      <text font-weight="bold" x="15" y="4" font-size="3.2" fill="white" text-anchor="middle" dominant-baseline="middle">
-        {props.username}
+      <text  font-weight="bold" x="15" y="4" font-size="3.2" fill="white" text-anchor="middle" dominant-baseline="middle">
+        <a href={`player/${props.username}`}>{props.username}</a>
       </text>
       <text x="15" y="9" font-size="3.2" fill="white" text-anchor="middle" dominant-baseline="middle">
         {props.stack}
