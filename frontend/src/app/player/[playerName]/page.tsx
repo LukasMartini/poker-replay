@@ -7,6 +7,8 @@ import { CategoryScale } from "chart.js/auto";
 import { Chart } from "chart.js";
 import { Hand } from "@/util/utils";
 import { BarChart, generateChartData } from "@/components/BarChart";
+import { fetchCashFlowWithUser, fetchHandCountWithPlayer } from "@/util/api-requests";
+import { useAuth } from '@/components/auth/AuthContext';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -14,6 +16,8 @@ Chart.register(CategoryScale);
 
 export default function PlayerDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
     const windowSize = 50;
+
+    const user = useAuth();
 
     var [chartData, setChartData] = useState(generateChartData([]));
     var [links, setLinks] = useState([]);
@@ -24,7 +28,7 @@ export default function PlayerDetails() { // Asynchronous server component for p
     const playerName = pathname.slice(8);
 
     const fetchQuantity = async () => {
-        await fetch(`${API_URL}hand_count/1?playername=${playerName}`)
+        await fetchHandCountWithPlayer(playerName, user.auth.token)
             .then(resp => resp.json())
             .then(data => {
                 setHandCount(data[0].hands);
@@ -32,18 +36,19 @@ export default function PlayerDetails() { // Asynchronous server component for p
     };
 
     useEffect(() => {
-        fetchQuantity();
-    }, [])
+        if (user.auth.token != null) {
+            fetchQuantity();
+        }
+    }, [user])
   
     const fetchHandData = async () => { 
         // Run SQL queries to fetch appropriate data. See server.py for further information.
          // TODO: use cached user
          // no ascending/descending because lazy
-        await fetch(`${API_URL}cash_flow/1?playername=${playerName}&limit=${windowSize}&offset=${offset}`, {
-            method: "GET"
-        })
+        await fetchCashFlowWithUser(playerName, windowSize, offset, user.auth.token)
             .then(resp => resp.json())
             .then(data => {
+                // console.log(generateChartData(data));
                 setChartData(generateChartData(data));
 
                 setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`))
@@ -51,8 +56,10 @@ export default function PlayerDetails() { // Asynchronous server component for p
     }
 
     useEffect(() => {
-        fetchHandData();
-    }, [offset])
+        if (user.auth.token != null) {
+            fetchHandData();
+        }
+    }, [user, offset])
 
     const handleClickLeft = () => {
         setOffset((prevOffset) => Math.max(prevOffset - windowSize, 0));

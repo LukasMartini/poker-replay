@@ -291,7 +291,7 @@ ORDER BY played_at DESC
 {offsetText}
     """
 
-    return execute_query(query, tuple(data), fetch=True)
+    return execute_query(query, tuple(data), fetch=True, return_dict=True)
 
 def player_actions_in_hand(user_id, hand_id):
     query = """

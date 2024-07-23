@@ -39,8 +39,11 @@ export const fetchHandSummary = (searchTerm: string, token: string) => get(`hand
 export const fetchPlayerActions = (searchTerm: string, token: string) => get(`player_actions/${searchTerm}`, token);
 export const fetchPlayerCards = (searchTerm: string, token: string) => get(`player_cards/${searchTerm}`, token);
 export const fetchHandCount = (token: string) => get(`hand_count`, token);
+export const fetchHandCountInSession = (sessionId: number, token: string) => get(`hand_count?sessionid=${sessionId}`, token);
+export const fetchHandCountWithPlayer = (playername: string, token: string) => get(`hand_count?playername=${playername}`, token);
 export const fetchCashFlow = (sessionid: string, limit: number, offset: number, token: string, descending="no") => get(`cash_flow?sessionid=${sessionid}&limit=${limit}&offset=${offset}&descending=${descending}`, token);
 export const fetchCashFlowByUser = (limit: number, offset: number, token: string) => get(`cash_flow?limit=${limit}&offset=${offset}`, token);
+export const fetchCashFlowWithUser = (playername: string, limit: number, offset: number, token: string) => get(`cash_flow?playername=${playername}&limit=${limit}&offset=${offset}`, token);
 export const loginUser = (credentials: FormData) => post(`login`, Object.fromEntries(credentials));
 export const signupUser = (formData: FormData) => post(`signup`, Object.fromEntries(formData));
 export const uploadFiles = (files: FormData, token: string) => post(`upload`, files, token);

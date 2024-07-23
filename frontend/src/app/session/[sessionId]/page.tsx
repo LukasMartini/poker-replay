@@ -7,7 +7,7 @@ import { CategoryScale } from "chart.js/auto";
 import { Chart } from "chart.js";
 import { Hand } from "@/util/utils";
 import { useAuth } from "@/components/auth/AuthContext";
-import { fetchCashFlow } from "@/util/api-requests";
+import { fetchCashFlow, fetchHandCountInSession } from "@/util/api-requests";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -29,7 +29,7 @@ export default function SessionDetails() { // Asynchronous server component for 
     const session = pathname.slice(9);
 
     const fetchQuantity = async () => {
-        await fetch(`${API_URL}hand_count/1?sessionid=${session}`)
+        await fetchHandCountInSession(Number(session), user.auth.token)
             .then(resp => resp.json())
             .then(data => {
                 setHandCount(data[0].hands);
@@ -37,8 +37,10 @@ export default function SessionDetails() { // Asynchronous server component for 
     };
 
     useEffect(() => {
-        fetchQuantity();
-    }, [])
+        if (user.auth.token != null) {
+            fetchQuantity();
+        }
+    }, [user])
   
     const fetchHandData = async () => { 
         // if we aren't rendering the start, and nothing has moved, don't do anything
@@ -48,7 +50,7 @@ export default function SessionDetails() { // Asynchronous server component for 
 
         // Run SQL queries to fetch appropriate data. See server.py for further information.
          // TODO: use cached user
-        await fetchCashFlow(session, 50, 0, user.auth.token)
+        await fetchCashFlow(session, 50, offset, user.auth.token)
             .then(resp => resp.json())
             .then(data => {
 
@@ -90,8 +92,10 @@ export default function SessionDetails() { // Asynchronous server component for 
     }
 
     useEffect(() => {
-        fetchHandData();
-    }, [offset])
+        if (user.auth.token) {
+            fetchHandData();
+        }
+    }, [user, offset])
 
     const handleClickLeft = () => {
         setOffset((prevOffset) => Math.max(prevOffset - windowSize, 0));
@@ -99,6 +103,7 @@ export default function SessionDetails() { // Asynchronous server component for 
     const handleClickRight = () => {
         setOffset((prevOffset) => {
             const newOffset = prevOffset + windowSize;
+            console.log(`Updating offset from ${prevOffset} to ${newOffset}`);
             return newOffset < handCount ? newOffset : prevOffset;
         });
     }  
