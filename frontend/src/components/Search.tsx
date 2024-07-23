@@ -1,14 +1,14 @@
 "use client"
-import { useSearchParams, usePathname, useRouter} from "next/navigation"
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import Chart from 'chart.js/auto'
+import Chart from 'chart.js/auto';
 import { CategoryScale } from "chart.js";
 import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
 import Image from "next/image";
 import { Hand } from "@/util/utils";
 import { useAuth } from '@/components/auth/AuthContext';
-import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
+import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards, fetchPlayerSearch } from "@/util/api-requests";
 
 Chart.register(CategoryScale);
 
@@ -20,6 +20,7 @@ const SearchBar = () => {
     const [r2, setResponse2] = useState([]);
     const [r3, setResponse3] = useState([]);
     const [offset, setOffset] = useState(0);
+    const [playerMatches, setPlayerMatches] = useState([]);
     const user = useAuth();
 
     var combinedData = [];
@@ -43,22 +44,30 @@ const SearchBar = () => {
       if (user.auth.token != null) {
         console.log('Checking for cash data with user', user)
         fetchCashData(offset, 30);
-
       }
     }, [user]);
 
     const handleSearch = async (searchTerm: string) => {
         const token = user.auth.token;
-        response1 = await fetchHandSummary(searchTerm, token);
-        response2 = await fetchPlayerActions(searchTerm, token);
-        response3 = await fetchPlayerCards(searchTerm, token);
+        if (searchTerm) {
+          if (!isNaN(parseInt(searchTerm))) {
+            response1 = await fetchHandSummary(searchTerm, token);
+            response2 = await fetchPlayerActions(searchTerm, token);
+            response3 = await fetchPlayerCards(searchTerm, token);
 
-        setResponse1(await response1.clone().json());
-        setResponse2(await response2.clone().json());
-        setResponse3(await response3.clone().json());
+            setResponse1(await response1.clone().json());
+            setResponse2(await response2.clone().json());
+            setResponse3(await response3.clone().json());
 
-        combinedData = [r1, r2, r3];
-        console.log("returned data: ", combinedData);
+          } else {
+            console.log("Searching for: ", searchTerm);
+            const playerMatchesResponse = await fetchPlayerSearch(searchTerm, token);
+            setPlayerMatches(await playerMatchesResponse.clone().json());
+            console.log(playerMatches);
+          }
+        } else {
+          setPlayerMatches([]);
+        }
     }
 
     const fetchQuantity = async () => {
@@ -74,7 +83,6 @@ const SearchBar = () => {
       console.log(`Found ${data[0].hands} hands for userID 1, server returned ${data[0].hands}`);
     };
   
-
     const fetchCashData = async (offset: number, amount = 30) => {
       let actualOffset = offset;
       if (offset + amount > handCount) {
@@ -96,7 +104,6 @@ const SearchBar = () => {
       setChartData(generateChartData(data));
     };
 
-
     const handleClickLeft = () => {
       setOffset((prevOffset) => Math.max(prevOffset - 30, 0));
     }
@@ -114,15 +121,24 @@ const SearchBar = () => {
         <div className="relative">
             <input 
                 className="peer block w-1/2 bg-[#2C2C2C] rounded-md border border-[#879195] py-[9px] pl-4 text-sm outline-2 placeholder:text-[#879195]"
-                placeholder="Search hands"
+                placeholder="Search player / hand ID"
                 defaultValue={searchParams.get('query')?.toString()}
                 onChange={(e) => {
                     handleSearch(e.target.value)
                 }}
             />
+            {playerMatches.length > 0 && (
+              <div className="absolute bg-gray-600 z-10 w-1/2 mt-2 shadow-lg rounded-md max-h-60 overflow-y-auto">
+                {playerMatches.map((match, index) => (
+                  <div key={index} className="p-2 cursor-pointer hover:bg-gray-200" onClick={() => handleSearch(match[1])}>
+                    {match[1]}
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="grid grid-cols-4 gap-12 pt-12">
                 {r1.map((info: any, index) => {
-                   return  <HandCard handId={info.id} played_at={info.played_at} tableName={info.table_name} key={index} />
+                  return  <HandCard handId={info.id} played_at={info.played_at} tableName={info.table_name} key={index} />
                 })}
             </div>
             <div className="flex justify-between translate-y-10">
@@ -136,7 +152,7 @@ const SearchBar = () => {
             </div>
             <BarChart chartData={chartData} hyperlinks={links} title="Profit/Loss" subtitle="All past hands" />
         </div>
-        
+
     )
 }
 
