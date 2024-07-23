@@ -170,9 +170,9 @@ def get_cash_flow(user_id, count='30', offset='-1', session_id='-1', ascdes = "D
     {offsetText}
     """
 
-    print("Sending query\n", get_cash_flow_query)
-    print("Data:", data)
-    return execute_query(get_cash_flow_query, tuple(data), fetch=True, return_dict=True)
+    returnData = execute_query(get_cash_flow_query, tuple(data), fetch=True, return_dict=True)
+    print(returnData)
+    return returnData
 
 def one_time_hand_info(user_id, hand_id):
     query = """
