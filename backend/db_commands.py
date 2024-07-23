@@ -217,7 +217,7 @@ def profile_data(username: str):
             execute_query(uploads_query, fetch=True),
             execute_query(sessions_query, fetch=True),
             execute_query(shared_query, fetch=True, return_dict=True)]
-
+    
     return data
 
 def cash_flow_to_player(user_id, player, count="-1", offset="-1"):
