@@ -18,7 +18,6 @@ export default function Uploads(props: UploadsProps) {
     const handleDelete = (file_id: string) => {
         deleteFile(file_id, token)
             .then(response => {
-                console.log('File deleted:', response);
                 window.location.reload();
             })
             .catch(error => {
