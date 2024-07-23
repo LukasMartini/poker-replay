@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { signupUser } from '@/util/api-requests';
+import Link from 'next/link';
 
 const handleSubmit = async (event: any) => {
   event.preventDefault();
@@ -37,32 +38,37 @@ const SignupPage = () => {
           Sign up for PokerReplay
       </h1>
       <br/><br/>
-      <form encType='multipart/form-data' onSubmit={handleSubmit} className="mx-auto max-w-xs p-8 space-y-4 bg-[#232323] rounded-lg shadow-md">
+      <form encType='multipart/form-data' onSubmit={handleSubmit} className="mx-auto w-full max-w-xs space-y-4 bg-[#2C2C2C]">
         <input
-          className="w-full bg-gray-800 rounded-md border border-gray-400 py-2 px-4 text-sm text-white placeholder-gray-400"
+          className="w-full bg-[#2C2C2C] rounded-md border border-[#879195] py-2 px-4 text-sm"
           type="email"
           name="email"
           placeholder="Email address"
         />
         <input
-          className="w-full bg-gray-800 rounded-md border border-gray-400 py-2 px-4 text-sm text-white placeholder-gray-400"
+          className="w-full bg-[#2C2C2C] rounded-md border border-[#879195] py-2 px-4 text-sm "
           type="text"
           name="username"
           placeholder="Username"
         />
         <input
-          className="w-full bg-gray-800 rounded-md border border-gray-400 py-2 px-4 text-sm text-white placeholder-gray-400"
+          className="w-full bg-[#2C2C2C] rounded-md border border-[#879195] py-2 px-4 text-sm"
           type="password"
           name="password"
           placeholder="Password"
         />
         <input
-          className="w-full bg-gray-800 rounded-md border border-gray-400 py-2 px-4 text-sm text-white placeholder-gray-400"
+          className="w-full bg-[#2C2C2C] rounded-md border border-[#879195] py-2 px-4 text-sm"
           type="password"
           name="confirm_password"
           placeholder="Confirm Password"
         />
-        <Button className="w-full" type='submit'>Sign Up</Button>
+        <Button className="w-full" variant="gradient" type='submit'>Sign Up</Button>
+        <div className="flex flex-cols justify-center px-12 text-xs">
+              <h1>Already have an account?</h1>
+              <h1>&nbsp;</h1>
+              <Link className="font-semibold cursor-pointer hover:underline" href={'login'}>Log in</Link>
+        </div>
       </form>
     </div>
   )

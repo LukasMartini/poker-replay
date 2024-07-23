@@ -19,39 +19,39 @@ export default function Sessions(props: SessionsProps) {
     for (var sesh = 0; sesh < props.number_of_sessions; sesh++) {
         const session_id = props.list_of_sessions[sesh][7];
         // The width corrections in each row are manual and eye-balled. Change at your discrection.
-        sessions.push(<TableBody key={props.list_of_sessions[sesh][7]} onClick={() => redirectToSesh(session_id)}>
-                        <TableRow>
-                        <TableCell className="w-[165px]">{props.list_of_sessions[sesh][0]}</TableCell>
-                        <TableCell className="w-[160px]">{props.list_of_sessions[sesh][1]}</TableCell>
-                        <TableCell className="w-[155px]">{props.list_of_sessions[sesh][2]}</TableCell>
-                        <TableCell className="w-[175px]">{props.list_of_sessions[sesh][3]}</TableCell>
-                        <TableCell className="w-[130px]">{props.list_of_sessions[sesh][4]}</TableCell>
-                        <TableCell className="w-[150px] text-xs">{props.list_of_sessions[sesh][5]}</TableCell>
-                        <TableCell className="text-xs">{props.list_of_sessions[sesh][6]}</TableCell>
-                        </TableRow>
-                    </TableBody>);
+        sessions.push(
+            <TableRow onClick={() => redirectToSesh(session_id)}>
+                <TableCell >{props.list_of_sessions[sesh][0]}</TableCell>
+                <TableCell >{props.list_of_sessions[sesh][1]}</TableCell>
+                <TableCell >{props.list_of_sessions[sesh][2]}</TableCell>
+                <TableCell >{props.list_of_sessions[sesh][3]}</TableCell>
+                <TableCell >{props.list_of_sessions[sesh][4]}</TableCell>
+                <TableCell className="text-xs">{props.list_of_sessions[sesh][5]}</TableCell>
+                <TableCell className="text-xs">{props.list_of_sessions[sesh][6]}</TableCell>
+            </TableRow>
+        );
     }
 
     return (
         <div>
             <div>
                 <p className="text-xl">Sessions:</p>
-                <Table> 
+                <Table>
                     <TableHeader className="text-[#31D2DD]">
                         <TableRow>
-                        <TableHead>Table Name</TableHead>
-                        <TableHead>Game Type</TableHead>
-                        <TableHead>Currency</TableHead>
-                        <TableHead>Total Hands</TableHead>
-                        <TableHead>Max Players</TableHead>
-                        <TableHead>Start Time</TableHead>
-                        <TableHead>End Time</TableHead>
+                            <TableHead>Table Name</TableHead>
+                            <TableHead>Game Type</TableHead>
+                            <TableHead>Currency</TableHead>
+                            <TableHead>Total Hands</TableHead>
+                            <TableHead>Max Players</TableHead>
+                            <TableHead>Start Time</TableHead>
+                            <TableHead>End Time</TableHead>
                         </TableRow>
                     </TableHeader>
+                    <TableBody >
+                        {sessions}
+                    </TableBody>
                 </Table>
-            </div>
-            <div style={{height:"25vh", overflow:"scroll"}}>
-                {sessions}
             </div>
         </div>
     )

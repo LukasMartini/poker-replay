@@ -8,5 +8,5 @@ export function cn(...inputs: ClassValue[]) {
 export interface Hand {
   played_at: string,
   hand_id: number,
-  amount: number,
+  amount: number
 }

@@ -12,31 +12,32 @@ export default function Uploads(props: UploadsProps) {
 
     for (var uppies = 0; uppies < props.number_of_uploads; uppies++) {
         // The filename in the database is a filepath. We need to cut it down.
-        const filename = props.list_of_uploads[uppies][1].split("/")[3]; // Removes the beginning filepath
+        const filename = props.list_of_uploads[uppies][1]; // Removes the beginning filepath
 
-        uploads.push(<TableBody key={uppies}>
-                        <TableRow>
-                        <TableCell className="w-[495px]">{filename.split(".")[0]}</TableCell> {/* Removes the file extension. */}
-                        <TableCell className="w-[580px]">{props.list_of_uploads[uppies][2]}</TableCell> {/* Width adjustment is manual. Forces highlight to end of row. */}
-                        </TableRow>
-                    </TableBody>);
+        uploads.push(
+            <TableRow>
+                <TableCell>{filename}</TableCell> {/* Removes the file extension. */}
+                <TableCell>{props.list_of_uploads[uppies][2]}</TableCell> {/* Width adjustment is manual. Forces highlight to end of row. */}
+            </TableRow>
+        );
     }
 
     return (
         <div>
             <div>
                 <p className="text-xl pt-16">Uploads:</p>
-                <Table> 
+                <Table>
                     <TableHeader className="text-[#31D2DD]">
                         <TableRow>
-                        <TableHead>File Name</TableHead>
-                        <TableHead>Upload Date</TableHead>
+                            <TableHead>File Name</TableHead>
+                            <TableHead>Upload Date</TableHead>
                         </TableRow>
                     </TableHeader>
+
+                    <TableBody>
+                        {uploads}
+                    </TableBody>
                 </Table>
-            </div>
-            <div style={{height:"15vh", overflow:"scroll"}}>
-                {uploads}
             </div>
         </div>
     )
