@@ -1,7 +1,7 @@
 "use client"
-import { useSearchParams, usePathname, useRouter} from "next/navigation"
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import Chart from 'chart.js/auto'
+import Chart from 'chart.js/auto';
 import { CategoryScale } from "chart.js";
 import { BarChart, generateChartData } from "./BarChart";
 import HandCard from "@/components/HandCard";
@@ -9,7 +9,7 @@ import Image from "next/image";
 import { Hand } from "@/util/utils";
 import { useAuth } from '@/components/auth/AuthContext';
 import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "./ui/table";
+import SessionTable from "./SessionTable";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -171,7 +171,7 @@ const SearchBar = () => {
                 : "transform translate-x-full"}`} 
               />
             </div>
-            {displayMode === "chart" && (
+            {/* {displayMode === "chart" && (
               <div className="flex justify-between translate-y-10">
                 <button onClick={handleClickLeft} disabled={isLeftButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-100 hover:scale-105">
                   <Image src={"/left-w.svg"} alt="left" width={24} height={24} />
@@ -181,31 +181,22 @@ const SearchBar = () => {
                   <Image src={"/right-w.svg"} alt="right" width={24} height={24} />
                 </button>
               </div>
-            )}
+            )} */}
+            <div className="flex justify-between translate-y-10">
+                <button onClick={handleClickLeft} disabled={isLeftButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-100 hover:scale-105">
+                  <Image src={"/left-w.svg"} alt="left" width={24} height={24} />
+                </button>
+
+                <button onClick={handleClickRight} disabled={isRightButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-00 hover:scale-105">
+                  <Image src={"/right-w.svg"} alt="right" width={24} height={24} />
+                </button>
+            </div>
             {displayMode === "chart" ? (
               <BarChart chartData={chartData} hyperlinks={links} title="Profit/Loss" subtitle="All past hands" />
             ) : (
-              <div className="pt-8">
-              <Table>
-                <TableHeader className="text-[#31D2DD]">
-                  <TableRow>
-                    <TableCell>Hand ID</TableCell>
-                    <TableCell>Played At</TableCell>
-                    <TableCell>Table Name</TableCell>
-                    <TableCell>Amount</TableCell>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {r4.map((info: any, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{info.hand_id}</TableCell>
-                      <TableCell>{info.played_at}</TableCell>
-                      <TableCell>{info.table_name}</TableCell>
-                      <TableCell>{info.amount}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="py-2">
+                <h2 className="text-center text-2xl">Poker Sessions</h2>
+                <SessionTable data={r4} />
               </div>
             )}
       </div>
