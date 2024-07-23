@@ -9,7 +9,7 @@ import { CategoryScale } from "chart.js/auto";
 import { Chart } from "chart.js";
 import { Hand } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthContext";
-import { fetchCashFlow, fetchHandCountInSession } from "@/util/api-requests";
+import { fetchCashFlow } from "@/util/api-requests";
 
 Chart.register(CategoryScale);
 
@@ -25,29 +25,9 @@ export default function SessionDetails() { // Asynchronous server component for 
     const pathname = usePathname();
     const session = pathname.slice(9);
 
-    const fetchQuantity = async () => {
-        await fetchHandCountInSession(Number(session), user.auth.token)
-            .then(resp => resp.json())
-            .then(data => {
-                setHandCount(data[0].hands);
-            });
-    };
-
-    useEffect(() => {
-        if (user.auth.token != null) {
-            fetchQuantity();
-        }
-    }, [user])
-  
-    const fetchHandData = async () => { 
-        // if we aren't rendering the start, and nothing has moved, don't do anything
-        if (offset == oldOffset) return;
-        console.log(`Fetching hand data from offset ${offset}`);
-        console.log(`Current trend stack is `, trendStack);
-
+    const apiCall = async (userId: string) => {
         // Run SQL queries to fetch appropriate data. See server.py for further information.
-         // TODO: use cached user
-        await fetchCashFlow(session, 50, offset, user.auth.token)
+        await fetchCashFlow(session, 50, 0, user.auth.token)
             .then(resp => resp.json())
             .then(data => {
                 setChartData(generateSessionLineData(data))
@@ -57,24 +37,8 @@ export default function SessionDetails() { // Asynchronous server component for 
 
     
     useEffect(() => {
-        if (user.auth.token) {
-            fetchHandData();
-        }
-    }, [user, offset])
-
-    const handleClickLeft = () => {
-        setOffset((prevOffset) => Math.max(prevOffset - windowSize, 0));
-    }
-    const handleClickRight = () => {
-        setOffset((prevOffset) => {
-            const newOffset = prevOffset + windowSize;
-            console.log(`Updating offset from ${prevOffset} to ${newOffset}`);
-            return newOffset < handCount ? newOffset : prevOffset;
-        });
-    }  
-
-    const isLeftButtonDisabled = offset === 0 || handCount <= windowSize;
-    const isRightButtonDisabled = offset + windowSize >= handCount || handCount <= windowSize;
+        apiCall("1"); // TODO: use cached user
+    }, [user])
 
     // var rows: Array<any> = [];
     // var pc_index: number = 0;

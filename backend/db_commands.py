@@ -88,7 +88,6 @@ def update_upload_status(upload_id: int, status: str):
 
 def get_hand_count(user_id):
     '''Gets the number of hands registered for a user_id.'''
-    print("Fetching hand count for", user_id)
 
     get_hand_query="""
     SELECT COUNT(*) hands
@@ -202,92 +201,7 @@ def profile_data(username: str):
             execute_query(sessions_query, fetch=True),
             execute_query(shared_query, fetch=True, return_dict=True)]
     
-    offsetText = ""
-    if offset and offset != '-1':
-        offsetText = "OFFSET %s"
-        data.append(offset)
-
-    query = f"""
--- find the hands where the player_id plays
-WITH user_player AS (
-	SELECT id FROM player WHERE player.user_id = %s
-),
-target_player AS (
-	SELECT id FROM player WHERE player.name = %s
-),
--- all hands from cash sessions you own    
-hands AS (
-	SELECT id, played_at
-	FROM poker_hand hand
-	WHERE EXISTS (
-    	SELECT 1 FROM poker_session
-    	WHERE poker_session.id = hand.session_id
-        	AND poker_session.user_id = %s
-        	AND poker_session.tournament_id IS NULL
-			AND EXISTS ( SELECT * FROM player_cards, target_player WHERE hand_id = hand.id AND player_id = target_player.id )
-	)
-),
--- map each hand to the player that collected it
-collected_hands AS (
-	SELECT hand.id AS hand_id, (
-        	SELECT act.player_id
-        	FROM player_action act
-        	WHERE act.hand_id = hand.id
-            	AND act.action_type = 'collect' -- should never have multiple collects per hand
-        	LIMIT 1
-    	) AS collector_id, played_at
-	FROM hands hand
-),
--- the total amount that each person contributed to each hand
-bet_amounts AS (
-	SELECT hand_id, player_id, SUM(amount) as amount
-	FROM player_action, user_player, target_player
-	WHERE hand_id IN (SELECT id FROM hands)
-		AND (player_id = user_player.id OR player_id = target_player.id)
-		AND action_type in ('call', 'bet', 'raise', 'all-in')
-	GROUP BY hand_id, player_id
-),
--- cash flow by hand and player to/from
-cash_flow as (
-	SELECT
-    	-- relevant player, the non-user player involved
-    	(CASE
-        	WHEN hand.collector_id = user_player.id
-        	THEN bet_amounts.player_id
-    
-        	WHEN bet_amounts.player_id = user_player.id
-        	THEN hand.collector_id
-    
-        	ELSE NULL
-    	END) as player_id,
-    	-- raw cash flow
-    	CASE
-        	-- when we win, add the amount we won from this player
-        	WHEN hand.collector_id = user_player.id
-        	THEN bet_amounts.amount
-    
-        	-- when someone else wins, if we bet, subtract the amount we lost to this player
-        	WHEN bet_amounts.player_id = user_player.id
-        	THEN -bet_amounts.amount
-    
-        	-- if we didn't win or place this bet, disregard the value
-        	ELSE 0
-    	END as amount,
-		hand.hand_id,
-		hand.played_at
-	FROM user_player, collected_hands hand
-	JOIN bet_amounts ON hand.hand_id = bet_amounts.hand_id
-)
-SELECT played_at, hand_id, amount
-FROM target_player, cash_flow
-WHERE cash_flow.player_id = target_player.id
-ORDER BY played_at DESC
-{countText}
-{offsetText}
-    """
-
-    return execute_query(query, tuple(data), fetch=True, return_dict=True)
-
+    return data
 def player_actions_in_hand(user_id, hand_id):
     query = """
     SELECT player.id as player_id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 

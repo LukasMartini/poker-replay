@@ -33,17 +33,14 @@ const SearchBar = () => {
     var [links, setLinks] = useState([]);
 
     useEffect(() => {
-      if (user.auth.token != null) {
+      if (user.auth.token != null)
         fetchQuantity()
-      }
     }, [user]);
 
     useEffect(() => {
-      if (user.auth.token != null) {
-        console.log('Checking for cash data with user', user)
+      if (user.auth.token != null)
         fetchCashData(offset, 30);
-      }
-    }, [user, offset]);
+    }, [user]);
 
     const handleSearch = async (searchTerm: string) => {
         const token = user.auth.token;
@@ -56,14 +53,14 @@ const SearchBar = () => {
         setResponse3(await response3.clone().json());
 
         combinedData = [r1, r2, r3];
-        console.log("returned data: ", combinedData);
+        console.log(combinedData);
     }
 
     const fetchQuantity = async () => {
       const response = await fetchHandCount(user.auth.token);
       const data = await response.json();
       
-      if (data === 'undefined' || data.size == 0) {
+      if (data === 'undefined') {
         console.log("Hand count request returned undefined");
         return;
       }
@@ -120,6 +117,7 @@ const SearchBar = () => {
             />
             <div className="grid grid-cols-4 gap-12 pt-12">
                 {r1.map((info: any, index) => {
+                    // console.log(info);
                    return  <HandCard handId={info.id} played_at={info.played_at} tableName={info.table_name} key={index} />
                 })}
             </div>

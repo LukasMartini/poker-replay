@@ -25,17 +25,12 @@ export const generateChartData = (handData: Hand[]) => {
     }
   });
 
-  console.log("Processing hand data from")
-  console.log(handData)
-  console.log("to")
-  console.log(handData.map((data) => (data.amount == 0 ? 0.004 : Number(data.amount))))
-
   return {
     labels: handData.map((data) => data.played_at),
     datasets: [
       {
         label: "Profit",
-        data: handData.map((data) => (data.amount == 0 ? 0.004 : Number(data.amount))),
+        data: handData.map((data) => (data.amount == 0 ? 0.004 : data.amount)),
         backgroundColor: colours,
         borderWidth: 0,
       },

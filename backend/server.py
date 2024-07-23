@@ -73,9 +73,7 @@ def player_cards(id: int) -> Response:
 def hand_quantity() -> Response:
     try:
         user_id = auth(request.headers.get("Authorization"))
-        session_id = request.args.get("sessionid", default = -1, type = int)
-        playername = request.args.get("playername", default='-1', type = str)
-        result = get_hand_count(str(user_id), str(session_id), playername)
+        result = get_hand_count(user_id)
 
         return jsonify(result), 200
     except Exception as e:
@@ -92,10 +90,7 @@ def cash_flow() -> Response:
         offset = request.args.get("offset", default=-1, type = int)
         session_id = request.args.get("sessionid", default = -1, type = int)
 
-        if (playername == "-1"):
-            result = get_cash_flow(str(user_id), str(limit), str(offset), str(session_id), ascendingDescending)
-        else:
-            result = cash_flow_to_player(str(user_id), playername, str(limit), str(offset))
+        result = get_cash_flow(user_id, str(limit), str(offset), str(session_id))
 
         return jsonify(result), 200
     except Exception as e:
