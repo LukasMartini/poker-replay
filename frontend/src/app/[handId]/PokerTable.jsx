@@ -193,11 +193,11 @@ const PokerTable = (props) => {
 
   function calculateStackSize(name, stack_size) {
     const playerActions = props.actions.filter(action => action.name === name && action.amount != null);
-    const didWin = props.actions.filter(action => action.name === name && (action.betting_round == 'Showdown'));
+    const didWin = props.actions.filter(action => action.name === name && (action.action_type == 'collect'));
 
     const bets = playerActions.reduce((total, action) => total + parseFloat(action.amount), 0).toFixed(2);
     if (didWin.length >0) {
-      if (didWin[0] && didWin[0].action_type == 'collect') {
+      if (didWin[0]) {
         return (parseFloat(stack_size) + parseFloat(didWin[0].amount)).toFixed(2);
       }  
     }
