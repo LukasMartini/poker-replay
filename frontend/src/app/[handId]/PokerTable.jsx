@@ -4,9 +4,6 @@ function colorFromSuit(suit) {
   if (suit === '♠' || suit === '♣') {
     return 'black';
   }
-  // else if (suit === '♦' || suit === '♥') {
-  //   return 'red';
-  // }
   return 'red';
 }
 
@@ -201,7 +198,7 @@ const PokerTable = (props) => {
     const bets = playerActions.reduce((total, action) => total + parseFloat(action.amount), 0).toFixed(2);
     if (didWin.length >0) {
       if (didWin[0] && didWin[0].action_type == 'collect') {
-        stack_size = parseFloat(stack_size) + parseFloat(calculatePot());
+        return parseFloat(stack_size) + parseFloat(didWin[0].amount);
       }  
     }
     return (stack_size - bets).toFixed(2);
