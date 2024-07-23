@@ -51,7 +51,6 @@ const SearchBar = () => {
 
     useEffect(() => {
       if (user.auth.token != null) {
-        console.log('Checking for cash data with user', user.auth.token)
         fetchCashData(offset, 30);
       }
     }, [user, offset]);
