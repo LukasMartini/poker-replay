@@ -183,11 +183,11 @@ const SearchBar = () => {
             )}
           </div>
             {isInputFocused && playerMatches.length > 0 && (
-              <div className="absolute bg-[#2C2C2C] z-10 w-1/2 mt-2 shadow-xl rounded-md max-h-60 overflow-y-auto">
+              <div className="absolute bg-[#2C2C2C] z-50 w-1/2 mt-2 shadow-xl rounded-md max-h-60 overflow-y-auto">
                 {playerMatches.map((match, index) => (
                   <div 
                     key={index} 
-                    className={`p-2 cursor-pointer hover:bg-gray-400 ${index === selectedIndex ? 'bg-gray-200' : ''}`}
+                    className={`p-2 cursor-pointer bg-[#2C2C2C] hover:bg-gray-400 ${index === selectedIndex ? 'bg-gray-200' : ''}`}
                     onMouseDown={() => replace(`/player/${match[1]}`)}
                   >
                     {match[1]}
