@@ -175,10 +175,52 @@ def file_upload():
     except Exception as e:
         print(e)
         return jsonify({"success": False, "error": str(e)}), 403 
+    
+@app.route('/api/share', methods=['GET', 'POST', 'DELETE'])
+@cross_origin()
+def hand_share():
+    try: 
+        user_id = auth(request.headers.get("Authorization"))
+        if request.method == 'GET':
+            hand_id = request.args.get('hand_id', type = int)
+            cur.execute("EXECUTE sharedWith(%s)", (hand_id,))
+            conn.commit()
+            result = cur.fetchall()
+            column_names = [description[0] for description in cur.description]
+                     
+            return jsonify([dict(zip(column_names, row)) for row in result]), 200
+        elif request.method == 'POST':
+            data = request.get_json()  # Accessing JSON data from the request body
+
+            shared_user = data.get('shared_user')
+            hand_id = data.get('hand_id')
+            cur.execute("EXECUTE getUserID(%s)", (shared_user,))
+            conn.commit()
+            result = cur.fetchall()
+            cur.execute("EXECUTE share(%s, %s, %s)", (user_id, result[0][0], hand_id))
+            conn.commit()
+            
+            return jsonify({"success": True}), 200 
+        elif request.method == 'DELETE':
+            data = request.get_json()  # Accessing JSON data from the request body
+            # Handle PUT request
+            shared_user = data.get('shared_id')
+            hand_id = data.get('hand_id')
+            cur.execute("EXECUTE unshare(%s, %s, %s)", (user_id, hand_id, shared_user))
+            conn.commit()
+            
+            return jsonify({"success": True}), 200 
+
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": "Bad Request"}), 400 
+
 
 if __name__ == '__main__':
     cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())
     cur.execute(open('./sql/R10/authorization.sql').read())
+    cur.execute(open('./sql/R7/authorized_hands_template.sql').read())
     app.run(host="localhost", port=5001, debug=True)
+
     cur.close()
     conn.close()
