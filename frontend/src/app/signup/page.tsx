@@ -25,7 +25,7 @@ const handleSubmit = async (event: any) => {
 
   const response = await signupUser(formData);
 
-  window.location.reload();
+  // window.location.reload();
 
   console.log(await response.json());
 };

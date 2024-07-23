@@ -40,9 +40,19 @@ const Navbar = () => {
                         Add history
                     </p>
                 </Link>
-                {auth.token ? (
-                    <Button onClick={logout} variant="secondary">Logout</Button>
-                ) : (
+                {auth.token && (
+                    <>
+                        <Link href={`/profile/${auth.username}`}>
+                            <p className="text-sm">
+                                Profile ({auth.username})
+                            </p>
+                        </Link>
+
+                        <Button onClick={()=>logout()} variant="secondary">Logout</Button>
+                    </>
+                )}
+
+                {!auth.token && (
                     <div>
                         <Link href={'/login'}>
                             <Button variant="secondary">Login</Button>

@@ -200,10 +200,31 @@ def profile_data(username: str):
     sessions_query = ("""SELECT s.table_name, s.game_type, s.currency, s.total_hands, s.max_players, s.start_time, s.end_time, s.id
                         FROM poker_session as s, (SELECT users.id as usid, uploads.id as upid FROM users, uploads WHERE users.username = '%s' AND users.id = uploads.user_id) us
                         WHERE s.user_id = us.usid AND s.upload_id = us.upid""" % username)
+    shared_query = ("""
+                      SELECT poker_hand.id,
+                        poker_hand.session_id,
+                                poker_hand.site_hand_id,
+                                poker_hand.small_blind,
+                                poker_hand.big_blind,
+                                poker_hand.total_pot,
+                                poker_hand.rake,
+                                poker_hand.played_at,
+                                users.username
+                                FROM poker_session
+                                JOIN poker_hand ON poker_session.id = poker_hand.session_id
+                                FULL OUTER JOIN authorized ON poker_hand.id = authorized.hand_id
+                                JOIN users ON poker_session.user_id = users.id
 
+                                WHERE poker_hand.id IN 
+                                (SELECT hand_id FROM authorized JOIN users ON authorized.user_id = users.id WHERE users.username = '%s');"""
+
+                    % username)
     data = [execute_query(user_data_query, fetch=True),
             execute_query(uploads_query, fetch=True),
-            execute_query(sessions_query, fetch=True)]
+            execute_query(sessions_query, fetch=True),
+            execute_query(shared_query, fetch=True, return_dict=True)]
+
+    return data
 
 def cash_flow_to_player(user_id, player, count="-1", offset="-1"):
     data = [user_id, player, user_id]
@@ -347,6 +368,7 @@ def player_cards_in_hand(user_id, hand_id):
     JOIN poker_session ON poker_hand.session_id = poker_session.id
     LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = %s
     WHERE player_cards.hand_id = %s AND (poker_session.user_id = %s OR authorized.user_id IS NOT NULL)
+    ORDER BY player_cards.position
     """
     
     return execute_query(query, (user_id, hand_id, user_id), fetch=True, return_dict=True)
