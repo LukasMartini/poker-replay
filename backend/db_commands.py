@@ -293,6 +293,29 @@ ORDER BY played_at DESC
 
     return execute_query(query, tuple(data), fetch=True, return_dict=True)
 
+def get_sessions(user_id, limit, offset):
+    data = [user_id]
+
+    countText = ""
+    if count and count != '-1':
+        countText = "LIMIT %s"
+        data.append(count)
+    
+    offsetText = ""
+    if offset and offset != '-1':
+        offsetText = "OFFSET %s"
+        data.append(offset)
+
+    query = f"""
+SELECT *
+FROM poker_session
+WHERE user_id = %s
+{countText}
+{offsetText}
+    """
+
+    return execute_query(query, tuple(data), fetch=True, return_dict=True)
+
 def player_actions_in_hand(user_id, hand_id):
     query = """
     SELECT player.id as player_id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 

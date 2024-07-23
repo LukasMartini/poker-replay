@@ -112,7 +112,20 @@ def cash_flow() -> Response:
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 403 
-    
+
+@app.route("/api/sessions", methods=['GET'])
+@cross_origin()
+def session_list() -> Response:
+    try:
+        user_id = auth(request.headers.get("Authorization"))
+        limit = request.args.get("limit", default=30, type = int)
+        offset = request.args.get("offset", default=-1, type = int)
+
+        result = get_sessions(str(user_id), str(limit), str(offset))
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 403     
+
 @app.route("/api/authorize", methods=['POST'])
 @cross_origin()
 def authorize() -> Response: 
