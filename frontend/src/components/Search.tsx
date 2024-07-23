@@ -34,7 +34,6 @@ const SearchBar = () => {
 
     useEffect(() => {
       if (user.auth.token != null) {
-        console.log('Checking for cash data with user', user)
         fetchQuantity()
       }
     }, [user]);
@@ -43,9 +42,8 @@ const SearchBar = () => {
       if (user.auth.token != null) {
         console.log('Checking for cash data with user', user)
         fetchCashData(offset, 30);
-
       }
-    }, [user]);
+    }, [user, offset]);
 
     const handleSearch = async (searchTerm: string) => {
         const token = user.auth.token;

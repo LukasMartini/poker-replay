@@ -72,8 +72,7 @@ export default function PlayerDetails() { // Asynchronous server component for p
     }  
 
     const isLeftButtonDisabled = offset === 0 || handCount <= windowSize;
-    const isRightButtonDisabled = (offset + windowSize >= handCount || handCount <= windowSize);
-    console.log(offset, windowSize, handCount, isRightButtonDisabled)
+    const isRightButtonDisabled = (offset + windowSize >= handCount || handCount <= windowSize || chartData.datasets[0].data.length < windowSize);
 
     const subtitle = `Hands with ${playerName}`
 
