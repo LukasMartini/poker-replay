@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import StaticData from "./StaticData";
 import Uploads from "./Uploads";
 import Sessions from "./Sessions";
+import { useAuth } from "@/components/auth/AuthContext";
+import { fetchProfile } from "@/util/api-requests";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL;
@@ -11,11 +13,13 @@ const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL;
 // TODO: find out if we are including a chart here and if so, what of.
 
 export default function ProfileView() {
+    const user = useAuth();
+
     const pathname = usePathname().slice(9);
     const [result, setResp]: [any, any] = useState([])
 
     const handleQuery = async (searchTerm: string) => {
-        const response = await fetch(`${API_URL}profile/${pathname}`);
+        const response = await fetchProfile(pathname, user.auth.token);
         setResp(await response.json());
     }
 
