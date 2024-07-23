@@ -8,7 +8,7 @@ import HandCard from "@/components/HandCard";
 import Image from "next/image";
 import { Hand } from "@/util/utils";
 import { useAuth } from '@/components/auth/AuthContext';
-import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards } from "@/util/api-requests";
+import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchPlayerActions, fetchPlayerCards, fetchSessions } from "@/util/api-requests";
 import SessionTable from "./SessionTable";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -21,10 +21,12 @@ const SearchBar = () => {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
+
     const [r1, setResponse1] = useState([]);
     const [r2, setResponse2] = useState([]);
     const [r3, setResponse3] = useState([]);
-    const [r4, setResponse4] = useState([]);
+    const [sessionData, setSessionData] = useState([]);
+
     const [offset, setOffset] = useState(0);
     const user = useAuth();
     const [displayMode, setDisplayMode] = useState<DisplayMode>("chart");
@@ -35,6 +37,7 @@ const SearchBar = () => {
     var response1 = new Response();
     var response2 = new Response();
     var response3 = new Response();
+    var sessionResponse = new Response();
 
     var [handCount, setHandCount] = useState(0); // this *should* be useState, not required until pagination
     var [chartData, setChartData] = useState(generateChartData([]));
@@ -53,20 +56,29 @@ const SearchBar = () => {
       }
     }, [user, offset]);
 
+    useEffect(() => {
+        if (displayMode === "table" && user.auth.token != null) {
+            loadSessionTable();
+        }
+    }, [displayMode, user]);
+
     const handleSearch = async (searchTerm: string) => {
         const token = user.auth.token;
         response1 = await fetchHandSummary(searchTerm, token);
         response2 = await fetchPlayerActions(searchTerm, token);
         response3 = await fetchPlayerCards(searchTerm, token);
-
+        
         setResponse1(await response1.clone().json());
         setResponse2(await response2.clone().json());
         setResponse3(await response3.clone().json());
 
-        setResponse4(await response1.clone().json()); //copy data to put into table
-
         combinedData = [r1, r2, r3];
         console.log("returned data: ", combinedData);
+    }
+
+    const loadSessionTable = async () => {
+        sessionResponse = await fetchSessions(user.auth.token); 
+        setSessionData(await sessionResponse.clone().json());
     }
 
     const fetchQuantity = async () => {
@@ -102,7 +114,6 @@ const SearchBar = () => {
   
       setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`));
       setChartData(generateChartData(data));
-      setResponse4(data); //use the same data for table for now and change later
     };
 
 
@@ -171,7 +182,7 @@ const SearchBar = () => {
                 : "transform translate-x-full"}`} 
               />
             </div>
-            {/* {displayMode === "chart" && (
+            {displayMode === "chart" && (
               <div className="flex justify-between translate-y-10">
                 <button onClick={handleClickLeft} disabled={isLeftButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-100 hover:scale-105">
                   <Image src={"/left-w.svg"} alt="left" width={24} height={24} />
@@ -181,22 +192,13 @@ const SearchBar = () => {
                   <Image src={"/right-w.svg"} alt="right" width={24} height={24} />
                 </button>
               </div>
-            )} */}
-            <div className="flex justify-between translate-y-10">
-                <button onClick={handleClickLeft} disabled={isLeftButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-100 hover:scale-105">
-                  <Image src={"/left-w.svg"} alt="left" width={24} height={24} />
-                </button>
-
-                <button onClick={handleClickRight} disabled={isRightButtonDisabled} className="opacity-50 disabled:cursor-not-allowed disabled:opacity-20 disabled:scale-100 hover:opacity-100 transition ease-in-out delay-00 hover:scale-105">
-                  <Image src={"/right-w.svg"} alt="right" width={24} height={24} />
-                </button>
-            </div>
+            )}
             {displayMode === "chart" ? (
               <BarChart chartData={chartData} hyperlinks={links} title="Profit/Loss" subtitle="All past hands" />
             ) : (
               <div className="py-2">
                 <h2 className="text-center text-2xl">Poker Sessions</h2>
-                <SessionTable data={r4} />
+                <SessionTable data={sessionData} />
               </div>
             )}
       </div>
