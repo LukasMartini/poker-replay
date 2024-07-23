@@ -6,6 +6,7 @@ import uuid
 import bcrypt
 from datetime import datetime, timedelta
 from db_commands import (
+    delete_upload,
     get_db_connection,
     get_hand_count,
     get_cash_flow,
@@ -215,6 +216,18 @@ def file_upload():
     except Exception as e:
         print(e)
         return jsonify({"success": False, "error": str(e)}), 403 
+
+@app.route('/api/delete/<int:file_id>', methods=['GET'])
+@cross_origin()
+def delete_file(file_id: int):
+    try: 
+        user_id = auth(request.headers.get("Authorization"))
+        threading.Thread(target=delete_upload, args=(user_id, file_id)).start()
+        return {"success": True, 'message': f'File {file_id} deleted successfully!'}, 200
+    
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": str(e)}), 403
     
 @app.route('/api/share', methods=['GET', 'POST', 'DELETE'])
 @cross_origin()

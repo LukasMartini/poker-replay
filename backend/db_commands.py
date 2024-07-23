@@ -74,11 +74,15 @@ def create_upload(user_id: int, file_name: str) -> int:
     upload_id = result[0][0]
     return upload_id
 
-def delete_upload(upload_id: int):
+def delete_upload(user_id: int, upload_id: int):
     query = """
-    DELETE FROM uploads WHERE id = %s
+    WITH check_ownership AS (
+        SELECT 1 FROM uploads WHERE id = %s AND user_id = %s
+    )
+    DELETE FROM uploads
+    WHERE id = %s AND EXISTS (SELECT 1 FROM check_ownership)
     """
-    execute_query(query, (upload_id,))
+    execute_query(query, (upload_id, user_id, upload_id))
 
 def update_upload_status(upload_id: int, status: str):
     query = """
