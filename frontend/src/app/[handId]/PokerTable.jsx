@@ -198,7 +198,7 @@ const PokerTable = (props) => {
     const bets = playerActions.reduce((total, action) => total + parseFloat(action.amount), 0).toFixed(2);
     if (didWin.length >0) {
       if (didWin[0] && didWin[0].action_type == 'collect') {
-        return parseFloat(stack_size) + parseFloat(didWin[0].amount);
+        return (parseFloat(stack_size) + parseFloat(didWin[0].amount)).toFixed(2);
       }  
     }
     return (stack_size - bets).toFixed(2);
