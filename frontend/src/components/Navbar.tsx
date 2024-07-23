@@ -49,11 +49,6 @@ const Navbar = () => {
                         Search hand
                     </p>
                 </Link>
-                <Link href={'/bankroll'} className="hover:underline">
-                    <p className="text-sm">
-                        Bankroll
-                    </p>
-                </Link>
                 <Link href={'/upload'} className="hover:underline">
                     <p className="text-sm">
                         Add history
