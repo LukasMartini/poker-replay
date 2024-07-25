@@ -15,3 +15,5 @@ PREPARE authorize(text) AS
     WHERE token = $1 AND expiry_date > NOW();
 
 CREATE INDEX users_token_index ON users(token);
+CREATE INDEX users_email_index ON users(email);
+CREATE INDEX users_username_index ON users(user);
