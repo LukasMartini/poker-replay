@@ -12,4 +12,6 @@ PREPARE renewToken(text, text, timestamp) AS
 
 PREPARE authorize(text) AS 
   SELECT id FROM users 
-    WHERE token = $1 AND expiry_date > NOW()
+    WHERE token = $1 AND expiry_date > NOW();
+
+CREATE INDEX users_token_index ON users(token);

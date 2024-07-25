@@ -15,7 +15,7 @@ CREATE TABLE users (
     password_hash CHAR(60), -- Assuming bcrypt hash which outputs 60 characters
     salt CHAR(29), -- Storing bcrypt salt, which is 29 characters long
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    token CHAR(36),
+    token CHAR(36) UNIQUE,
     expiry_date TIMESTAMP,
     CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,}$')
 );
