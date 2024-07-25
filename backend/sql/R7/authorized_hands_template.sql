@@ -10,21 +10,6 @@ PREPARE share(integer, integer, integer) AS
       users.id = $1
       AND poker_hand.id = $3;
 
-PREPARE sharedHands(integer) AS
-  SELECT poker_hand.id,
-    poker_hand.session_id,
-    poker_hand.site_hand_id,
-    poker_hand.small_blind,
-    poker_hand.big_blind,
-    poker_hand.total_pot,
-    poker_hand.rake,
-    poker_hand.played_at
-    FROM poker_session
-    JOIN poker_hand ON poker_session.id = poker_hand.session_id
-    FULL OUTER JOIN authorized ON poker_hand.id = authorized.hand_id
-    WHERE poker_hand.id IN 
-      (SELECT hand_id FROM authorized WHERE user_id = $1);
-
 PREPARE sharedWith(integer) AS
   SELECT users.id, users.username, users.email
     FROM users
