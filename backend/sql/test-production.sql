@@ -1,5 +1,6 @@
 -- ---------- Create a User ---------- --
-SELECT COUNT(*) FROM users WHERE username = 'nuu_user' OR email = 'enigma@zen.mst'
+SELECT COUNT(*) FROM users WHERE username = 'nuu_user' OR email = 'enigma@zen.mst';
+
 -- If the user account exists, query stops here. If it is a new account, see below.
 INSERT INTO users (username, email, password_hash, salt, token)
 VALUES ('nuu_user', 'enigma@zen.mst', '$2b$12$RFi87s8TkByRg7TDec6crgRilqwDOc0mlatH6gMoFCZIXjGOhVMje', '$2b$12$RFi87s8TkByRgMXBec6bxe', 'd8euoc45-dfa4-45b6-9f49-fe903e80607a');
@@ -10,7 +11,7 @@ VALUES (1, 'test_file.nonbin', 'processing')
 RETURNING id;
 
 -- ---------- Update Upload Status ---------- --
-UPDATE uploads SET status = 'complete' WHERE id = 3;
+UPDATE uploads SET status = 'completed' WHERE id = 3;
 
 -- ---------- Delete a File ---------- --
 WITH check_ownership AS (
@@ -78,7 +79,7 @@ SELECT poker_hand.id, poker_hand.session_id, poker_hand.total_pot, poker_hand.ra
 FROM poker_hand
 JOIN poker_session ON poker_hand.session_id = poker_session.id
 LEFT JOIN board_cards ON board_cards.hand_id = poker_hand.id
-LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = %s
+LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = 1
 WHERE poker_hand.id = 1 AND (poker_session.user_id = 1 OR authorized.user_id IS NOT NULL);
 
 SELECT player.id as player_id, player.name, player_action.id, player_action.hand_id, player_action.action_type, 
@@ -87,7 +88,7 @@ FROM player
 JOIN player_action ON player_action.player_id = player.id
 JOIN poker_hand ON player_action.hand_id = poker_hand.id
 JOIN poker_session ON poker_hand.session_id = poker_session.id
-LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = %s
+LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = 1
 WHERE player_action.hand_id = 1 AND (poker_session.user_id = 1 OR authorized.user_id IS NOT NULL)
 ORDER BY player_action.id;
 
@@ -97,7 +98,7 @@ FROM player
 JOIN player_cards ON player_cards.player_id = player.id
 JOIN poker_hand ON player_cards.hand_id = poker_hand.id
 JOIN poker_session ON poker_hand.session_id = poker_session.id
-LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = %s
+LEFT JOIN authorized ON authorized.hand_id = poker_hand.id AND authorized.user_id = 1
 WHERE player_cards.hand_id = 1 AND (poker_session.user_id = 1 OR authorized.user_id IS NOT NULL)
 ORDER BY player_cards.position;
 
@@ -133,7 +134,7 @@ WITH user_player AS (
 	SELECT id FROM player WHERE player.user_id = 1
 ),
 target_player AS (
-	SELECT id FROM player WHERE player.name = 1
+	SELECT id FROM player WHERE player.name = 'Villa0722'
 ),
 -- all hands from cash sessions you own    
 hands AS (
@@ -219,4 +220,4 @@ JOIN poker_session ps ON ph.session_id = ps.id
 JOIN player_cards pc ON ph.id = pc.hand_id
 JOIN player p ON pc.player_id = p.id
 WHERE ps.user_id = 1
-    AND p.name ILIKE 'poker';
+    AND p.name ILIKE '%poker%';
