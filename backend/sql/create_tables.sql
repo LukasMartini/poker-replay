@@ -117,3 +117,6 @@ CREATE TABLE authorized (
     FOREIGN KEY (hand_id) REFERENCES poker_hand(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, hand_id)
 );
+
+CREATE INDEX action_hand
+ON player_action (hand_id);
