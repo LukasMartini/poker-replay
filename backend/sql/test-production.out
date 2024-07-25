@@ -267,3 +267,21 @@ DELETE 0
        117 | Epangpoker
        190 | 60centPoker
 (3 rows)
+
+-- ---------- Get User ID ---------- --
+ id 
+----
+  7
+(1 row)
+
+-- ---------- Share ---------- --
+INSERT 0 0
+
+-- ---------- Shared With ---------- --
+ id |  username   |         email         
+----+-------------+-----------------------
+  2 | matteo-psnt | mppesent@uwaterloo.ca
+(1 row)
+
+-- ---------- Unshare ---------- --
+DELETE 0

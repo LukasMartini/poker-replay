@@ -221,3 +221,26 @@ JOIN player_cards pc ON ph.id = pc.hand_id
 JOIN player p ON pc.player_id = p.id
 WHERE ps.user_id = 1
     AND p.name ILIKE '%poker%';
+
+-- ---------- Get User ID ---------- --
+SELECT id FROM users WHERE username = 'nuu_user' OR email = 'enigma@zen.mst';
+
+-- ---------- Share ---------- --
+INSERT INTO authorized(user_id, hand_id)
+SELECT 2, poker_hand.id FROM users 
+    JOIN poker_session ON users.id = poker_session.user_id
+    JOIN poker_hand ON poker_session.id = poker_hand.session_id
+    WHERE 
+      users.id = 1
+      AND poker_hand.id = 1000;
+
+-- ---------- Shared With ---------- --
+SELECT users.id, users.username, users.email
+    FROM users
+    JOIN authorized ON users.id = authorized.user_id
+    WHERE authorized.hand_id = 1000;
+
+-- ---------- Unshare ---------- --
+DELETE FROM authorized
+    WHERE user_id = 1 AND hand_id = 1000 AND hand_id IN 
+      (SELECT poker_hand.id FROM poker_session JOIN poker_hand ON poker_session.id = poker_hand.session_id WHERE user_id = 1);
