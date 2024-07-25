@@ -31,7 +31,10 @@ PREPARE sharedWith(integer) AS
     JOIN authorized ON users.id = authorized.user_id
     WHERE authorized.hand_id = $1;
 
-PREPARE unshare(integer, integer, integer) AS  
-  DELETE FROM authorized
-    WHERE user_id = $3 AND hand_id = $2 AND hand_id IN 
-      (SELECT poker_hand.id FROM poker_session JOIN poker_hand ON poker_session.id = poker_hand.session_id WHERE user_id = $1); 
+  PREPARE unshare(integer, integer, integer) AS  
+    DELETE FROM authorized
+      WHERE user_id = $3 AND hand_id = $2 AND hand_id IN 
+        (SELECT poker_hand.id FROM poker_session JOIN poker_hand ON poker_session.id = poker_hand.session_id WHERE user_id = $1); 
+
+CREATE INDEX hand_session ON poker_hand(session_id);
+CREATE INDEX session_user ON poker_session(user_id);
