@@ -1,0 +1,45 @@
+# Docker
+**/*
+!backend/
+!frontend/
+!backend/**
+!frontend/**
+!hand_histories/
+
+# Exclude development files
+**/.next
+**/node_modules
+**/__pycache__
+**/*.pyc
+**/.git
+**/.gitignore
+**/README.md
+
+# Exclude reports (large files)
+reports/
+CS_348_Group_21___Report.pdf
+
+# Exclude shell scripts (except wait script)
+shell_commands.sh
+
+# Keep only essential backend files
+!backend/requirements.txt
+!backend/server.py
+!backend/db_commands.py
+!backend/convert_history.py
+!backend/load_data.py
+!backend/parser_db_commands.py
+!backend/sql/
+
+# Keep only essential frontend files
+!frontend/package.json
+!frontend/package-lock.json
+!frontend/next.config.mjs
+!frontend/tsconfig.json
+!frontend/tailwind.config.ts
+!frontend/postcss.config.mjs
+!frontend/components.json
+!frontend/next-env.d.ts
+!frontend/src/
+!frontend/public/
+!frontend/components/

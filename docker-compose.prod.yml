@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  database:
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_production_password}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-poker_user}:${POSTGRES_PASSWORD:-secure_production_password}@database:5432/${POSTGRES_DB:-poker_replay}
+    restart: unless-stopped
+
+  frontend:
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5000}
+    restart: unless-stopped
+
+volumes:
+  postgres_prod_data:

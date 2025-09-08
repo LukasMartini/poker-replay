@@ -1,5 +1,9 @@
+import { Suspense } from "react";
 import HandCard from "@/components/HandCard";
 import SearchBar from "@/components/Search";
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 
 const test = [
   {
@@ -24,13 +28,13 @@ const test = [
   },
 ];
 
-
 const Search = () => {
-
   return (
     <div className="bg-[#2C2C2C] text-white px-24">
       <div className="py-12 justify-center">
-        <SearchBar />
+        <Suspense fallback={<div>Loading...</div>}>
+          <SearchBar />
+        </Suspense>
       </div>
     </div>
   );

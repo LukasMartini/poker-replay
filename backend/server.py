@@ -160,29 +160,50 @@ def signup() -> Response:
             # Assuming data contains 'username' and 'email'
             username = data.get('username')
             email = data.get('email')
-            salt = bcrypt.gensalt()
             password = data.get('password')
+            
+            if not username or not email or not password:
+                return jsonify({"success": False, "error": "Missing required fields"}), 400
+            
+            salt = bcrypt.gensalt()
             hashed_password = bcrypt.hashpw(password.encode(), salt)
             hashed_password = hashed_password.decode('utf-8')
             salt = salt.decode('utf-8')
-            cur.execute("EXECUTE createUser (%s, %s, %s, %s, %s, %s)", (username, email, hashed_password, str(uuid.uuid4()), datetime.now() + timedelta(days=1), salt))
+            token = str(uuid.uuid4())
+            expiry_date = datetime.now() + timedelta(days=1)
+            
+            # Parameters for createUser: username, email, password_hash, token, expiry_date, salt
+            cur.execute("EXECUTE createUser (%s, %s, %s, %s, %s, %s)", 
+                       (username, email, hashed_password, token, expiry_date, salt))
             conn.commit()
-            return jsonify('{"success": true}'), 200
+            return jsonify({"success": True}), 200
+        else:
+            return jsonify({"success": False, "error": "Request must be JSON"}), 400
 
     except Exception as e:
-        print(e)
-        return jsonify('{"success": false}'), 400
+        print(f"Signup error: {e}")
+        conn.rollback()  # Add rollback on error
+        return jsonify({"success": False, "error": str(e)}), 400
 
 @app.route("/api/login", methods=['POST'])
+@cross_origin()
 def login():
     try:
         if request.is_json:
             data = request.get_json()  # Accessing JSON data from the request body
             password = data.get('password')
             username = data.get('username')
+            
+            if not username or not password:
+                return jsonify({"success": False, "error": "Missing username or password"}), 400
+            
             cur.execute("EXECUTE login(%s)", (username,))
             conn.commit()
             result = cur.fetchall()
+            
+            if not result:
+                return jsonify({"success": False, "error": "User not found"}), 404
+                
             hashed_password = bcrypt.hashpw(password.encode(), result[0][0].encode())
             if (hashed_password.decode("utf-8") == result[0][1]):
                 token = result[0][2]
@@ -193,9 +214,12 @@ def login():
                 return jsonify({"success": True, "token": token, "username": result[0][3], "email": result[0][4]}), 200 
             else: 
                 return jsonify({"success": False, "error": "Incorrect username or password"}), 403
+        else:
+            return jsonify({"success": False, "error": "Request must be JSON"}), 400
     except Exception as e:
-        print(e)
-        return jsonify({"success": False, "error": "Bad Request"}), 400 
+        print(f"Login error: {e}")
+        conn.rollback()
+        return jsonify({"success": False, "error": "Login failed"}), 500 
     
 @app.route("/api/profile/<string:username>", methods=['GET'])
 @cross_origin()
@@ -279,10 +303,24 @@ def hand_share():
 
 
 if __name__ == '__main__':
-    cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())
-    cur.execute(open('./sql/R10/authorization.sql').read())
-    cur.execute(open('./sql/R7/authorized_hands_template.sql').read())
-    app.run(host="localhost", port=5001, debug=True)
-
-    cur.close()
-    conn.close()
+    try:
+        # Load SQL templates if files exist
+        sql_files = [
+            './sql/R6/fetch_hand_query_templates.sql',
+            './sql/R10/authorization.sql', 
+            './sql/R7/authorized_hands_template.sql'
+        ]
+        
+        for sql_file in sql_files:
+            if os.path.exists(sql_file):
+                cur.execute(open(sql_file).read())
+        
+        # Use environment variables for configuration
+        host = os.getenv('FLASK_HOST', '0.0.0.0')
+        port = int(os.getenv('FLASK_PORT', '5000'))
+        debug = os.getenv('FLASK_ENV') == 'development'
+        
+        app.run(host=host, port=port, debug=debug)
+    finally:
+        cur.close()
+        conn.close()

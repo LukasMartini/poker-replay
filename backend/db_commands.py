@@ -1,12 +1,21 @@
 import psycopg2
 from psycopg2 import pool
 import bcrypt
+import os
+from urllib.parse import urlparse
+
+# Get database configuration from environment variables
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://admin:admin123@localhost:5432/cs348')
+
+# Parse DATABASE_URL
+url = urlparse(DATABASE_URL)
 
 DB_PARAMS = {
-    "host": "localhost",
-    "database": "cs348",
-    "user": "admin",
-    "password": "admin123"
+    "host": url.hostname or "localhost",
+    "database": url.path[1:] if url.path else "cs348",  # Remove leading slash
+    "user": url.username or "admin",
+    "password": url.password or "admin123",
+    "port": url.port or 5432
 }
 
 connection_pool = pool.SimpleConnectionPool(1, 20, **DB_PARAMS)

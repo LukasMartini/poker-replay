@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: poker-replay-db
+    environment:
+      POSTGRES_DB: poker_replay
+      POSTGRES_USER: poker_user
+      POSTGRES_PASSWORD: poker_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/sql/create_tables.sql:/docker-entrypoint-initdb.d/01-create_tables.sql
+      - ./backend/sql/R10/authorization.sql:/docker-entrypoint-initdb.d/02-authorization.sql
+      - ./backend/sql/R6/fetch_hand_query_templates.sql:/docker-entrypoint-initdb.d/03-fetch_hand_query_templates.sql
+      - ./backend/sql/R7/authorized_hands_template.sql:/docker-entrypoint-initdb.d/04-authorized_hands_template.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poker_user -d poker_replay"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - poker-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: poker-replay-backend
+    environment:
+      DATABASE_URL: postgresql://poker_user:poker_password@database:5432/poker_replay
+      FLASK_ENV: production
+      CORS_ORIGINS: http://localhost:3001
+    ports:
+      - "5001:5000"
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./backend/uploads:/app/uploads
+    networks:
+      - poker-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: poker-replay-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:5001
+    ports:
+      - "3001:3000"
+    depends_on:
+      - backend
+    networks:
+      - poker-network
+
+volumes:
+  postgres_data:
+
+networks:
+  poker-network:
+    driver: bridge
