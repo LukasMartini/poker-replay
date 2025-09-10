@@ -13,7 +13,6 @@ const LoginPage = () => {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    console.log(formData);
     const response = await loginUser(formData);
   
     const result = await response.json();
@@ -22,7 +21,6 @@ const LoginPage = () => {
       user.login(result.token, result.email, result.username);
     }
   };
-  console.log(user.auth);
 
   return (
     <div className="bg-[#2C2C2C] text-white">

@@ -45,9 +45,6 @@ export default function SessionDetails() { // Asynchronous server component for 
     const fetchHandData = async () => { 
         // if we aren't rendering the start, and nothing has moved, don't do anything
         if (offset == oldOffset) return;
-        console.log(`Fetching hand data from offset ${offset}`);
-        console.log(`Current trend stack is `, trendStack);
-
         // Run SQL queries to fetch appropriate data. See server.py for further information.
          // TODO: use cached user
         await fetchCashFlow(session, 50, offset, user.auth.token)
@@ -103,7 +100,6 @@ export default function SessionDetails() { // Asynchronous server component for 
     const handleClickRight = () => {
         setOffset((prevOffset) => {
             const newOffset = prevOffset + windowSize;
-            console.log(`Updating offset from ${prevOffset} to ${newOffset}`);
             return newOffset < handCount ? newOffset : prevOffset;
         });
     }  

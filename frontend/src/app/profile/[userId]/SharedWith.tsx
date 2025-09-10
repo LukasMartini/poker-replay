@@ -12,8 +12,6 @@ export default function SharedWith(props: any) {
         window.location.href = `${ROOT_URL}${e}`;
     }
 
-    console.log(props.list_of_sessions);
-
     for (var sesh = 0; sesh < props.list_of_sessions.length; sesh++) {
         const session_id = props.list_of_sessions[sesh].id;
         // The width corrections in each row are manual and eye-balled. Change at your discrection.

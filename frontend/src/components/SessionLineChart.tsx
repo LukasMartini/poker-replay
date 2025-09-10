@@ -43,8 +43,6 @@ export const generateSessionLineData = (handData: Hand[], startTrend: number[] =
     }
   }
 
-  console.log(trend);
-
   return {
     labels: timeLabels,
     datasets: [
