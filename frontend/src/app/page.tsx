@@ -1,39 +1,19 @@
-import HandCard from "@/components/HandCard";
-import SearchBar from "@/components/Search";
+"use client";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
-const test = [
-  {
-      handId: "aaaaaaaaa",
-      userId: "text 2",
-      tableName: "text 3",
-  },
-  {
-    handId: "ssssssss",
-    userId: "text 2",
-    tableName: "text 3",
-  },
-  {
-    handId: "ddddddddddd",
-    userId: "text 2",
-    tableName: "text 3",
-  },
-  {
-    handId: "ffffffff",
-    userId: "text 2",
-    tableName: "text 3",
-  },
-];
+const Search = dynamic(() => import("@/components/Search"), { ssr: false });
 
-
-const Search = () => {
-
+const App = () => {
   return (
-    <div className="bg-[#2C2C2C] text-white px-24">
+    <div className="brm -g-[#2C2C2C] text-white px-24">
       <div className="py-12 justify-center">
-        <SearchBar />
+        <Suspense fallback={<div>Loading search...</div>}>
+          <Search />
+        </Suspense>
       </div>
     </div>
   );
-}
+};
 
-export default Search
+export default App;

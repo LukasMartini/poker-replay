@@ -96,7 +96,7 @@ const Stack = (props) => {
   return (
     <>
     {Array.from({ length: parseInt(number) }, (_, index) => (
-      <Chip transform={`translate(0, ${index * -40})`} color={chipColor(index, number)} />
+      <Chip key={index} transform={`translate(0, ${index * -40})`} color={chipColor(index, number)} />
     ))}
     </>
   )

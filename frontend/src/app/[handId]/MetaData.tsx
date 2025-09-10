@@ -60,6 +60,7 @@ export default function MetaData(props: MetaDataProps) {
     useEffect(() => {
         getSharedPlayers();
     }, []);
+
     return (
         <div className="grid">
             <div className="py-8">
@@ -89,7 +90,7 @@ export default function MetaData(props: MetaDataProps) {
                                 Shared with:
                             </span>
                             {sharedPlayers.map((player: any) => (
-                                <span className="text-sm py-2 pr-2">
+                                <span key={player.id} className="text-sm py-2 pr-2">
                                     {player.username}
                                     <a href="javascript:void(0)" onClick={() => { deleteShare(player.id) }} className="px-1 text-red-500">×</a>
                                 </span>

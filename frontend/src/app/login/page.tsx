@@ -56,7 +56,7 @@ const LoginPage = () => {
             />
             <Button className="w-full" variant="gradient" type='submit'>Login</Button>
             <div className="flex flex-cols px-16 text-xs">
-              <h1>Don't have an account?</h1>
+              <h1>Don&apos;t have an account?</h1>
               <h1> &nbsp; </h1>
               <Link className="font-semibold cursor-pointer hover:underline" href='signup'>Sign up</Link>
             </div>
