@@ -55,7 +55,6 @@ export default function GetDetails() {
     // This useEffect hook re-renders with the updated Replay component whenever displayedAction is set.
     useEffect(() => {
         replayDisplay = <Replay othiResult={othiResult} paResult={paResult} pcResult={pcResult} action={displayedAction} />;
-        console.log(othiResult);
     }, [displayedAction])
 
     const rowOnClick = (e: any) => { // Sets displayedAction's index to the name field of the HandDetails object clicked.

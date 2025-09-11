@@ -232,7 +232,6 @@ const PokerTable = (props) => {
           }
         </g>
       ))}
-      {console.log(lastActionCollect()  )}
       {round != "Preflop" && round != "Showdown" && !lastActionCollect() && (
         <g transform="translate(87, 27)">
           <circle cx="4" cy="3.5" r="3" fill="grey" />

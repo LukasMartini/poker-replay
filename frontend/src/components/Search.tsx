@@ -86,12 +86,10 @@ const SearchBar = () => {
       const data = await response.json();
       
       if (data === 'undefined' || data.size == 0) {
-        console.log("Hand count request returned undefined");
         return;
       }
   
       setHandCount(data[0].hands);
-      console.log(`Found ${data[0].hands} hands for userID 1, server returned ${data[0].hands}`);
     };
   
     const fetchCashData = async (offset: number, amount = 30) => {
@@ -105,7 +103,6 @@ const SearchBar = () => {
       const data = await response.json();
   
       if (data === 'undefined') {
-        console.log("Cash flow request returned undefined");    
         return;
       }
   
