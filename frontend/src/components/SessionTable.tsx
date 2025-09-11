@@ -1,4 +1,5 @@
 import { Table, TableBody, TableCell, TableHeader, TableRow } from './ui/table';
+import { useRouter } from 'next/navigation';
 
 type SessionTableProps = {
     data: Array<{
@@ -16,6 +17,12 @@ type SessionTableProps = {
 };
 
 const SessionTable: React.FC<SessionTableProps> = ({ data }) => {
+    const router = useRouter();
+
+    const handleSessionClick = (sessionId: number) => {
+        router.push(`/session/${sessionId}`);
+    };
+
     return (
         <div className="pt-8">
             <Table>
@@ -34,7 +41,7 @@ const SessionTable: React.FC<SessionTableProps> = ({ data }) => {
                 </TableHeader>
                 <TableBody>
                     {data.map((info, index) => (
-                        <TableRow key={index} className='cursor-pointer' onClick={() => window.open(`/session/${info.id}`, "_blank")}>
+                        <TableRow key={index} className='cursor-pointer' onClick={() => handleSessionClick(info.id)}>
                             <TableCell>{info.upload_id}</TableCell>
                             <TableCell>{info.buy_in}</TableCell>
                             <TableCell>{info.table_name}</TableCell>

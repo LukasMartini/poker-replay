@@ -105,11 +105,11 @@ const Stack = (props) => {
 const PlayerInfo = (props) => {
   return (
     <>
-      <rect x="0" y="0" width="30" height="12" fill="grey" stroke-width="0.5" rx="4" stroke="white" />
-      <text  fontWeight="bold" x="15" y="4" fontSize="3.2" fill="white" text-anchor="middle" dominant-baseline="middle">
+      <rect x="0" y="0" width="30" height="12" fill="grey" strokeWidth="0.5" rx="4" stroke="white" />
+      <text fontWeight="bold" x="15" y="4" fontSize="3.2" fill="white" textAnchor="middle" dominantBaseline="middle">
         <a href={`player/${props.username}`}>{props.username}</a>
       </text>
-      <text x="15" y="9" font-size="3.2" fill="white" text-anchor="middle" dominant-baseline="middle">
+      <text x="15" y="9" fontSize="3.2" fill="white" textAnchor="middle" dominantBaseline="middle">
         {props.stack}
       </text>
     </>
@@ -120,7 +120,7 @@ const DealerChip = (props) => {
   return (
     <g transform={props.transform}>
       <circle cx="0" cy="0" r="3" fill="white" />
-      <text fontWeight="bold" x="0" y="0" font-size="3.2" fill="black" text-anchor="middle" dominant-baseline="middle">D</text>
+      <text fontWeight="bold" x="0" y="0" fontSize="3.2" fill="black" textAnchor="middle" dominantBaseline="middle">D</text>
     </g>
   )
 };
@@ -213,7 +213,7 @@ const PokerTable = (props) => {
         </radialGradient>
       </defs>
 
-      <ellipse cx="100" cy="50" rx="90" ry="40" fill="url(#greenGradient)" stroke-width="3" stroke="brown" />
+      <ellipse cx="100" cy="50" rx="90" ry="40" fill="url(#greenGradient)" strokeWidth="3" stroke="brown" />
 
       {props.players.map((player, index) => (
         <g key={index} transform={`translate(${playerOffsets[index].x}, ${playerOffsets[index].y})`}>
@@ -224,7 +224,7 @@ const PokerTable = (props) => {
           {playersLastAction(player.name) && (
             <g transform={`translate(${playerStackOffsets[index].x}, ${playerStackOffsets[index].y})`}>
               {(playersLastAction(player.name).action_type != 'fold' && playersLastAction(player.name).action_type != 'check') && (<Stack bb={props.hand[0] && props.hand[0].big_blind} bet={parseFloat(playersLastAction(player.name).amount)}/>) }
-              <text x="0" y="5" font-size="3.2" fill="white" text-anchor="middle" dominant-baseline="middle">
+              <text x="0" y="5" fontSize="3.2" fill="white" textAnchor="middle" dominantBaseline="middle">
                 {playersLastAction(player.name).action_type} {playersLastAction(player.name).amount || ''}
               </text>
             </g>
@@ -237,7 +237,7 @@ const PokerTable = (props) => {
           <circle cx="4" cy="3.5" r="3" fill="grey" />
           <rect x="4" y="0.5" width="16" height="6" fill="grey" />
           <circle cx="20" cy="3.5" r="3" fill="grey" />
-          <text x="12" y="4" font-size="3.2" fill="white" text-anchor="middle" dominant-baseline="middle">
+          <text x="12" y="4" fontSize="3.2" fill="white" textAnchor="middle" dominantBaseline="middle">
             Pot: {calculatePot()}
           </text>
         </g> 
@@ -246,19 +246,19 @@ const PokerTable = (props) => {
         (round == "Flop" || round == "Turn" || round == "River" || round == "Showdown") && (
           <>
             <g>
-              <rect x="50" y="35" width="18" height="30" fill="white" stroke-width="0.5" rx="2" stroke="black" />
-              <text x="52" y="42" font-size="6" fill={colorFromSuit(parseCard(props.hand[0].flop_card1).suit)}>{parseCard(props.hand[0].flop_card1).rank}</text>
-              <text x="55" y="55" font-size="15" fill={colorFromSuit(parseCard(props.hand[0].flop_card1).suit)}>{parseCard(props.hand[0].flop_card1).suit}</text>
+              <rect x="50" y="35" width="18" height="30" fill="white" strokeWidth="0.5" rx="2" stroke="black" />
+              <text x="52" y="42" fontSize="6" fill={colorFromSuit(parseCard(props.hand[0].flop_card1).suit)}>{parseCard(props.hand[0].flop_card1).rank}</text>
+              <text x="55" y="55" fontSize="15" fill={colorFromSuit(parseCard(props.hand[0].flop_card1).suit)}>{parseCard(props.hand[0].flop_card1).suit}</text>
             </g>
             <g>
-              <rect x="70" y="35" width="18" height="30" fill="white" stroke-width="0.5" rx="2" stroke="black" />
-              <text x="72" y="42" font-size="6" fill={colorFromSuit(parseCard(props.hand[0].flop_card2).suit)}>{parseCard(props.hand[0].flop_card2).rank}</text>
-              <text x="75" y="55" font-size="15" fill={colorFromSuit(parseCard(props.hand[0].flop_card2).suit)}>{parseCard(props.hand[0].flop_card2).suit}</text>
+              <rect x="70" y="35" width="18" height="30" fill="white" strokeWidth="0.5" rx="2" stroke="black" />
+              <text x="72" y="42" fontSize="6" fill={colorFromSuit(parseCard(props.hand[0].flop_card2).suit)}>{parseCard(props.hand[0].flop_card2).rank}</text>
+              <text x="75" y="55" fontSize="15" fill={colorFromSuit(parseCard(props.hand[0].flop_card2).suit)}>{parseCard(props.hand[0].flop_card2).suit}</text>
             </g>
             <g>
-              <rect x="90" y="35" width="18" height="30" fill="white" stroke-width="0.5" rx="2" stroke="black" />
-              <text x="92" y="42" font-size="6" fill={colorFromSuit(parseCard(props.hand[0].flop_card3).suit)}>{parseCard(props.hand[0].flop_card3).rank}</text>
-              <text x="95" y="55" font-size="15" fill={colorFromSuit(parseCard(props.hand[0].flop_card3).suit)}>{parseCard(props.hand[0].flop_card3).suit}</text>
+              <rect x="90" y="35" width="18" height="30" fill="white" strokeWidth="0.5" rx="2" stroke="black" />
+              <text x="92" y="42" fontSize="6" fill={colorFromSuit(parseCard(props.hand[0].flop_card3).suit)}>{parseCard(props.hand[0].flop_card3).rank}</text>
+              <text x="95" y="55" fontSize="15" fill={colorFromSuit(parseCard(props.hand[0].flop_card3).suit)}>{parseCard(props.hand[0].flop_card3).suit}</text>
             </g>
 
           </>
@@ -268,9 +268,9 @@ const PokerTable = (props) => {
         (round == "Turn" || round == "River" || round == "Showdown") && (
           <>
             <g>
-              <rect x="110" y="35" width="18" height="30" fill="white" stroke-width="0.5" rx="2" stroke="black" />
-              <text x="112" y="42" font-size="6" fill={colorFromSuit(parseCard(props.hand[0].turn_card).suit)}>{parseCard(props.hand[0].turn_card).rank}</text>
-              <text x="115" y="55" font-size="15" fill={colorFromSuit(parseCard(props.hand[0].turn_card).suit)}>{parseCard(props.hand[0].turn_card).suit}</text>
+              <rect x="110" y="35" width="18" height="30" fill="white" strokeWidth="0.5" rx="2" stroke="black" />
+              <text x="112" y="42" fontSize="6" fill={colorFromSuit(parseCard(props.hand[0].turn_card).suit)}>{parseCard(props.hand[0].turn_card).rank}</text>
+              <text x="115" y="55" fontSize="15" fill={colorFromSuit(parseCard(props.hand[0].turn_card).suit)}>{parseCard(props.hand[0].turn_card).suit}</text>
             </g>
 
           </>
@@ -280,9 +280,9 @@ const PokerTable = (props) => {
         (round == "River" || round == "Showdown") && (
           <>
             <g>
-              <rect x="130" y="35" width="18" height="30" fill="white" stroke-width="0.5" rx="2" stroke="black" />
-              <text x="132" y="42" font-size="6" fill={colorFromSuit(parseCard(props.hand[0].river_card).suit)}>{parseCard(props.hand[0].river_card).rank}</text>
-              <text x="135" y="55" font-size="15" fill={colorFromSuit(parseCard(props.hand[0].river_card).suit)}>{parseCard(props.hand[0].river_card).suit}</text>
+              <rect x="130" y="35" width="18" height="30" fill="white" strokeWidth="0.5" rx="2" stroke="black" />
+              <text x="132" y="42" fontSize="6" fill={colorFromSuit(parseCard(props.hand[0].river_card).suit)}>{parseCard(props.hand[0].river_card).rank}</text>
+              <text x="135" y="55" fontSize="15" fill={colorFromSuit(parseCard(props.hand[0].river_card).suit)}>{parseCard(props.hand[0].river_card).suit}</text>
             </g>
           </>
         )
