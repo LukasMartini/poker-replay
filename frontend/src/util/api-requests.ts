@@ -58,6 +58,7 @@ export const fetchCashFlow = (sessionid: string, limit: number, offset: number, 
 export const fetchCashFlowByUser = (limit: number, offset: number, token: string) => get(`cash_flow?limit=${limit}&offset=${offset}`, token);
 export const fetchCashFlowWithUser = (playername: string, limit: number, offset: number, token: string) => get(`cash_flow?playername=${playername}&limit=${limit}&offset=${offset}`, token);
 export const loginUser = (credentials: FormData) => post(`login`, Object.fromEntries(credentials));
+export const loginDemoUser = () => post(`login`, { username: "demo_player", password: "demo_password" });
 export const signupUser = (formData: FormData) => post(`signup`, Object.fromEntries(formData));
 export const uploadFiles = (files: FormData, token: string) => post(`upload`, files, token);
 export const deleteFile = (fileId: string, token: string) => get(`delete/${fileId}`, token);

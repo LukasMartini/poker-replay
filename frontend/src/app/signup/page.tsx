@@ -1,8 +1,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { signupUser } from '@/util/api-requests';
+import { signupUser, loginDemoUser } from '@/util/api-requests';
 import Link from 'next/link';
+import { useAuth } from '@/components/auth/AuthContext';
 
 const handleSubmit = async (event: any) => {
   event.preventDefault();
@@ -32,6 +33,24 @@ const handleSubmit = async (event: any) => {
 };
 
 const SignupPage = () => {
+  const user = useAuth();
+
+  const handleDemoLogin = async () => {
+    try {
+      const response = await loginDemoUser();
+      const result = await response.json();
+      
+      if (result.success) {
+        user.login(result.token, result.email, result.username);
+      } else {
+        alert("Demo login failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Demo login error:", error);
+      alert("Demo login failed. Please try again.");
+    }
+  };
+
   return (
     <div className="bg-[#2C2C2C] text-white px-64">
       <h1 className="text-xl text-center  font-bold pt-8">
@@ -64,10 +83,26 @@ const SignupPage = () => {
           placeholder="Confirm Password"
         />
         <Button className="w-full" variant="gradient" type='submit'>Sign Up</Button>
-        <div className="flex flex-cols justify-center px-12 text-xs">
-              <h1>Already have an account?</h1>
-              <h1>&nbsp;</h1>
-              <Link className="font-semibold cursor-pointer hover:underline" href={'login'}>Log in</Link>
+        
+        <div className="flex items-center my-4">
+          <hr className="flex-1 border-gray-600" />
+          <span className="px-3 text-xs text-gray-400">or</span>
+          <hr className="flex-1 border-gray-600" />
+        </div>
+        
+        <button 
+          type="button" 
+          onClick={handleDemoLogin}
+          className="w-full py-2 px-4 text-sm border border-gray-600 rounded-md hover:border-gray-500 transition-colors text-gray-300 hover:text-white"
+        >
+          Continue with Demo Account
+        </button>
+        
+        <div className="flex justify-center text-xs pt-4">
+          <span className="text-gray-400">Already have an account?</span>
+          <Link className="ml-1 font-semibold cursor-pointer hover:underline text-white" href={'login'}>
+            Log in
+          </Link>
         </div>
       </form>
     </div>
