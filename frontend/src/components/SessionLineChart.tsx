@@ -79,7 +79,7 @@ export const LineChart = ( { chartData, hyperlinks }: any ) => {
       if (elements.length > 0) {
         const index = elements[0].index;
         const link = hyperlinks[index];
-        window.open(link, "_blank");
+        window.location.href = link;
       }
     },
     scales: {

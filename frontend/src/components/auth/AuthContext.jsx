@@ -8,7 +8,7 @@ const AuthContext = createContext();
 
 // Create a provider component
 export const AuthProvider = ({ children }) => {
-  const { auth, login, logout } = useAuthHook();
+  const { auth, login, logout, isDemoUser, setIsDemoUser } = useAuthHook();
 
   // Initialize the authentication state
   useEffect(() => {
@@ -16,8 +16,11 @@ export const AuthProvider = ({ children }) => {
       try {
         const response = await authorizeUser(auth.token);
         const data = await response.json();
-        if (!data.success)
+        if (!data.success) {
           logout();
+        } else {
+          setIsDemoUser(data.is_demo_user || false);
+        }
       } catch (error) {
           console.error('Error fetching data:', error);
         
@@ -27,10 +30,10 @@ export const AuthProvider = ({ children }) => {
     if (auth.token != null)
       fetchData();
 
-  }, []);
+  }, [auth.token, setIsDemoUser, logout]);
 
   return (
-    <AuthContext.Provider value={{ auth, login, logout }}>
+    <AuthContext.Provider value={{ auth, login, logout, isDemoUser }}>
       {children}
     </AuthContext.Provider>
   );

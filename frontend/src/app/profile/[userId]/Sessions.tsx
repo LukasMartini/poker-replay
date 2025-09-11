@@ -13,19 +13,19 @@ export default function Sessions(props: SessionsProps) {
     var sessions: Array<any> = [];
 
     const redirectToSesh = (e: any) => { // Will link to the associated session view page.
-        window.location.href = `${ROOT_URL}session/${e}`;
+        window.location.href = `${ROOT_URL}/session/${e}`;
     }
 
     for (var sesh = 0; sesh < props.number_of_sessions; sesh++) {
         const session_id = props.list_of_sessions[sesh][7];
         // The width corrections in each row are manual and eye-balled. Change at your discrection.
         sessions.push(
-            <TableRow onClick={() => redirectToSesh(session_id)}>
-                <TableCell >{props.list_of_sessions[sesh][0]}</TableCell>
-                <TableCell >{props.list_of_sessions[sesh][1]}</TableCell>
-                <TableCell >{props.list_of_sessions[sesh][2]}</TableCell>
-                <TableCell >{props.list_of_sessions[sesh][3]}</TableCell>
-                <TableCell >{props.list_of_sessions[sesh][4]}</TableCell>
+            <TableRow key={session_id} onClick={() => redirectToSesh(session_id)}>
+                <TableCell>{props.list_of_sessions[sesh][0]}</TableCell>
+                <TableCell>{props.list_of_sessions[sesh][1]}</TableCell>
+                <TableCell>{props.list_of_sessions[sesh][2]}</TableCell>
+                <TableCell>{props.list_of_sessions[sesh][3]}</TableCell>
+                <TableCell>{props.list_of_sessions[sesh][4]}</TableCell>
                 <TableCell className="text-xs">{props.list_of_sessions[sesh][5]}</TableCell>
                 <TableCell className="text-xs">{props.list_of_sessions[sesh][6]}</TableCell>
             </TableRow>
@@ -47,7 +47,7 @@ export default function Sessions(props: SessionsProps) {
                         <TableHead>End Time</TableHead>
                     </TableRow>
                 </TableHeader>
-                <TableBody >
+                <TableBody>
                     {sessions}
                 </TableBody>
             </Table>

@@ -9,22 +9,20 @@ export default function SharedWith(props: any) {
     var sessions: Array<any> = [];
 
     const redirectToSesh = (e: any) => { // Will link to the associated session view page.
-        window.location.href = `${ROOT_URL}${e}`;
+        window.location.href = `${ROOT_URL}/session/${e}`;
     }
 
     for (var sesh = 0; sesh < props.list_of_sessions.length; sesh++) {
         const session_id = props.list_of_sessions[sesh].id;
         // The width corrections in each row are manual and eye-balled. Change at your discrection.
         sessions.push(
-                        <TableRow  style={{cursor: "pointer"}} onClick={() => redirectToSesh(session_id)} >
-                        <TableCell className="w-[165px]">{props.list_of_sessions[sesh].username}</TableCell>
-                        <TableCell className="w-[160px]">{props.list_of_sessions[sesh].id}</TableCell>
-                        <TableCell className="w-[160px]">{props.list_of_sessions[sesh].played_at}</TableCell>
-                        <TableCell className="w-[160px]">{props.list_of_sessions[sesh].small_blind}/{props.list_of_sessions[sesh].big_blind}</TableCell>
-
-
-                        </TableRow>
-                   );
+            <TableRow key={session_id} style={{cursor: "pointer"}} onClick={() => redirectToSesh(session_id)}>
+                <TableCell className="w-[165px]">{props.list_of_sessions[sesh].username}</TableCell>
+                <TableCell className="w-[160px]">{props.list_of_sessions[sesh].id}</TableCell>
+                <TableCell className="w-[160px]">{props.list_of_sessions[sesh].played_at}</TableCell>
+                <TableCell className="w-[160px]">{props.list_of_sessions[sesh].small_blind}/{props.list_of_sessions[sesh].big_blind}</TableCell>
+            </TableRow>
+        );
     }
 
     return (

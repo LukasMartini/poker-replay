@@ -1,0 +1,40 @@
+# Production overrides for docker-compose.yml
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+services:
+  database:
+    container_name: poker-replay-db-prod
+    ports: []
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  demo-data-loader:
+    container_name: poker-replay-demo-loader-prod
+    build:
+      target: production
+
+  backend:
+    container_name: poker-replay-backend-prod
+    build:
+      target: production
+    environment:
+      FLASK_DEBUG: "false"
+      FLASK_ENV: production
+      CORS_ORIGINS: https://repl.poker/
+    volumes:
+      - ./backend/uploads:/app/uploads
+    restart: unless-stopped
+
+  frontend:
+    container_name: poker-replay-frontend-prod
+    build:
+      target: production
+    environment:
+      NEXT_PUBLIC_API_URL: https://repl.poker/
+      NEXT_PUBLIC_ROOT_URL: https://repl.poker/
+    volumes: []
+    restart: unless-stopped
+
+volumes:
+  postgres_prod_data:

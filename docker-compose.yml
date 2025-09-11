@@ -1,0 +1,92 @@
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: poker-replay-db
+    environment:
+      POSTGRES_DB: poker_replay
+      POSTGRES_USER: poker_replay_user
+      POSTGRES_PASSWORD: poker_replay_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/sql/create_tables.sql:/docker-entrypoint-initdb.d/01-create_tables.sql
+      - ./backend/sql/R10/authorization.sql:/docker-entrypoint-initdb.d/02-authorization.sql
+      - ./backend/sql/R6/fetch_hand_query_templates.sql:/docker-entrypoint-initdb.d/03-fetch_hand_query_templates.sql
+      - ./backend/sql/R7/authorized_hands_template.sql:/docker-entrypoint-initdb.d/04-authorized_hands_template.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poker_replay_user -d poker_replay"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - poker-network
+
+  demo-data-loader:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+      target: development
+    container_name: poker-replay-demo-loader
+    environment:
+      DATABASE_URL: postgresql://poker_replay_user:poker_replay_password@database:5432/poker_replay
+      PYTHONPATH: /app
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./hand_histories:/app/hand_histories
+    networks:
+      - poker-network
+    command: ["python", "load_demo_data.py"]
+    restart: "no"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+      target: development
+    container_name: poker-replay-backend
+    environment:
+      DATABASE_URL: postgresql://poker_replay_user:poker_replay_password@database:5432/poker_replay
+      FLASK_DEBUG: "true"
+      FLASK_ENV: development
+      CORS_ORIGINS: http://localhost:3000
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./backend:/app  # Mount source code for live reload
+      - ./hand_histories:/app/hand_histories
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - poker-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      target: development
+    container_name: poker-replay-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:5001
+      NEXT_PUBLIC_ROOT_URL: http://localhost:3000
+      NEXT_TELEMETRY_DISABLED: "1"
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app  # Mount source code for live reload
+      - /app/node_modules  # Use container's node_modules
+      - /app/.next  # Use container's .next directory
+    networks:
+      - poker-network
+
+volumes:
+  postgres_data:
+
+networks:
+  poker-network:
+    driver: bridge

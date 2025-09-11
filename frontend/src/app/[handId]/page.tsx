@@ -64,7 +64,7 @@ export default function GetDetails() {
     // Assigns the necessary details to each HandDetails summary and pushes them to rows for display in the JSX.
     if (othiResult[0] && paResult && pcResult && pcResult[0]) { // Forces the code to wait for all the dependencies to exist.
         for (var action = 0; action < paResult.length; action++) {
-            rows.push(<div className="py-2">
+            rows.push(<div key={action} className="py-2">
                 <HandDetails name={action} row={[paResult[action].name, paResult[action].betting_round,
                 paResult[action].action_type, paResult[action].amount,
                 othiResult[0].flop_card1, othiResult[0].flop_card2, othiResult[0].flop_card3,

@@ -9,8 +9,6 @@ import { Hand } from "@/util/utils";
 import { useAuth } from "@/components/auth/AuthContext";
 import { fetchCashFlow, fetchHandCountInSession } from "@/util/api-requests";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 Chart.register(CategoryScale);
 
 export default function SessionDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
@@ -84,7 +82,7 @@ export default function SessionDetails() { // Asynchronous server component for 
                 // new data has been processed, so update oldOffset
                 setOldOffset(offset);
 
-                setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`))
+                setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}/${hand.hand_id}`))
             });
     }
 

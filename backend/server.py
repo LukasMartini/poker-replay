@@ -33,18 +33,38 @@ def auth(auth_header):
     cur = conn.cursor()
 
     try: 
+        if not auth_header:
+            raise Exception("Authorization header is missing.")
+            
         parts = auth_header.split()
         if len(parts) == 2 and parts[0].lower() == 'bearer':
             token = parts[1]
             cur.execute("EXECUTE authorize(%s)", (token,))
             result = cur.fetchall()
+            
+            if not result or len(result) == 0:
+                raise Exception("Invalid or expired authorization token.")
+                
+            user_id = result[0][0]
             cur.close()
-            return result[0][0]
+            return user_id
         else:
-            raise Exception("Invalid authorization token.")
+            raise Exception("Invalid authorization token format. Expected 'Bearer <token>'.")
     except Exception as e:
-        print(e)
+        if cur:
+            cur.close()
+        print(f"Authentication error: {e}")
         raise e
+
+def is_demo_user(user_id):
+    """Check if the user is the demo user"""
+    try:
+        cur.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+        result = cur.fetchone()
+        return result and result[0] == "demo_player"
+    except Exception:
+        return False
+
 
 @app.route('/api/hand_summary/<int:id>', methods=['GET'])
 @cross_origin()
@@ -143,12 +163,18 @@ def session_list() -> Response:
 
 @app.route("/api/authorize", methods=['POST'])
 @cross_origin()
-def authorize() -> Response: 
-    try: 
+def authorize() -> Response:
+    try:
         user_id = auth(request.headers.get("Authorization"))
-        return jsonify({"success": True, "user_id": user_id}), 200 
+        cur.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+        result = cur.fetchone()
+        
+        is_demo = result and result[0] == "demo_player"
+        
+        return jsonify({"success": True, "is_demo_user": is_demo}), 200
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 403 
+        print(e)
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
 
 @app.route("/api/signup", methods=['POST'])
 @cross_origin()
@@ -160,29 +186,50 @@ def signup() -> Response:
             # Assuming data contains 'username' and 'email'
             username = data.get('username')
             email = data.get('email')
-            salt = bcrypt.gensalt()
             password = data.get('password')
+            
+            if not username or not email or not password:
+                return jsonify({"success": False, "error": "Missing required fields"}), 400
+            
+            salt = bcrypt.gensalt()
             hashed_password = bcrypt.hashpw(password.encode(), salt)
             hashed_password = hashed_password.decode('utf-8')
             salt = salt.decode('utf-8')
-            cur.execute("EXECUTE createUser (%s, %s, %s, %s, %s, %s)", (username, email, hashed_password, str(uuid.uuid4()), datetime.now() + timedelta(days=1), salt))
+            token = str(uuid.uuid4())
+            expiry_date = datetime.now() + timedelta(days=1)
+            
+            # Parameters for createUser: username, email, password_hash, token, expiry_date, salt
+            cur.execute("EXECUTE createUser (%s, %s, %s, %s, %s, %s)", 
+                       (username, email, hashed_password, token, expiry_date, salt))
             conn.commit()
-            return jsonify('{"success": true}'), 200
+            return jsonify({"success": True}), 200
+        else:
+            return jsonify({"success": False, "error": "Request must be JSON"}), 400
 
     except Exception as e:
-        print(e)
-        return jsonify('{"success": false}'), 400
+        print(f"Signup error: {e}")
+        conn.rollback()  # Add rollback on error
+        return jsonify({"success": False, "error": str(e)}), 400
 
 @app.route("/api/login", methods=['POST'])
+@cross_origin()
 def login():
     try:
         if request.is_json:
             data = request.get_json()  # Accessing JSON data from the request body
             password = data.get('password')
             username = data.get('username')
+            
+            if not username or not password:
+                return jsonify({"success": False, "error": "Missing username or password"}), 400
+            
             cur.execute("EXECUTE login(%s)", (username,))
             conn.commit()
             result = cur.fetchall()
+            
+            if not result:
+                return jsonify({"success": False, "error": "User not found"}), 404
+                
             hashed_password = bcrypt.hashpw(password.encode(), result[0][0].encode())
             if (hashed_password.decode("utf-8") == result[0][1]):
                 token = result[0][2]
@@ -193,9 +240,12 @@ def login():
                 return jsonify({"success": True, "token": token, "username": result[0][3], "email": result[0][4]}), 200 
             else: 
                 return jsonify({"success": False, "error": "Incorrect username or password"}), 403
+        else:
+            return jsonify({"success": False, "error": "Request must be JSON"}), 400
     except Exception as e:
-        print(e)
-        return jsonify({"success": False, "error": "Bad Request"}), 400 
+        print(f"Login error: {e}")
+        conn.rollback()
+        return jsonify({"success": False, "error": "Login failed"}), 500 
     
 @app.route("/api/profile/<string:username>", methods=['GET'])
 @cross_origin()
@@ -214,6 +264,11 @@ def profile(username: str) -> Response:
 def file_upload():
     try: 
         user_id = auth(request.headers.get("Authorization"))
+        
+        # Block demo user from uploading
+        if is_demo_user(user_id):
+            return jsonify({"success": False, "error": "Demo users cannot upload files. Please create a regular account to upload hand histories."}), 403
+        
         uploaded_files = request.files.getlist('file')
         for file in uploaded_files:
             file_name = file.filename
@@ -231,6 +286,11 @@ def file_upload():
 def delete_file(file_id: int):
     try: 
         user_id = auth(request.headers.get("Authorization"))
+        
+        # Block demo user from deleting files
+        if is_demo_user(user_id):
+            return jsonify({"success": False, "error": "Demo users cannot delete files. Please create a regular account for full functionality."}), 403
+        
         threading.Thread(target=delete_upload, args=(user_id, file_id)).start()
         return {"success": True, 'message': f'File {file_id} deleted successfully!'}, 200
     
@@ -279,10 +339,24 @@ def hand_share():
 
 
 if __name__ == '__main__':
-    cur.execute(open('./sql/R6/fetch_hand_query_templates.sql').read())
-    cur.execute(open('./sql/R10/authorization.sql').read())
-    cur.execute(open('./sql/R7/authorized_hands_template.sql').read())
-    app.run(host="localhost", port=5001, debug=True)
-
-    cur.close()
-    conn.close()
+    try:
+        # Load SQL templates if files exist
+        sql_files = [
+            './sql/R6/fetch_hand_query_templates.sql',
+            './sql/R10/authorization.sql', 
+            './sql/R7/authorized_hands_template.sql'
+        ]
+        
+        for sql_file in sql_files:
+            if os.path.exists(sql_file):
+                cur.execute(open(sql_file).read())
+        
+        # Use environment variables for configuration
+        host = os.getenv('FLASK_HOST', '0.0.0.0')
+        port = int(os.getenv('FLASK_PORT', '5000'))
+        debug = os.getenv('FLASK_ENV') == 'development'
+        
+        app.run(host=host, port=port, debug=debug)
+    finally:
+        cur.close()
+        conn.close()

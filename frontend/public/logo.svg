@@ -1,0 +1,14 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(6, 6)">
+    <g transform="rotate(-10, 6, 10)">
+      <rect x="0" y="0" width="12" height="20" fill="white" stroke="black" stroke-width="0.5" rx="1"/>
+      <text x="1" y="5" font-size="4" fill="red" font-family="Arial">7</text>
+      <text x="3.5" y="13" font-size="8" fill="red">♥</text>
+    </g>
+    <g transform="translate(8, 0) rotate(10, 6, 10)">
+      <rect x="0" y="0" width="12" height="20" fill="white" stroke="black" stroke-width="0.5" rx="1"/>
+      <text x="1" y="5" font-size="4" fill="black" font-family="Arial">2</text>
+      <text x="3.5" y="13" font-size="8" fill="black">♣</text>
+    </g>
+  </g>
+</svg>

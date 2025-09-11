@@ -1,5 +1,5 @@
 "use client"
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import Chart from 'chart.js/auto';
 import { CategoryScale } from "chart.js";
@@ -11,21 +11,15 @@ import { useAuth } from '@/components/auth/AuthContext';
 import { fetchCashFlowByUser, fetchHandCount, fetchHandSummary, fetchSessions, fetchPlayerSearch } from "@/util/api-requests";
 import SessionTable from "./SessionTable";
 
-import Link from 'next/link';
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 Chart.register(CategoryScale);
 
 type DisplayMode = "chart" | "table";
 
 const SearchBar = () => {
     const searchParams = useSearchParams();
-    const pathname = usePathname();
     const { replace } = useRouter();
 
     const [r1, setResponse1] = useState([]);
-    const [r2, setResponse2] = useState([]);
-    const [r3, setResponse3] = useState([]);
     const [sessionData, setSessionData] = useState([]);
 
     const [offset, setOffset] = useState(0);
@@ -39,8 +33,6 @@ const SearchBar = () => {
     var combinedData = [];
     
     var response1 = new Response();
-    var response2 = new Response();
-    var response3 = new Response();
     var sessionResponse = new Response();
 
     var [handCount, setHandCount] = useState(0); // this *should* be useState, not required until pagination
@@ -114,7 +106,7 @@ const SearchBar = () => {
         return;
       }
   
-      setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`));
+      setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}/${hand.hand_id}`));
       setChartData(generateChartData(data));
     };
 

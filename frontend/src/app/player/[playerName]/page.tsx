@@ -10,8 +10,6 @@ import { BarChart, generateChartData } from "@/components/BarChart";
 import { fetchCashFlowWithUser, fetchHandCountWithPlayer } from "@/util/api-requests";
 import { useAuth } from '@/components/auth/AuthContext';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 Chart.register(CategoryScale);
 
 export default function PlayerDetails() { // Asynchronous server component for pulling api calls. // TODO: pass pathname somehow
@@ -51,7 +49,7 @@ export default function PlayerDetails() { // Asynchronous server component for p
                 // console.log(generateChartData(data));
                 setChartData(generateChartData(data));
 
-                setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`))
+                setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}/${hand.hand_id}`))
             });
     }
 

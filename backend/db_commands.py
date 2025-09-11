@@ -1,12 +1,22 @@
+import os
+from datetime import datetime, timedelta
 import psycopg2
 from psycopg2 import pool
 import bcrypt
+from urllib.parse import urlparse
+
+# Get database configuration from environment variables
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://admin:admin123@localhost:5432/cs348')
+
+# Parse DATABASE_URL
+url = urlparse(DATABASE_URL)
 
 DB_PARAMS = {
-    "host": "localhost",
-    "database": "cs348",
-    "user": "admin",
-    "password": "admin123"
+    "host": url.hostname or "localhost",
+    "database": url.path[1:] if url.path else "cs348",  # Remove leading slash
+    "user": url.username or "admin",
+    "password": url.password or "admin123",
+    "port": url.port or 5432
 }
 
 connection_pool = pool.SimpleConnectionPool(1, 20, **DB_PARAMS)
@@ -58,11 +68,14 @@ def create_user(username: str, email: str, password: str, token: str):
     hashed_password = hashed_password.decode('utf-8')
     salt = salt.decode('utf-8')
 
+    # Set token expiry to 1 day from now
+    expiry_date = datetime.now() + timedelta(days=1)
+
     query = """
-    INSERT INTO users (username, email, password_hash, salt, token)
-    VALUES (%s, %s, %s, %s, %s)
+    INSERT INTO users (username, email, password_hash, salt, token, expiry_date)
+    VALUES (%s, %s, %s, %s, %s, %s)
     """
-    execute_query(query, (username, email, hashed_password, salt, token))
+    execute_query(query, (username, email, hashed_password, salt, token, expiry_date))
 
 def create_upload(user_id: int, file_name: str) -> int:
     query = """
