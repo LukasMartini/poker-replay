@@ -2,7 +2,7 @@
 
 ## Website
 
-<http://146.190.240.220/>
+<https://repl.poker/>
 
 ## Figma Link
 
