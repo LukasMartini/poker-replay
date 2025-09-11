@@ -25,7 +25,7 @@ export default function ProfileView() {
 
     useEffect(() => {
         if (pathname === "null") { // If the user is not logged in, redirect to the login page.
-            window.location.href = `${ROOT_URL}login`;
+            window.location.href = `${ROOT_URL}/login`;
         }
 
         if (user.auth.token != null)

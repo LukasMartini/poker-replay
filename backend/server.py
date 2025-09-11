@@ -56,6 +56,16 @@ def auth(auth_header):
         print(f"Authentication error: {e}")
         raise e
 
+def is_demo_user(user_id):
+    """Check if the user is the demo user"""
+    try:
+        cur.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+        result = cur.fetchone()
+        return result and result[0] == "demo_player"
+    except Exception:
+        return False
+
+
 @app.route('/api/hand_summary/<int:id>', methods=['GET'])
 @cross_origin()
 def hand_summary(id: int) -> Response:
@@ -153,12 +163,18 @@ def session_list() -> Response:
 
 @app.route("/api/authorize", methods=['POST'])
 @cross_origin()
-def authorize() -> Response: 
-    try: 
+def authorize() -> Response:
+    try:
         user_id = auth(request.headers.get("Authorization"))
-        return jsonify({"success": True, "user_id": user_id}), 200 
+        cur.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+        result = cur.fetchone()
+        
+        is_demo = result and result[0] == "demo_player"
+        
+        return jsonify({"success": True, "is_demo_user": is_demo}), 200
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 403 
+        print(e)
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
 
 @app.route("/api/signup", methods=['POST'])
 @cross_origin()
@@ -248,6 +264,11 @@ def profile(username: str) -> Response:
 def file_upload():
     try: 
         user_id = auth(request.headers.get("Authorization"))
+        
+        # Block demo user from uploading
+        if is_demo_user(user_id):
+            return jsonify({"success": False, "error": "Demo users cannot upload files. Please create a regular account to upload hand histories."}), 403
+        
         uploaded_files = request.files.getlist('file')
         for file in uploaded_files:
             file_name = file.filename
@@ -265,6 +286,11 @@ def file_upload():
 def delete_file(file_id: int):
     try: 
         user_id = auth(request.headers.get("Authorization"))
+        
+        # Block demo user from deleting files
+        if is_demo_user(user_id):
+            return jsonify({"success": False, "error": "Demo users cannot delete files. Please create a regular account for full functionality."}), 403
+        
         threading.Thread(target=delete_upload, args=(user_id, file_id)).start()
         return {"success": True, 'message': f'File {file_id} deleted successfully!'}, 200
     

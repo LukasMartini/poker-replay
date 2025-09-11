@@ -109,7 +109,7 @@ const SearchBar = () => {
         return;
       }
   
-      setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`));
+      setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}/${hand.hand_id}`));
       setChartData(generateChartData(data));
     };
 

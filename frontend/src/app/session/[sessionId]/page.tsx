@@ -85,7 +85,7 @@ export default function SessionDetails() { // Asynchronous server component for 
                 // new data has been processed, so update oldOffset
                 setOldOffset(offset);
 
-                setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}${hand.hand_id}`))
+                setLinks(data.map((hand: Hand) => `${process.env.NEXT_PUBLIC_ROOT_URL}/${hand.hand_id}`))
             });
     }
 

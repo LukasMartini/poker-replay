@@ -9,7 +9,7 @@ export default function SharedWith(props: any) {
     var sessions: Array<any> = [];
 
     const redirectToSesh = (e: any) => { // Will link to the associated session view page.
-        window.location.href = `${ROOT_URL}${e}`;
+        window.location.href = `${ROOT_URL}/session/${e}`;
     }
 
     console.log(props.list_of_sessions);
@@ -23,8 +23,6 @@ export default function SharedWith(props: any) {
                         <TableCell className="w-[160px]">{props.list_of_sessions[sesh].id}</TableCell>
                         <TableCell className="w-[160px]">{props.list_of_sessions[sesh].played_at}</TableCell>
                         <TableCell className="w-[160px]">{props.list_of_sessions[sesh].small_blind}/{props.list_of_sessions[sesh].big_blind}</TableCell>
-
-
                         </TableRow>
                    );
     }

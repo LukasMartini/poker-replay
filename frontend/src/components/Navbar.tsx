@@ -31,7 +31,7 @@ const Logo = () => {
 }
 
 const Navbar = () => {
-    const {auth, logout} = useAuth();
+    const {auth, logout, isDemoUser} = useAuth();
     
     const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -69,6 +69,11 @@ const Navbar = () => {
                         <Link href={`/profile/${auth.username}`}>
                             <p className="text-sm">
                                 Profile ({auth.username})
+                                {isDemoUser && (
+                                    <span className="ml-1 text-xs bg-[#2CBDC7] text-black px-2 py-0.5 rounded-full">
+                                        DEMO
+                                    </span>
+                                )}
                             </p>
                         </Link>
 
