@@ -1,8 +1,11 @@
 FROM node:18-alpine
 
+# Build argument to determine environment (development or production)
+ARG BUILD_ENV=production
+
 WORKDIR /app
 
-# Copy package files
+# Copy package files first for better caching
 COPY frontend/package*.json ./
 
 # Install dependencies
@@ -11,15 +14,23 @@ RUN npm install
 # Copy the frontend application
 COPY frontend/ .
 
-# Set environment variable to skip linting during build
-ENV ESLINT_NO_DEV_ERRORS=true
-ENV CI=false
-
-# Build the application
-RUN npm run build
-
 # Expose the port
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+# Set environment variables
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# For production: build the application
+RUN if [ "$BUILD_ENV" = "production" ]; then \
+        export ESLINT_NO_DEV_ERRORS=true && \
+        export CI=false && \
+        export NODE_ENV=production && \
+        npm run build; \
+    fi
+
+# Set runtime environment variables
+ENV NODE_ENV=production
+ENV BUILD_ENV_RUNTIME=$BUILD_ENV
+
+# Use a simpler CMD approach
+CMD ["sh", "-c", "if [ \"$BUILD_ENV_RUNTIME\" = \"production\" ]; then npm start; else npm run dev; fi"]

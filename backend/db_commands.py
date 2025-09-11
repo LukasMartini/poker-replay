@@ -1,7 +1,8 @@
+import os
+from datetime import datetime, timedelta
 import psycopg2
 from psycopg2 import pool
 import bcrypt
-import os
 from urllib.parse import urlparse
 
 # Get database configuration from environment variables
@@ -67,11 +68,14 @@ def create_user(username: str, email: str, password: str, token: str):
     hashed_password = hashed_password.decode('utf-8')
     salt = salt.decode('utf-8')
 
+    # Set token expiry to 1 day from now
+    expiry_date = datetime.now() + timedelta(days=1)
+
     query = """
-    INSERT INTO users (username, email, password_hash, salt, token)
-    VALUES (%s, %s, %s, %s, %s)
+    INSERT INTO users (username, email, password_hash, salt, token, expiry_date)
+    VALUES (%s, %s, %s, %s, %s, %s)
     """
-    execute_query(query, (username, email, hashed_password, salt, token))
+    execute_query(query, (username, email, hashed_password, salt, token, expiry_date))
 
 def create_upload(user_id: int, file_name: str) -> int:
     query = """

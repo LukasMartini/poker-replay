@@ -1,5 +1,8 @@
 FROM python:3.11-slim
 
+# Build argument to determine environment (development or production)
+ARG BUILD_ENV=production
+
 WORKDIR /app
 
 # Install system dependencies
@@ -26,10 +29,15 @@ RUN mkdir -p uploads
 # Expose the port
 EXPOSE 5000
 
-# Set environment variables
+# Set environment variables based on build environment
 ENV FLASK_APP=server.py
-ENV FLASK_ENV=production
 ENV PYTHONPATH=/app
 
+# Default environment variables (can be overridden at runtime)
+ENV FLASK_ENV=production
+ENV FLASK_DEBUG=false
+ENV PYTHONUNBUFFERED=1
+
 # Start the application
-CMD ["python", "server.py"]
+# Use -u flag for unbuffered output (useful for development logging)
+CMD ["python", "-u", "server.py"]

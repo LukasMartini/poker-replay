@@ -22,22 +22,47 @@ services:
     networks:
       - poker-network
 
-  backend:
+  # Separate service just for loading demo data
+  demo-data-loader:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: poker-replay-backend
+      args:
+        BUILD_ENV: development
+    container_name: poker-replay-demo-loader
     environment:
       DATABASE_URL: postgresql://poker_user:poker_password@database:5432/poker_replay
-      FLASK_ENV: production
-      CORS_ORIGINS: http://localhost:3000
-    ports:
-      - "5001:5000"
+      PYTHONPATH: /app
     depends_on:
       database:
         condition: service_healthy
     volumes:
-      - ./backend/uploads:/app/uploads
+      - ./hand_histories:/app/hand_histories
+    networks:
+      - poker-network
+    command: ["python", "load_demo_data.py"]
+    restart: "no"  # Run once and exit
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+      args:
+        BUILD_ENV: development
+    container_name: poker-replay-backend
+    environment:
+      DATABASE_URL: postgresql://poker_user:poker_password@database:5432/poker_replay
+      FLASK_DEBUG: "true"
+      CORS_ORIGINS: http://localhost:3000
+      PYTHONUNBUFFERED: "1"  # Ensures Python output is not buffered
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./backend:/app  # Mount the entire backend directory for live code changes
+      - ./hand_histories:/app/hand_histories
+    depends_on:
+      database:
+        condition: service_healthy
     networks:
       - poker-network
 
@@ -45,15 +70,23 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
+      args:
+        BUILD_ENV: development
     container_name: poker-replay-frontend
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:5001
+      NODE_ENV: development
+      BUILD_ENV_RUNTIME: development
     ports:
       - "3000:3000"
-    depends_on:
-      - backend
+    volumes:
+      - ./frontend:/app  # Mount frontend directory for live changes
+      - /app/node_modules  # Use container's node_modules
+      - /app/.next  # Use container's .next directory
     networks:
       - poker-network
+    # Override command to run in dev mode
+    command: ["npm", "run", "dev"]
 
 volumes:
   postgres_data:

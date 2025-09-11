@@ -4,16 +4,21 @@
 help:
 	@echo "Poker Replay Docker Commands"
 	@echo "============================"
-	@echo "Development Commands:"
-	@echo "  build          - Build all Docker images"
-	@echo "  up             - Start all services in detached mode"
-	@echo "  up-logs        - Start all services with logs visible"
-	@echo "  down           - Stop all services"
-	@echo "  restart        - Restart all services"
-	@echo "  dev            - Start development environment with rebuild"
+	@echo "Standard Commands (Development):"
+	@echo "  up             - Start development environment"
+	@echo "  up-logs        - Start development environment with logs visible"
+	@echo "  build          - Build and start development environment"
+	@echo "  down           - Stop development environment"
+	@echo "  restart        - Restart development environment"
+	@echo "  logs           - Show logs from all services"
+	@echo ""
+	@echo "Production Commands:"
+	@echo "  prod-up        - Start production environment"
+	@echo "  prod-build     - Start production environment with rebuild"
+	@echo "  prod-down      - Stop production environment"
+	@echo "  prod-logs      - Show production logs from all services"
 	@echo ""
 	@echo "Logging Commands:"
-	@echo "  logs           - Show logs from all services"
 	@echo "  logs-backend   - Show logs from backend service only"
 	@echo "  logs-frontend  - Show logs from frontend service only"
 	@echo "  logs-database  - Show logs from database service only"
@@ -23,41 +28,62 @@ help:
 	@echo "  backend-shell  - Open backend container shell"
 	@echo "  frontend-shell - Open frontend container shell"
 	@echo ""
-	@echo "Production Commands:"
-	@echo "  prod-up        - Start production environment"
-	@echo "  prod-down      - Stop production environment"
-	@echo ""
 	@echo "Maintenance:"
 	@echo "  clean          - Remove all containers, networks, and volumes (WARNING: Removes all data!)"
 
-# Build all images
-build:
-	docker-compose build
-
-# Start all services
+# === STANDARD COMMANDS (Development) ===
+# Start development environment
 up:
 	docker-compose up -d
 
-# Start all services with logs
+# Start development environment with logs visible
 up-logs:
 	docker-compose up
 
-# Stop all services
+# Build and start development environment
+build:
+	docker-compose up --build
+
+# Stop development environment
 down:
 	docker-compose down
 
-# Restart all services
+# Restart development environment
 restart: down up
 
-# Show logs
+# === PRODUCTION COMMANDS ===
+# Start production environment
+prod-up:
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+# Start production environment with rebuild
+prod-build:
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+
+# Stop production environment
+prod-down:
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+
+# Production logs
+prod-logs:
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml logs -f
+
+# === SHARED COMMANDS ===
+# Show logs (development by default)
 logs:
 	docker-compose logs -f
 
-# Clean everything (WARNING: This removes all data!)
-clean:
-	docker-compose down -v --rmi all --remove-orphans
-	docker system prune -f
+# View specific service logs (development)
+logs-backend:
+	docker-compose logs -f backend
 
+logs-frontend:
+	docker-compose logs -f frontend
+
+logs-database:
+	docker-compose logs -f database
+
+# === SHELL ACCESS (Development) ===
 # Database shell
 db-shell:
 	docker exec -it poker-replay-db psql -U poker_user -d poker_replay
@@ -70,23 +96,9 @@ backend-shell:
 frontend-shell:
 	docker exec -it poker-replay-frontend /bin/sh
 
-# Production deployment
-prod-up:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-
-prod-down:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
-
-# Development with rebuild
-dev:
-	docker-compose up --build
-
-# View specific service logs
-logs-backend:
-	docker-compose logs -f backend
-
-logs-frontend:
-	docker-compose logs -f frontend
-
-logs-database:
-	docker-compose logs -f database
+# === MAINTENANCE ===
+# Clean everything (WARNING: This removes all data!)
+clean:
+	docker-compose down -v --rmi all --remove-orphans
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml down -v --rmi all --remove-orphans
+	docker system prune -f

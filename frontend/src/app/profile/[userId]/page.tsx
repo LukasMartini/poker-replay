@@ -8,7 +8,6 @@ import { useAuth } from "@/components/auth/AuthContext";
 import { fetchProfile } from "@/util/api-requests";
 import SharedWith from "./SharedWith";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL;
 
 // TODO: find out if we are including a chart here and if so, what of.

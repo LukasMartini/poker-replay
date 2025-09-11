@@ -1,65 +1,59 @@
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from '@/components/auth/AuthContext';
+import { getSharedPlayers, shareHand, unshareHand } from "@/util/api-requests";
+
 interface MetaDataProps {
     handID: string;
     tableName: string;
     timestamp: string;
 }
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function MetaData(props: MetaDataProps) {
     const [sharedPlayers, setSharedPlayers] = useState([]);
     const [shareInput, setShareInput] = useState("");
+    const user = useAuth();
 
-    async function getSharedPlayers() {
-        const response = await fetch(`${API_URL}share?hand_id=${props.handID}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        const json = await response.json();
-        setSharedPlayers(json);
-    }
+    const fetchSharedPlayers = useCallback(async () => {
+        if (!user.auth.token) return;
+        
+        try {
+            const response = await getSharedPlayers(props.handID, user.auth.token);
+            const json = await response.json();
+            setSharedPlayers(json);
+        } catch (error) {
+            console.error("Error fetching shared players:", error);
+        }
+    }, [user.auth.token, props.handID]);
+
     async function postShare() {
-        await fetch(`${API_URL}share`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({
-                hand_id: props.handID,
-                shared_user: shareInput
-            })
-        });
-
-        getSharedPlayers();
+        if (!user.auth.token || !shareInput.trim()) return;
+        
+        try {
+            await shareHand(props.handID, shareInput, user.auth.token);
+            setShareInput(""); // Clear input after successful share
+            fetchSharedPlayers(); // Refresh the list
+        } catch (error) {
+            console.error("Error sharing hand:", error);
+        }
     }
 
     async function deleteShare(id: number) {
-        await fetch(`${API_URL}share`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({
-                hand_id: props.handID,
-                shared_id: id
-            })
-        });
-
-        getSharedPlayers();
+        if (!user.auth.token) return;
+        
+        try {
+            await unshareHand(props.handID, id, user.auth.token);
+            fetchSharedPlayers(); // Refresh the list
+        } catch (error) {
+            console.error("Error unsharing hand:", error);
+        }
     }
 
-
     useEffect(() => {
-        getSharedPlayers();
-    }, []);
+        fetchSharedPlayers();
+    }, [fetchSharedPlayers]);
     return (
         <div className="grid">
             <div className="py-8">

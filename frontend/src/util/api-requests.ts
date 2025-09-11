@@ -1,5 +1,5 @@
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/`;
 
 
 // Helper function to get headers
@@ -35,6 +35,16 @@ async function post(endpoint: string, data: object | FormData, token?: string) {
     return response;
 }
 
+// Function to perform DELETE request
+async function del(endpoint: string, data?: object, token?: string) {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+        method: 'DELETE',
+        headers: getHeaders(token),
+        body: data ? JSON.stringify(data) : undefined
+    });
+    return response;
+}
+
 export const fetchSessions = (limit: number, offset: number, token: string) => get(`sessions?limit=${limit}&offset=${offset}`, token);
 export const fetchProfile = (profile: string, token: string) => get(`profile/${profile}`, token);
 export const fetchHandSummary = (searchTerm: string, token: string) => get(`hand_summary/${searchTerm}`, token);
@@ -52,3 +62,6 @@ export const signupUser = (formData: FormData) => post(`signup`, Object.fromEntr
 export const uploadFiles = (files: FormData, token: string) => post(`upload`, files, token);
 export const deleteFile = (fileId: string, token: string) => get(`delete/${fileId}`, token);
 export const authorizeUser = (token: string) => post(`authorize`, {}, token);
+export const getSharedPlayers = (handId: string, token: string) => get(`share?hand_id=${handId}`, token);
+export const shareHand = (handId: string, sharedUser: string, token: string) => post(`share`, { hand_id: handId, shared_user: sharedUser }, token);
+export const unshareHand = (handId: string, sharedId: number, token: string) => del(`share`, { hand_id: handId, shared_id: sharedId }, token);

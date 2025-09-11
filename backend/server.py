@@ -33,17 +33,27 @@ def auth(auth_header):
     cur = conn.cursor()
 
     try: 
+        if not auth_header:
+            raise Exception("Authorization header is missing.")
+            
         parts = auth_header.split()
         if len(parts) == 2 and parts[0].lower() == 'bearer':
             token = parts[1]
             cur.execute("EXECUTE authorize(%s)", (token,))
             result = cur.fetchall()
+            
+            if not result or len(result) == 0:
+                raise Exception("Invalid or expired authorization token.")
+                
+            user_id = result[0][0]
             cur.close()
-            return result[0][0]
+            return user_id
         else:
-            raise Exception("Invalid authorization token.")
+            raise Exception("Invalid authorization token format. Expected 'Bearer <token>'.")
     except Exception as e:
-        print(e)
+        if cur:
+            cur.close()
+        print(f"Authentication error: {e}")
         raise e
 
 @app.route('/api/hand_summary/<int:id>', methods=['GET'])
