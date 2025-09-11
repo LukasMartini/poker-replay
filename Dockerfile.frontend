@@ -1,36 +1,61 @@
-FROM node:18-alpine
-
-# Build argument to determine environment (development or production)
-ARG BUILD_ENV=production
+# Base stage with dependencies
+FROM node:18-alpine as base
 
 WORKDIR /app
 
 # Copy package files first for better caching
 COPY frontend/package*.json ./
+RUN npm ci --only=production && npm cache clean --force
 
-# Install dependencies
-RUN npm install
-
-# Copy the frontend application
-COPY frontend/ .
-
-# Expose the port
-EXPOSE 3000
-
-# Set environment variables
+# Development stage
+FROM base as development
+ENV NODE_ENV=development
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# For production: build the application
-RUN if [ "$BUILD_ENV" = "production" ]; then \
-        export ESLINT_NO_DEV_ERRORS=true && \
-        export CI=false && \
-        export NODE_ENV=production && \
-        npm run build; \
-    fi
+# Install dev dependencies
+RUN npm ci
 
-# Set runtime environment variables
+# Copy source code (will be mounted as volume in dev)
+COPY frontend/ .
+
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
+
+# Build stage for production
+FROM base as builder
 ENV NODE_ENV=production
-ENV BUILD_ENV_RUNTIME=$BUILD_ENV
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Use a simpler CMD approach
-CMD ["sh", "-c", "if [ \"$BUILD_ENV_RUNTIME\" = \"production\" ]; then npm start; else npm run dev; fi"]
+# Install all dependencies for building
+RUN npm ci
+
+# Copy source code
+COPY frontend/ .
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM node:18-alpine as production
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+WORKDIR /app
+
+# Copy package files and install only production dependencies
+COPY frontend/package*.json ./
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy built application from builder stage
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.mjs ./
+COPY --from=builder /app/package.json ./
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs \
+    && adduser -S nextjs -u 1001
+
+USER nextjs
+EXPOSE 3000
+CMD ["npm", "start"]

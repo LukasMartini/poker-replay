@@ -1,51 +1,39 @@
+# Production overrides for docker-compose.yml
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
 services:
   database:
     container_name: poker-replay-db-prod
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_production_password}
-      POSTGRES_USER: ${POSTGRES_USER:-poker_user}
-      POSTGRES_DB: ${POSTGRES_DB:-poker_replay}
+    ports: []
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
-      - ./backend/sql/create_tables.sql:/docker-entrypoint-initdb.d/01-create_tables.sql
-      - ./backend/sql/R10/authorization.sql:/docker-entrypoint-initdb.d/02-authorization.sql
-      - ./backend/sql/R6/fetch_hand_query_templates.sql:/docker-entrypoint-initdb.d/03-fetch_hand_query_templates.sql
-      - ./backend/sql/R7/authorized_hands_template.sql:/docker-entrypoint-initdb.d/04-authorized_hands_template.sql
     restart: unless-stopped
 
   demo-data-loader:
     container_name: poker-replay-demo-loader-prod
     build:
-      args:
-        BUILD_ENV: production
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-poker_user}:${POSTGRES_PASSWORD:-secure_production_password}@database:5432/${POSTGRES_DB:-poker_replay}
-      PYTHONPATH: /app
+      target: production
 
   backend:
     container_name: poker-replay-backend-prod
     build:
-      args:
-        BUILD_ENV: production
+      target: production
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-poker_user}:${POSTGRES_PASSWORD:-secure_production_password}@database:5432/${POSTGRES_DB:-poker_replay}
       FLASK_DEBUG: "false"
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      FLASK_ENV: production
+      CORS_ORIGINS: https://repl.poker/
     volumes:
-      - ./backend/uploads:/app/uploads  # Only mount uploads, not source code
+      - ./backend/uploads:/app/uploads
     restart: unless-stopped
 
   frontend:
     container_name: poker-replay-frontend-prod
     build:
-      args:
-        BUILD_ENV: production
+      target: production
     environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5001}
-      NODE_ENV: production
-      BUILD_ENV_RUNTIME: production
-    volumes: []  # Remove all volume mounts for production
-    command: ["npm", "start"]  # Explicitly use production command
+      NEXT_PUBLIC_API_URL: https://repl.poker/
+      NEXT_PUBLIC_ROOT_URL: https://repl.poker/
+    volumes: []
     restart: unless-stopped
 
 volumes:

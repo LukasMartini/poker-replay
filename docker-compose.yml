@@ -4,8 +4,8 @@ services:
     container_name: poker-replay-db
     environment:
       POSTGRES_DB: poker_replay
-      POSTGRES_USER: poker_user
-      POSTGRES_PASSWORD: poker_password
+      POSTGRES_USER: poker_replay_user
+      POSTGRES_PASSWORD: poker_replay_password
     ports:
       - "5433:5432"
     volumes:
@@ -15,23 +15,21 @@ services:
       - ./backend/sql/R6/fetch_hand_query_templates.sql:/docker-entrypoint-initdb.d/03-fetch_hand_query_templates.sql
       - ./backend/sql/R7/authorized_hands_template.sql:/docker-entrypoint-initdb.d/04-authorized_hands_template.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U poker_user -d poker_replay"]
+      test: ["CMD-SHELL", "pg_isready -U poker_replay_user -d poker_replay"]
       interval: 5s
       timeout: 5s
       retries: 5
     networks:
       - poker-network
 
-  # Separate service just for loading demo data
   demo-data-loader:
     build:
       context: .
       dockerfile: Dockerfile.backend
-      args:
-        BUILD_ENV: development
+      target: development
     container_name: poker-replay-demo-loader
     environment:
-      DATABASE_URL: postgresql://poker_user:poker_password@database:5432/poker_replay
+      DATABASE_URL: postgresql://poker_replay_user:poker_replay_password@database:5432/poker_replay
       PYTHONPATH: /app
     depends_on:
       database:
@@ -41,24 +39,24 @@ services:
     networks:
       - poker-network
     command: ["python", "load_demo_data.py"]
-    restart: "no"  # Run once and exit
+    restart: "no"
 
   backend:
     build:
       context: .
       dockerfile: Dockerfile.backend
-      args:
-        BUILD_ENV: development
+      target: development
     container_name: poker-replay-backend
     environment:
-      DATABASE_URL: postgresql://poker_user:poker_password@database:5432/poker_replay
+      DATABASE_URL: postgresql://poker_replay_user:poker_replay_password@database:5432/poker_replay
       FLASK_DEBUG: "true"
+      FLASK_ENV: development
       CORS_ORIGINS: http://localhost:3000
-      PYTHONUNBUFFERED: "1"  # Ensures Python output is not buffered
+      PYTHONUNBUFFERED: "1"
     ports:
       - "5001:5000"
     volumes:
-      - ./backend:/app  # Mount the entire backend directory for live code changes
+      - ./backend:/app  # Mount source code for live reload
       - ./hand_histories:/app/hand_histories
     depends_on:
       database:
@@ -70,23 +68,21 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-      args:
-        BUILD_ENV: development
+      target: development
     container_name: poker-replay-frontend
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:5001
+      NEXT_PUBLIC_ROOT_URL: http://localhost:3000
+      NEXT_TELEMETRY_DISABLED: "1"
       NODE_ENV: development
-      BUILD_ENV_RUNTIME: development
     ports:
       - "3000:3000"
     volumes:
-      - ./frontend:/app  # Mount frontend directory for live changes
+      - ./frontend:/app  # Mount source code for live reload
       - /app/node_modules  # Use container's node_modules
       - /app/.next  # Use container's .next directory
     networks:
       - poker-network
-    # Override command to run in dev mode
-    command: ["npm", "run", "dev"]
 
 volumes:
   postgres_data:

@@ -1,7 +1,5 @@
-FROM python:3.11-slim
-
-# Build argument to determine environment (development or production)
-ARG BUILD_ENV=production
+# Base stage with common dependencies
+FROM python:3.11-slim as base
 
 WORKDIR /app
 
@@ -9,35 +7,44 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --upgrade pip
 
 # Copy requirements first for better caching
 COPY backend/requirements.txt .
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the backend application
-COPY backend/ .
-
-# Copy sample hand history for demo data
-COPY hand_histories/ ./hand_histories/
-
-# Create uploads directory
-RUN mkdir -p uploads
-
-# Expose the port
-EXPOSE 5000
-
-# Set environment variables based on build environment
-ENV FLASK_APP=server.py
+# Development stage
+FROM base as development
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=true
+ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app
 
-# Default environment variables (can be overridden at runtime)
+# Copy source code (will be mounted as volume in dev)
+COPY backend/ .
+COPY hand_histories/ ./hand_histories/
+RUN mkdir -p uploads
+
+EXPOSE 5000
+CMD ["python", "-u", "server.py"]
+
+# Production stage
+FROM base as production
 ENV FLASK_ENV=production
 ENV FLASK_DEBUG=false
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
 
-# Start the application
-# Use -u flag for unbuffered output (useful for development logging)
+# Copy application code
+COPY backend/ .
+COPY hand_histories/ ./hand_histories/
+
+# Create non-root user for security
+RUN groupadd -r poker && useradd -r -g poker poker \
+    && mkdir -p uploads \
+    && chown -R poker:poker /app
+
+USER poker
+EXPOSE 5000
 CMD ["python", "-u", "server.py"]
