@@ -181,7 +181,7 @@ const SearchBar = () => {
       <>
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8">
           <h1 className="text-5xl font-extrabold bg-gradient-to-r from-red-500 to-yellow-400 bg-clip-text text-transparent drop-shadow-lg leading-relaxed">
-            Replay. Analyze. Master
+            Replay. Analyze. Master.
           </h1>
           <h5 className="text-xl font-medium bg-gradient-to-b from-gray-200 to-white bg-clip-text text-transparent">
             Fix the leaks, sharpen your game.
@@ -202,10 +202,10 @@ const SearchBar = () => {
             width={600}
             height={400}
             className="w-full max-w-xl mx-auto"
-            priority
+            unoptimized={true}
           />
 
-          
+
         </div>
       </>
     );
